@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -12,9 +13,16 @@ public class EnemyHealth : MonoBehaviour
     int health;
     public int expAmount = 50;
 
+    [Header("GameObjects")]
+    GameObject healthbar;
+
+    [Header("Images")]
+    Image healthImage;
+
     [Header("Components")]
     public RoomSpawner roomSpawner;
     ExpSoulsManager expSoulsManager;
+    Camera cam;
 
     #endregion
 
@@ -24,6 +32,9 @@ public class EnemyHealth : MonoBehaviour
     void Start()
     {
         expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
+        healthImage = transform.Find("Healthbar/Background/Foreground").GetComponent<Image>();
+        healthbar = transform.Find("Healthbar").gameObject;
+        cam = Camera.main;
         
         health = maxHealth;
     }
@@ -43,6 +54,9 @@ public class EnemyHealth : MonoBehaviour
         if (roomSpawner.inArea)
         {
             health -= damage;
+
+            healthbar.transform.rotation = Quaternion.LookRotation(healthbar.transform.position - cam.transform.position);
+            healthImage.fillAmount = (float)health / maxHealth;
 
             if (health <= 0)
             {

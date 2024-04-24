@@ -11,6 +11,7 @@ public class Ulfberht : MonoBehaviour
 
     [Header("Floats")]
     public readonly float slashSpeed = 100f;
+    public readonly float cooldown = 0.5f;
 
     [Header("Bools")]
     public bool slashing;

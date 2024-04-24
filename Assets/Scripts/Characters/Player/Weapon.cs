@@ -40,19 +40,12 @@ public class Weapon : MonoBehaviour
         ulfberhtObj = ulfberht.gameObject;
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if (ulfberhtObj.activeInHierarchy)
-        {
-            rState = RangeState.Melee;
-            mType = MeleeAttackType.Slash;
-        }
-
         // Melee Slash Switch
         if (slashing)
         {
-           switch (sState)
+            switch (sState)
             {
                 case SlashState.NoSlash:
                     BeginSlash();
@@ -116,6 +109,16 @@ public class Weapon : MonoBehaviour
                     canAttack = true;
                     break;
             }
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (ulfberhtObj.activeInHierarchy)
+        {
+            rState = RangeState.Melee;
+            mType = MeleeAttackType.Slash;
         }
     }
 

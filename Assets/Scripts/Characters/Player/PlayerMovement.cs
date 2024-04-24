@@ -51,6 +51,14 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         rb.MovePosition(rb.position + currentSpeed * Time.fixedDeltaTime * move);
+
+        if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Slash)
+        {
+            if (Input.GetMouseButton(0) && weapon.canAttack)
+            {
+                weapon.Slash();
+            }
+        }
     }
 
     // Update is called once per frame
@@ -64,15 +72,6 @@ public class PlayerMovement : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space) && !isDashing && !dashCooldown && (move.x != 0 || move.z != 0))
             {
                 StartCoroutine(Dash());
-            }
-
-
-            if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Slash)
-            {
-                if (Input.GetMouseButton(0) && weapon.canAttack)
-                {
-                    weapon.Slash();
-                }
             }
         }
     }
