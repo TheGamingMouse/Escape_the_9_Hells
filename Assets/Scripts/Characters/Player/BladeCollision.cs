@@ -6,17 +6,17 @@ using UnityEngine;
 public class BladeCollision : MonoBehaviour
 {
     int damage;
-    SlashSword slashSword;
+    Ulfberht ulfberht;
 
     void Start()
     {
-        damage = GetComponentInParent<SlashSword>().damage;
-        slashSword = GetComponentInParent<SlashSword>();
+        damage = GetComponentInParent<Ulfberht>().damage;
+        ulfberht = GetComponentInParent<Ulfberht>();
     }
 
-    void OnTriggerEnter(Collider coll)
+    void OnTriggerStay(Collider coll)
     {
-        if (slashSword.slashing)
+        if (ulfberht.slashing)
         {
             if (coll.TryGetComponent<Ricky>(out Ricky ricky))
             {

@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody rb;
     Camera mainCam;
     public Weapon weapon;
-    public SlashSword slashSword;
+    public Ulfberht ulfberht;
 
     #endregion
 
@@ -66,11 +66,12 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(Dash());
             }
 
+
             if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Slash)
             {
-                if (Input.GetMouseButtonDown(0) && !slashSword.slashing)
+                if (Input.GetMouseButton(0) && weapon.canAttack)
                 {
-                    slashSword.Slash();
+                    weapon.Slash();
                 }
             }
         }

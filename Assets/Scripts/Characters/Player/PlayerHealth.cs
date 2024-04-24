@@ -8,13 +8,14 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Ints")]
     [Range(0, 100)]
-    readonly int maxHealth = 100;
+    public readonly int maxHealth = 100;
     
     [Range(0, 100)]
     public int health;
 
     [Header("Bools")]
     bool playerDead;
+    public bool isInvinsible;
 
     #endregion
 
@@ -42,7 +43,10 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
+        if (!isInvinsible && !playerDead)
+        {
+            health -= damage;
+        }
     }
 
     #endregion

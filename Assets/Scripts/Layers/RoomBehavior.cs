@@ -12,6 +12,7 @@ public class RoomBehavior : MonoBehaviour
 
     [Header("GameObjects")]
     public GameObject door;
+    public GameObject secondDoor;
     public GameObject backDoor;
 
     [Header("Arrays")]
@@ -38,6 +39,14 @@ public class RoomBehavior : MonoBehaviour
             if (activeDoors[i] == doors[i])
             {
                 door = doors[i];
+            }
+        }
+
+        for (int i = 0; i < activeDoors.Length; i++)
+        {
+            if (activeDoors[i] == doors[i] && doors[i] != door)
+            {
+                secondDoor = doors[i];
             }
         }
     }

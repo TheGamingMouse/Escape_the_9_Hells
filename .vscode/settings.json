@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Escape the 9 Hells.sln"
+    "dotnet.defaultSolution": "Escape_the_9_Hells.sln"
 }

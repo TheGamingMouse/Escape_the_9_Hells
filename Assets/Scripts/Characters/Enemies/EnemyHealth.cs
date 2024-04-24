@@ -8,11 +8,13 @@ public class EnemyHealth : MonoBehaviour
     #region Properties
 
     [Header("Ints")]
-    readonly int maxHealth = 75;
+    public int maxHealth = 75;
     int health;
+    public int expAmount = 50;
 
     [Header("Components")]
     public RoomSpawner roomSpawner;
+    ExpSoulsManager expSoulsManager;
 
     #endregion
 
@@ -21,6 +23,8 @@ public class EnemyHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
+        
         health = maxHealth;
     }
 
@@ -36,12 +40,16 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
-
-        if (health <= 0)
+        if (roomSpawner.inArea)
         {
-            roomSpawner.enemies.Remove(gameObject);
-            Destroy(gameObject);
+            health -= damage;
+
+            if (health <= 0)
+            {
+                roomSpawner.enemies.Remove(gameObject);
+                expSoulsManager.AddExperience(expAmount);
+                Destroy(gameObject);
+            }
         }
     }
 

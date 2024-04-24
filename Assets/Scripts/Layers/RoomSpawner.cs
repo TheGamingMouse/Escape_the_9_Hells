@@ -11,19 +11,25 @@ public class RoomSpawner : MonoBehaviour
     bool layerGenerated;
     bool enemiesDefeated;
     bool nextRoomLoaded;
-    [SerializeField] bool enemiesSpawned;
+    bool enemiesSpawned;
+    public bool inArea;
 
     [Header("GameObjects")]
-    GameObject door;
-    GameObject doorHinge;
-    public GameObject normalEnemy;
+    [SerializeField] GameObject door;
+    [SerializeField] GameObject secondDoor;
+    [SerializeField] GameObject doorHinge;
+    [SerializeField] GameObject secondDoorHinge;
+    public GameObject enemy;
+    public GameObject chest;
 
     [Header("Transforms")]
     public Transform enemyList;
+    Transform chestSpawn;
 
     [Header("Lists")]
     readonly List<Transform> spawnPoints = new();
     public List<GameObject> enemies = new();
+    readonly List<Transform> chestSpawns = new();
 
     [Header("Components")]
     LayerGenerator generator;
@@ -47,6 +53,11 @@ public class RoomSpawner : MonoBehaviour
         {
             spawnPoints.Add(transform.Find("SpawnPositions").GetChild(i));
         }
+
+        for (int i = 0; i <= 3; i++)
+        {
+            chestSpawns.Add(transform.Find("ChestSpawns").GetChild(i));
+        }
     }
 
     // Update is called once per frame
@@ -56,8 +67,21 @@ public class RoomSpawner : MonoBehaviour
 
         if (layerGenerated)
         {
-            door = roomBehavior.door;
-            doorHinge = roomBehavior.door.transform.Find("DoorHinge").gameObject;
+            if (roomBehavior.door != null)
+            {
+                door = roomBehavior.door;
+                doorHinge = roomBehavior.door.transform.Find("DoorHinge").gameObject;
+
+                if (roomBehavior.secondDoor != null)
+                {
+                    secondDoor = roomBehavior.secondDoor;
+                    secondDoorHinge = roomBehavior.secondDoor.transform.Find("DoorHinge").gameObject;
+                }
+            }
+            else
+            {
+                // TO DO - Make a chest room (or something)
+            }
         }
 
         if (enemiesDefeated)
@@ -85,56 +109,159 @@ public class RoomSpawner : MonoBehaviour
 
     void OpenDoor()
     {
-        door.GetComponentInChildren<BoxCollider>().enabled = false;
-        doorHinge.transform.localRotation = Quaternion.Slerp(doorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
+        if (door != null)
+        {
+            door.GetComponentInChildren<BoxCollider>().enabled = false;
+            doorHinge.transform.localRotation = Quaternion.Slerp(doorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
+
+            if (secondDoor != null)
+            {
+                secondDoor.GetComponentInChildren<BoxCollider>().enabled = false;
+                secondDoorHinge.transform.localRotation = Quaternion.Slerp(secondDoorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
+            }
+        }
     }
 
     void LoadNextRoom()
     {
-        GameObject[] rooms = layerManager.rooms;
-
-        foreach (GameObject r in rooms)
+        if (door != null)
         {
-            if (door.name == "Up Door")
-            {
-                if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
-                {
-                    r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                    r.SetActive(true);
+            GameObject[] rooms = layerManager.rooms;
 
-                    nextRoomLoaded = true;
-                }
-            }
-            else if (door.name == "Down Door")
+            foreach (GameObject r in rooms)
             {
-                if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
+                if (door.name == "Up Door")
                 {
-                    r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                    r.SetActive(true);
+                    if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
+                    {
+                        r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
+                        r.SetActive(true);
 
-                    nextRoomLoaded = true;
+                        nextRoomLoaded = true;
+                    }
                 }
-            }
-            else if (door.name == "Right Door")
-            {
-                if (r.GetComponent<RoomBehavior>().x == roomBehavior.x + 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                else if (door.name == "Down Door")
                 {
-                    r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                    r.SetActive(true);
-                    
-                    nextRoomLoaded = true;
+                    if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
+                    {
+                        r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
+                        r.SetActive(true);
+
+                        nextRoomLoaded = true;
+                    }
                 }
-            }
-            else if (door.name == "Left Door")
-            {
-                if (r.GetComponent<RoomBehavior>().x == roomBehavior.x - 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                else if (door.name == "Right Door")
                 {
-                    r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                    r.SetActive(true);
-                    
-                    nextRoomLoaded = true;
+                    if (r.GetComponent<RoomBehavior>().x == roomBehavior.x + 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                    {
+                        r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
+                        r.SetActive(true);
+                        
+                        nextRoomLoaded = true;
+                    }
+                }
+                else if (door.name == "Left Door")
+                {
+                    if (r.GetComponent<RoomBehavior>().x == roomBehavior.x - 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                    {
+                        r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
+                        r.SetActive(true);
+                        
+                        nextRoomLoaded = true;
+                    }
+                }
+
+                if (secondDoor != null)
+                {
+                    if (secondDoor.name == "Up Door")
+                    {
+                        if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
+                        {
+                            r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
+                            r.SetActive(true);
+
+                            nextRoomLoaded = true;
+                        }
+                    }
+                    else if (secondDoor.name == "Down Door")
+                    {
+                        if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
+                        {
+                            r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
+                            r.SetActive(true);
+
+                            nextRoomLoaded = true;
+                        }
+                    }
+                    else if (secondDoor.name == "Right Door")
+                    {
+                        if (r.GetComponent<RoomBehavior>().x == roomBehavior.x + 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                        {
+                            r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
+                            r.SetActive(true);
+                            
+                            nextRoomLoaded = true;
+                        }
+                    }
+                    else if (secondDoor.name == "Left Door")
+                    {
+                        if (r.GetComponent<RoomBehavior>().x == roomBehavior.x - 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                        {
+                            r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
+                            r.SetActive(true);
+                            
+                            nextRoomLoaded = true;
+                        }
+                    }
                 }
             }
+        }
+        else
+        {
+            if (roomBehavior.backDoor.name == "Up Door")
+            {
+                foreach (Transform c in chestSpawns)
+                {
+                    if (c.name == "Down Chest")
+                    {
+                        chestSpawn = c;
+                    }
+                }
+            }
+            else if (roomBehavior.backDoor.name == "Down Door")
+            {
+                foreach (Transform c in chestSpawns)
+                {
+                    if (c.name == "Up Chest")
+                    {
+                        chestSpawn = c;
+                    }
+                }
+            }
+            else if (roomBehavior.backDoor.name == "Right Door")
+            {
+                foreach (Transform c in chestSpawns)
+                {
+                    if (c.name == "Left Chest")
+                    {
+                        chestSpawn = c;
+                    }
+                }
+            }
+            else if (roomBehavior.backDoor.name == "Left Door")
+            {
+                foreach (Transform c in chestSpawns)
+                {
+                    if (c.name == "Right Chest")
+                    {
+                        chestSpawn = c;
+                    }
+                }
+            }
+            var newChest = Instantiate(chest, chestSpawn.position, Quaternion.identity, chestSpawn);
+            newChest.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
+
+            nextRoomLoaded = true;
         }
     }
 
@@ -150,12 +277,32 @@ public class RoomSpawner : MonoBehaviour
         {
             int spawnIndex = Random.Range(0, spawnPoints.Count);
             
-            var newEnemy = Instantiate(normalEnemy, spawnPoints[spawnIndex].position, Quaternion.identity, enemyList);
+            var newEnemy = Instantiate(enemy, spawnPoints[spawnIndex].position, Quaternion.identity, enemyList);
             newEnemy.GetComponent<EnemyHealth>().roomSpawner = this;
+            newEnemy.GetComponent<EnemyMovement>().roomSpawner = this;
             enemies.Add(newEnemy);
         }
 
         enemiesSpawned = true;
+    }
+
+    #endregion
+
+    #region General Methods
+
+    void OnTriggerEnter(Collider coll)
+    {
+        if (coll.transform.CompareTag("Player"))
+        {
+            inArea = true;
+        }
+    }
+    void OnTriggerExit(Collider coll)
+    {
+        if (coll.transform.CompareTag("Player"))
+        {
+            inArea = false;
+        }
     }
 
     #endregion

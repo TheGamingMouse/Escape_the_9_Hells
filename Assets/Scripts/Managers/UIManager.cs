@@ -7,9 +7,6 @@ public class UIManager : MonoBehaviour
 {
     #region Properties
 
-    [Header("Ints")]
-    int level;
-
     [Header("Floats")]
     [Range(0f, 1f)]
     float exp;
@@ -25,6 +22,7 @@ public class UIManager : MonoBehaviour
 
     [Header("TMPs")]
     TMP_Text levelText;
+    TMP_Text soulsText;
 
     [Header("Components")]
     Dialogue dialogue;
@@ -65,6 +63,7 @@ public class UIManager : MonoBehaviour
         UpdateExp();
         UpdateHealth();
         UpdateLevel();
+        UpdateSouls();
     }
 
     #endregion
@@ -87,6 +86,7 @@ public class UIManager : MonoBehaviour
     void FindTextElements()
     {
         levelText = GameObject.FindWithTag("Canvas").transform.Find("uf_level_elite/LevelText (TMP)").GetComponent<TextMeshProUGUI>();
+        soulsText = GameObject.FindWithTag("Canvas").transform.Find("Souls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
     }
 
     void DisableObjects()
@@ -125,8 +125,12 @@ public class UIManager : MonoBehaviour
 
     void UpdateLevel()
     {
-        level = playerLevel.level;
-        levelText.text = $"{level}";
+        levelText.text = $"{playerLevel.level}";
+    }
+
+    void UpdateSouls()
+    {
+        soulsText.text = $"{playerLevel.souls}";
     }
 
     #endregion
