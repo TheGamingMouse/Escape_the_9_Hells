@@ -6,6 +6,11 @@ public class BossGenerator : MonoBehaviour
 {
     #region Properties
 
+    [Header("GameObjects")]
+    public GameObject downTreasure;
+    public GameObject rightTreasure;
+    public GameObject leftTreasure;
+
     [Header("Components")]
     public RoomBehavior room;
     
@@ -15,6 +20,10 @@ public class BossGenerator : MonoBehaviour
     void Start()
     {
         GenerateExit();
+
+        downTreasure.SetActive(false);
+        rightTreasure.SetActive(false);
+        leftTreasure.SetActive(false);
     }
 
     // Update is called once per frame
@@ -31,16 +40,22 @@ public class BossGenerator : MonoBehaviour
         {
             bool[] status = {true, true, false, false};
             room.UpdateRoom(status);
+
+            downTreasure.SetActive(true);
         }
         if (door == 1)
         {
             bool[] status = {true, false, true, false};
             room.UpdateRoom(status);
+
+            rightTreasure.SetActive(true);
         }
         if (door == 2)
         {
             bool[] status = {true, false, false, true};
             room.UpdateRoom(status);
+
+            leftTreasure.SetActive(true);
         }
     }
 }
