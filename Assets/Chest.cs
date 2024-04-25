@@ -21,11 +21,12 @@ public class Chest : MonoBehaviour
         expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
 
         souls = Random.Range(5, 16);
+        expSoulsManager.AddSouls(souls);
     }
 
     // Update is called once per frame
     void Update()
     {
-        expSoulsManager.AddSouls(souls);
+        
     }
 }

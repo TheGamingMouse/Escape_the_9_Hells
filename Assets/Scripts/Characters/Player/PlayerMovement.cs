@@ -50,13 +50,16 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.MovePosition(rb.position + currentSpeed * Time.fixedDeltaTime * move);
-
-        if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Slash)
+        if (startBool)
         {
-            if (Input.GetMouseButton(0) && weapon.canAttack)
+            rb.MovePosition(rb.position + currentSpeed * Time.fixedDeltaTime * move);
+
+            if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Slash)
             {
-                weapon.Slash();
+                if (Input.GetMouseButton(0) && weapon.canAttack)
+                {
+                    weapon.Slash();
+                }
             }
         }
     }
