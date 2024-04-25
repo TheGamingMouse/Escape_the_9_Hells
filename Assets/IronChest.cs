@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 
-public class Chest : MonoBehaviour
+public class IronChest : MonoBehaviour
 {
     #region Properties
 
