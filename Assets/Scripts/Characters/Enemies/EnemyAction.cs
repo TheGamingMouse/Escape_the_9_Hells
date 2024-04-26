@@ -6,19 +6,17 @@ public class EnemyAction : MonoBehaviour
 {
     #region Properties
 
-    [Header("Enum States")]
-    [SerializeField] AttackState aState;
+    [Header("Floats")]
+    readonly float attackSpeed = 0.5f;
 
     [Header("Bools")]
-    bool nPosBool;
-    bool aPosBool;
     public bool attacking;
 
-    [Header("Transforms")]
-    public Transform weapon;
-
-    [Header("Vector3s")]
-    public Vector3 nPos, aPos;
+    [Header("Animator")]
+    Animator animator;
+    
+    [Header("AnimationClips")]
+    AnimationClip clip;
 
     [Header("Components")]
     EnemyMovement enemyMovement;
@@ -33,46 +31,28 @@ public class EnemyAction : MonoBehaviour
     {
         enemyMovement = GetComponent<EnemyMovement>();
         pugio = GetComponentInChildren<Pugio>();
+        pugio.canDamageEnemies = false;
+
+        animator = pugio.GetComponentInParent<Animator>();
+
+        AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip c in clips)
+        {
+            if (c.name == "Pugio Pierce")
+            {
+                clip = c;
+            }
+        }
+
+        animator.SetFloat("AttackSpeed", attackSpeed);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (enemyMovement.targetInRange)
+        if (enemyMovement.targetInRange && !attacking)
         {
             Attack();
-        }
-
-        if (attacking)
-        {
-           switch (aState)
-            {
-                case AttackState.NoPierce:
-                    Pierce();
-                    if (aPosBool)
-                    {
-                        aState = AttackState.Pierce;
-                    }
-                    break;
-                
-                case AttackState.Pierce:
-                    NoPierce();
-                    if (nPosBool)
-                    {
-                        aState = AttackState.EndPierce;
-                    }
-                    break;
-
-                case AttackState.EndPierce:
-                    attacking = false;
-                    aState = AttackState.NoPierce;
-                    break;
-            }
-        }
-        else
-        {
-            NoPierce();
-            aState = AttackState.NoPierce;
         }
     }
 
@@ -82,40 +62,23 @@ public class EnemyAction : MonoBehaviour
 
     void Attack()
     {
+        pugio.piercing = true;
+        animator.SetBool("Piercing", true);
+        StartCoroutine(Unattack());
+
         attacking = true;
     }
 
-    void NoPierce()
+    IEnumerator Unattack()
     {
-        weapon.localPosition = Vector3.Slerp(weapon.localPosition, nPos, pugio.attackSpeed * Time.deltaTime);
+        float clipLength = clip.length / animator.GetFloat("AttackSpeed");
 
-        if (weapon.localPosition == nPos)
-        {
-            nPosBool = true;
-            aPosBool = false;
-        }
-    }
+        yield return new WaitForSeconds(clipLength);
 
-    void Pierce()
-    {
-        weapon.localPosition = Vector3.Slerp(weapon.localPosition, aPos, pugio.attackSpeed * Time.deltaTime);
+        pugio.piercing = false;
+        animator.SetBool("Piercing", false);
 
-        if (weapon.localPosition == aPos)
-        {
-            nPosBool = false;
-            aPosBool = true;
-        }
-    }
-
-    #endregion
-
-    #region Enums
-
-    enum AttackState
-    {
-        NoPierce,
-        Pierce,
-        EndPierce
+        attacking = false;
     }
 
     #endregion

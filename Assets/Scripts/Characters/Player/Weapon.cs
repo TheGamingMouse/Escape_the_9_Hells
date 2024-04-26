@@ -9,26 +9,29 @@ public class Weapon : MonoBehaviour
     [Header("Enum States")]
     public RangeState rState;
     public MeleeAttackType mType;
+    public WeaponActive wActive;
+
+    [Header("Ints")]
+    public int attackSpeedMultiplier = 1;
 
     [Header("Bools")]
     public bool canAttack;
 
     [Header("GameObjects")]
     GameObject ulfberhtObj;
+    GameObject pugioObj;
+
+    [Header("Animator")]
+    Animator ulfAnimator;
+    Animator pugAnimator;
+
+    [Header("AnimationClips")]
+    AnimationClip ulfClip;
+    AnimationClip pugClip;
 
     [Header("Components")]
     public Ulfberht ulfberht;
-
-    [Header("Ulfberht")]
-    SlashState sState;
-
-    public bool slashing;
-    bool nRotBool;
-    bool sRot1Bool;
-    bool sRot2Bool;
-    bool sRotEndBool;
-
-    public Quaternion nRot, sRot1, sRot2, sRotEnd;
+    public Pugio pugio;
 
     #endregion
 
@@ -38,78 +41,47 @@ public class Weapon : MonoBehaviour
     void Start()
     {
         ulfberhtObj = ulfberht.gameObject;
-    }
+        pugioObj = pugio.gameObject;
 
-    void FixedUpdate()
-    {
-        // Melee Slash Switch
-        if (slashing)
+        if (wActive == WeaponActive.Ulfberht)
         {
-            switch (sState)
+            pugioObj.SetActive(false);
+            ulfberht.canDamageEnemies = true;
+        }
+        else if (wActive == WeaponActive.Pugio)
+        {
+            ulfberhtObj.SetActive(false);
+            pugio.canDamageEnemies = true;
+        }
+
+        if (ulfberhtObj.activeInHierarchy)
+        {
+            ulfAnimator = ulfberhtObj.GetComponent<Animator>();
+
+            AnimationClip[] clips = ulfAnimator.runtimeAnimatorController.animationClips;
+            foreach (AnimationClip c in clips)
             {
-                case SlashState.NoSlash:
-                    BeginSlash();
-                    if (sRot1Bool)
-                    {
-                        sState = SlashState.StartSlash;
-                    }
-                    break;
-                
-                case SlashState.StartSlash:
-                    MidSlash();
-                    if (sRot2Bool)
-                    {
-                        sState = SlashState.MidSlash;
-                    }
-                    break;
-                
-                case SlashState.MidSlash:
-                    EndSlash();
-                    if (sRotEndBool)
-                    {
-                        sState = SlashState.EndSlash;
-                    }
-                    break;
-                
-                case SlashState.EndSlash:
-                    slashing = false;
-                    ulfberht.slashing = false;
-                    break;
+                if (c.name == "Ulfberht Slash")
+                {
+                    ulfClip = c;
+                }
             }
         }
-        else
+        else if (pugioObj.activeInHierarchy)
         {
-            switch (sState)
+            pugAnimator = pugioObj.GetComponent<Animator>();
+
+            AnimationClip[] clips = pugAnimator.runtimeAnimatorController.animationClips;
+            foreach (AnimationClip c in clips)
             {
-                case SlashState.EndSlash:
-                    MidSlash();
-                    if (sRot2Bool)
-                    {
-                        sState = SlashState.MidSlash;
-                    }
-                    break;
-                
-                case SlashState.MidSlash:
-                    BeginSlash();
-                    if (sRot1Bool)
-                    {
-                        sState = SlashState.StartSlash;
-                    }
-                    break;
-                
-                case SlashState.StartSlash:
-                    NoSlash();
-                    if (nRotBool)
-                    {
-                        sState = SlashState.NoSlash;
-                    }
-                    break;
-                
-                case SlashState.NoSlash:
-                    canAttack = true;
-                    break;
+                if (c.name == "Pugio Pierce")
+                {
+                    pugClip = c;
+                }
             }
         }
+
+        canAttack = true;
     }
 
     // Update is called once per frame
@@ -120,80 +92,89 @@ public class Weapon : MonoBehaviour
             rState = RangeState.Melee;
             mType = MeleeAttackType.Slash;
         }
+        else if (pugioObj.activeInHierarchy)
+        {
+            rState = RangeState.Melee;
+            mType = MeleeAttackType.Pierce;
+        }
     }
 
     #endregion
 
-    #region Attack Animations - Melee
-
-    #region Ulberht
+    #region Attack - Melee
 
     public void Slash()
     {
-        slashing = true;
-        ulfberht.slashing = true;
-        canAttack = false;
-    }
-    
-    void BeginSlash()
-    {
-        ulfberht.transform.localRotation = Quaternion.Slerp(ulfberht.transform.localRotation, sRot1, ulfberht.slashSpeed * Time.deltaTime);
-
-        if (ulfberht.transform.localRotation == sRot1)
+        if (wActive == WeaponActive.Ulfberht)
         {
-            nRotBool = false;
-            sRot1Bool = true;
-            sRot2Bool = false;
-            sRotEndBool = false;
+            ulfAnimator.SetBool("Slashing", true);
+            StartCoroutine(Unslash());
+
+            ulfberht.slashing = true;
+            canAttack = false;
         }
     }
 
-    void MidSlash()
+    IEnumerator Unslash()
     {
-        ulfberht.transform.localRotation = Quaternion.Slerp(ulfberht.transform.localRotation, sRot2, ulfberht.slashSpeed * Time.deltaTime);
-
-        if (ulfberht.transform.localRotation == sRot2)
+        if (wActive == WeaponActive.Ulfberht)
         {
-            nRotBool = false;
-            sRot1Bool = false;
-            sRot2Bool = true;
-            sRotEndBool = false;
+            float clipLength = ulfClip.length / ulfAnimator.GetFloat("AttackSpeed");
+
+            yield return new WaitForSeconds(clipLength);
+
+            ulfAnimator.SetBool("Slashing", false);
+
+            ulfberht.slashing = false;
+            canAttack = true;
         }
     }
 
-    void EndSlash()
+    public void Pierce()
     {
-        ulfberht.transform.localRotation = Quaternion.Slerp(ulfberht.transform.localRotation, sRotEnd, ulfberht.slashSpeed * Time.deltaTime);
-
-        if (ulfberht.transform.localRotation == sRotEnd)
+        if (wActive == WeaponActive.Pugio)
         {
-            nRotBool = false;
-            sRot1Bool = false;
-            sRot2Bool = false;
-            sRotEndBool = true;
+            pugio.piercing = true;
+            pugAnimator.SetBool("Piercing", true);
+            StartCoroutine(Unpierce());
+
+            canAttack = false;
         }
     }
 
-    void NoSlash()
+    IEnumerator Unpierce()
     {
-        ulfberht.transform.localRotation = Quaternion.Slerp(ulfberht.transform.localRotation, nRot, ulfberht.slashSpeed * Time.deltaTime);
-
-        if (ulfberht.transform.localRotation == nRot)
+        if (wActive == WeaponActive.Pugio)
         {
-            nRotBool = true;
-            sRot1Bool = false;
-            sRot2Bool = false;
-            sRotEndBool = false;
+            float clipLength = pugClip.length / pugAnimator.GetFloat("AttackSpeed");
+
+            yield return new WaitForSeconds(clipLength);
+
+            pugio.piercing = false;
+            pugAnimator.SetBool("Piercing", false);
+
+            canAttack = true;
         }
     }
 
-    #endregion Ulberht
+    public void IncreaseAttackMultiplier(int newValue)
+    {
+        attackSpeedMultiplier += newValue;
+        Mathf.Clamp(attackSpeedMultiplier, 1, 10);
+
+        if (wActive == WeaponActive.Ulfberht)
+        {
+            ulfAnimator.SetFloat("AttackSpeed", attackSpeedMultiplier);
+        }
+        else if (wActive == WeaponActive.Pugio)
+        {
+            pugAnimator.SetFloat("AttackSpeed", attackSpeedMultiplier);
+        }
+    }
 
     #endregion
 
     #region Enums
-
-    #region General Enums
 
     public enum RangeState
     {
@@ -208,19 +189,11 @@ public class Weapon : MonoBehaviour
         Pierce
     }
 
-    #endregion General Enums
-
-    #region Animation Enums
-
-    enum SlashState
+    public enum WeaponActive
     {
-        NoSlash,
-        StartSlash,
-        MidSlash,
-        EndSlash
+        Ulfberht,
+        Pugio
     }
-
-    #endregion Animation Enums
 
     #endregion
 }

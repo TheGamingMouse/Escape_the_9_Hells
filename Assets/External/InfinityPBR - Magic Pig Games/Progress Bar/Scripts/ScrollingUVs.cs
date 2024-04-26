@@ -14,8 +14,8 @@ namespace MagicPigGames
 
         [Header("Wiggle")] 
         public bool wiggle = true;
-        public Vector2 wiggleSpeed = new Vector2(0.05f, 0f);
-        public Vector2 wiggleMagnitude = new Vector2(0.05f, 0.05f);
+        public Vector2 wiggleSpeed = new Vector2(0.01f, 0f);
+        public Vector2 wiggleMagnitude = new Vector2(0.02f, 0.02f);
         public RawImage rawImage;
 
         private Vector2 _wiggle;

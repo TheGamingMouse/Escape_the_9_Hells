@@ -9,8 +9,9 @@ public class Pugio : MonoBehaviour
     [Header("Ints")]
     public readonly int damage = 6;
 
-    [Header("Floats")]
-    public float attackSpeed = 75f;
+    [Header("Bools")]
+    public bool piercing;
+    public bool canDamageEnemies;
 
     [Header("Components")]
     EnemyAction enemyAction;
@@ -30,9 +31,25 @@ public class Pugio : MonoBehaviour
 
     void OnTriggerEnter(Collider coll)
     {
-        if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent<PlayerHealth>(out PlayerHealth pComp) && enemyAction.attacking)
+        if (piercing)
         {
-            pComp.TakeDamage(damage);
+            if (canDamageEnemies)
+            {
+                if (coll.TryGetComponent<Ricky>(out Ricky ricky))
+                {
+                    ricky.TakeDamage(damage);
+                }
+                
+                if (coll.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
+                {
+                    eComp.TakeDamage(damage);
+                }
+            }
+
+            if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent<PlayerHealth>(out PlayerHealth pComp) && enemyAction.attacking)
+            {
+                pComp.TakeDamage(damage);
+            }
         }
     }
 

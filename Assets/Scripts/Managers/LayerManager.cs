@@ -13,6 +13,7 @@ public class LayerManager : MonoBehaviour
 
     [Header("Arrays")]
     public GameObject[] rooms;
+    public GameObject bossRoom;
 
     [Header("Components")]
     LayerGenerator generator;
@@ -25,6 +26,9 @@ public class LayerManager : MonoBehaviour
     void Start()
     {
         generator = GameObject.FindWithTag("Generator").GetComponent<LayerGenerator>();
+        bossRoom = GameObject.FindWithTag("BossRoom");
+
+        bossRoom.SetActive(false);
     }
 
     // Update is called once per frame

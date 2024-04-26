@@ -37,12 +37,14 @@ public class EnemyHealth : MonoBehaviour
         cam = Camera.main;
         
         health = maxHealth;
+        healthbar.transform.rotation = Quaternion.LookRotation(healthbar.transform.position - cam.transform.position);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        healthbar.transform.rotation = Quaternion.LookRotation(healthbar.transform.position - cam.transform.position);
+        healthImage.fillAmount = (float)health / maxHealth;
     }
 
     #endregion

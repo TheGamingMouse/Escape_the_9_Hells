@@ -53,14 +53,7 @@ public class PlayerMovement : MonoBehaviour
         if (startBool)
         {
             rb.MovePosition(rb.position + currentSpeed * Time.fixedDeltaTime * move);
-
-            if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Slash)
-            {
-                if (Input.GetMouseButton(0) && weapon.canAttack)
-                {
-                    weapon.Slash();
-                }
-            }
+            Mathf.Clamp(transform.position.y, -20f, 0.55f);
         }
     }
 
@@ -75,6 +68,21 @@ public class PlayerMovement : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space) && !isDashing && !dashCooldown && (move.x != 0 || move.z != 0))
             {
                 StartCoroutine(Dash());
+            }
+
+            if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Slash)
+            {
+                if (Input.GetMouseButton(0) && weapon.canAttack)
+                {
+                    weapon.Slash();
+                }
+            }
+            else if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Pierce)
+            {
+                if (Input.GetMouseButton(0) && weapon.canAttack)
+                {
+                    weapon.Pierce();
+                }
             }
         }
     }
@@ -92,21 +100,24 @@ public class PlayerMovement : MonoBehaviour
 
             if (move.x == 0 && move.z == 0)
             {
-                rb.velocity = Vector3.zero;
+                rb.velocity = new Vector3(0f, -currentSpeed, 0f);
             }
         }
     }
 
     void LookAtMouse()
     {
-        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, groundMask))
+        if (Input.mousePosition.x >= 0 && Input.mousePosition.x <= 1920 && Input.mousePosition.y >= 0 && Input.mousePosition.y <= 1080)
         {
-            mousePosition = hit.point;
-            mousePosition.y += 0.5f;
+            Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, groundMask))
+            {
+                mousePosition = hit.point;
+                mousePosition.y += 0.5f;
+            }
+            transform.forward = mousePosition - new Vector3(transform.position.x, transform.position.y, transform.position.z);
+            transform.rotation = new Quaternion(0f, transform.rotation.y, 0f, transform.rotation.w);
         }
-        transform.forward = mousePosition - new Vector3(transform.position.x, transform.position.y, transform.position.z);
-        transform.rotation = new Quaternion(0f, transform.rotation.y, 0f, transform.rotation.w);
     }
 
     IEnumerator Dash()

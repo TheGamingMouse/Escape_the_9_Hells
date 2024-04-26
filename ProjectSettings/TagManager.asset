@@ -14,6 +14,7 @@ TagManager:
   - LayerRoom
   - Generator
   - StartLevel
+  - BossRoom
   layers:
   - Default
   - TransparentFX
