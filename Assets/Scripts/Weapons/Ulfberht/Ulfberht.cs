@@ -4,14 +4,30 @@ using UnityEngine;
 
 public class Ulfberht : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
-    [Header("Ints")]
-    public readonly int damage = 12;
+    [Header("Floats")]
+    readonly float baseDamage = 12;
+    public float damage;
 
     [Header("Bools")]
     public bool slashing;
     public bool canDamageEnemies;
+
+    [Header("Components")]
+    public Weapon weapon;
+
+    #endregion
+
+    #region StartUpdate Methods
+
+    void Update()
+    {
+        if (weapon != null)
+        {
+            damage = baseDamage * weapon.damageMultiplier;
+        }
+    }
 
     #endregion
 }

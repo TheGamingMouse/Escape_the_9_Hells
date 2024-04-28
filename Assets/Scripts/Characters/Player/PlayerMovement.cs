@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Floats")]
     public readonly float baseSpeed = 10f;
@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     readonly float dashDuration = 0.2f;
     readonly float dashCooldownTime = 1f;
     public float currentSpeed;
+    public float speedMultiplier = 1;
 
     [Header("Bools")]
     public bool startBool = true;
@@ -32,7 +33,6 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody rb;
     Camera mainCam;
     public Weapon weapon;
-    public Ulfberht ulfberht;
 
     #endregion
 
@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (startBool)
         {
-            rb.MovePosition(rb.position + currentSpeed * Time.fixedDeltaTime * move);
+            rb.MovePosition(rb.position + currentSpeed * speedMultiplier * Time.fixedDeltaTime * move);
             Mathf.Clamp(transform.position.y, -20f, 0.55f);
         }
     }
@@ -70,14 +70,14 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(Dash());
             }
 
-            if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Slash)
+            if (weapon.rState == Weapon.RangeState.Melee && weapon.aType == Weapon.AttackType.Slash)
             {
                 if (Input.GetMouseButton(0) && weapon.canAttack)
                 {
                     weapon.Slash();
                 }
             }
-            else if (weapon.rState == Weapon.RangeState.Melee && weapon.mType == Weapon.MeleeAttackType.Pierce)
+            else if (weapon.rState == Weapon.RangeState.Melee && weapon.aType == Weapon.AttackType.Pierce)
             {
                 if (Input.GetMouseButton(0) && weapon.canAttack)
                 {
@@ -143,21 +143,6 @@ public class PlayerMovement : MonoBehaviour
 
         GetComponent<MeshRenderer>().material.SetColor("_Color", normalColor);
         dashCooldown = false;
-    }
-
-    void OnCollisionEnter(Collision coll)
-    {
-        if (coll.transform.CompareTag("Pillar"))
-        {
-            currentSpeed = 0f;
-        }
-    }
-    void OnCollisionExit(Collision coll)
-    {
-        if (coll.transform.CompareTag("Pillar"))
-        {
-            currentSpeed = baseSpeed;
-        }
     }
 
     #endregion

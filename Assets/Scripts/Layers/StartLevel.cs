@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class StartLevel : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Bools")]
     bool doorOpening;

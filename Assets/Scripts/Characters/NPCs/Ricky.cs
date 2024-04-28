@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Ricky : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Ints")]
     int listIndex = 0;

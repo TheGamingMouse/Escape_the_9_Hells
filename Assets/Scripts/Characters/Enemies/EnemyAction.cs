@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyAction : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Floats")]
     readonly float attackSpeed = 0.5f;

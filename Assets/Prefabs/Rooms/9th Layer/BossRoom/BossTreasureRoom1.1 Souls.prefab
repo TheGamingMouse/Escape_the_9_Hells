@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 7307328480973677571}
   - component: {fileID: 2415334655346970992}
   m_Layer: 0
-  m_Name: BossTreasureRoom1.1
+  m_Name: BossTreasureRoom1.1 Souls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,9 +80,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tType: 0
-  soulChest: {fileID: 2476306706555744521, guid: 33dcdfbc105b1a746932742af1eb3d20, type: 3}
-  levelChest: {fileID: 1004989271517063636, guid: 0c1d4408e9204fa4b99f543f09f52f03, type: 3}
-  expChest: {fileID: 1004989271517063636, guid: fee44b46fd3d040468a4d38ecd568ae9, type: 3}
+  ready: 0
+  chests:
+  - {fileID: 2476306706555744521, guid: 33dcdfbc105b1a746932742af1eb3d20, type: 3}
+  - {fileID: 1004989271517063636, guid: fee44b46fd3d040468a4d38ecd568ae9, type: 3}
+  - {fileID: 1004989271517063636, guid: 0c1d4408e9204fa4b99f543f09f52f03, type: 3}
+  spawns:
+  - {fileID: 2998320466304230414}
+  - {fileID: 423473993558547477}
+  - {fileID: 3955500616893609870}
+  - {fileID: 4392724751683315933}
 --- !u!1 &1617386945388741265
 GameObject:
   m_ObjectHideFlags: 0

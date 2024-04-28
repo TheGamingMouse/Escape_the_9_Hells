@@ -19,6 +19,26 @@ public class LevelManager : MonoBehaviour
 
     #endregion
 
+    #region Methods
+
+    public void ReturnToHub()
+    {
+        SceneManager.LoadScene("Hub");
+    }
+
+    public void ReturnToMenu()
+    {
+        SceneManager.LoadScene("Main Menu");
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+        print("Quit");
+    }
+
+    #endregion
+
     #region SubscribtionHanlder Methods
 
     void HandleEnterLayer()

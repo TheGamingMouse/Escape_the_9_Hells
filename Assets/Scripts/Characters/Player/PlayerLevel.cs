@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerLevel : MonoBehaviour
 {
@@ -11,18 +12,23 @@ public class PlayerLevel : MonoBehaviour
 
     #endregion
 
-    #region Properties
+    #region Variables
 
     [Header("Ints")]
     public int level;
     public int souls;
     int previousSouls;
+    public int demonsKilled;
+    public int devilsKilled;
 
     [Header("Floats")]
     [Range(0f, 1.5f)]
     public float exp;
     float expMultiplier;
     float preExpMultiplier;
+
+    [Header("Strings")]
+    public string layerReached;
 
     [Header("GameObjects")]
     public GameObject levelUpEffectObj;
@@ -79,6 +85,7 @@ public class PlayerLevel : MonoBehaviour
         gainSoulsEffectObj.SetActive(false);
 
         previousSouls = souls;
+        layerReached = SceneManager.GetActiveScene().name;
     }
 
     // Update is called once per frame
@@ -131,12 +138,21 @@ public class PlayerLevel : MonoBehaviour
 
     #region SubscriptionHandler Methods
 
-    void HandleExpChange(int newExp)
+    void HandleExpChange(int newExp, string enemyType)
     {
         exp += newExp / expMultiplier;
         if (exp >= 1f)
         {
             LevelUp(true);
+        }
+
+        if (enemyType.ToLower() == "demon")
+        {
+            demonsKilled++;
+        }
+        else if (enemyType.ToLower() == "devil")
+        {
+            devilsKilled++;
         }
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Follow : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Enum States")]
     public FollowState fState;

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class PerkMenu : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Bools")]
     public bool pannelsLoaded;
@@ -89,26 +89,7 @@ public class PerkMenu : MonoBehaviour
 
     public void SelectedPerk(int btnNo)
     {
-        if (selectedPerkItemsSO[btnNo].title == "Template Perk")
-        {
-            playerPerks.templatePerks.Add(selectedPerkItemsSO[btnNo]);
-        }
-        else if (selectedPerkItemsSO[btnNo].title == "Defence Perk")
-        {
-            playerPerks.defencePerks.Add(selectedPerkItemsSO[btnNo]);
-        }
-        else if (selectedPerkItemsSO[btnNo].title == "Attack Speed Perk")
-        {
-            playerPerks.attackSpeedPerks.Add(selectedPerkItemsSO[btnNo]);
-        }
-        else if (selectedPerkItemsSO[btnNo].title == "Damage Perk")
-        {
-            playerPerks.damagePerks.Add(selectedPerkItemsSO[btnNo]);
-        }
-        else if (selectedPerkItemsSO[btnNo].title == "Movement Speed Perk")
-        {
-            playerPerks.moveSpeedPerks.Add(selectedPerkItemsSO[btnNo]);
-        }
+        playerPerks.AddPerk(selectedPerkItemsSO[btnNo]);
 
         menuOpen = false;
     }

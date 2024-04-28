@@ -1,20 +1,29 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    #region Properties
+    #region Events
+
+    public static event Action OnPlayerDeath;
+
+    #endregion
+
+    #region Variables
 
     [Header("Ints")]
     [Range(0, 100)]
     public readonly int maxHealth = 100;
     
+    [Header("Floats")]
     [Range(0, 100)]
-    public int health;
+    public float health;
+    public float resistanceMultiplier = 1;
 
     [Header("Bools")]
-    bool playerDead;
+    public bool playerDead;
     public bool isInvinsible;
 
     #endregion
@@ -32,8 +41,8 @@ public class PlayerHealth : MonoBehaviour
     {
         if (health <= 0 && !playerDead)
         {
-            print("Player is dead");
             playerDead = true;
+            OnPlayerDeath?.Invoke();
         }
     }
 
@@ -45,7 +54,14 @@ public class PlayerHealth : MonoBehaviour
     {
         if (!isInvinsible && !playerDead)
         {
-            health -= damage;
+            if ((health - damage) >= 0)
+            {
+                health -= damage / resistanceMultiplier;
+            }
+            else if ((health - damage) < 0)
+            {
+                health = 0;
+            }
         }
     }
 

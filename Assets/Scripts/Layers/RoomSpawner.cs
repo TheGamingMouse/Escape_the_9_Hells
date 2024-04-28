@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class RoomSpawner : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Bools")]
     bool layerGenerated;
@@ -24,7 +24,7 @@ public class RoomSpawner : MonoBehaviour
 
     [Header("Transforms")]
     public Transform enemyList;
-    Transform chestSpawn;
+    [SerializeField] Transform chestSpawn;
 
     [Header("Lists")]
     readonly List<Transform> spawnPoints = new();
@@ -307,7 +307,7 @@ public class RoomSpawner : MonoBehaviour
             
             var newEnemy = Instantiate(enemy, spawnPoints[spawnIndex].position, Quaternion.identity, enemyList);
             newEnemy.GetComponent<EnemyHealth>().roomSpawner = this;
-            newEnemy.GetComponent<EnemyMovement>().roomSpawner = this;
+            newEnemy.GetComponent<EnemySight>().roomSpawner = this;
             enemies.Add(newEnemy);
         }
 

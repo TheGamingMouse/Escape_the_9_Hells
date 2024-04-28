@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -966050103840300871}
   - component: {fileID: 8928245564331845087}
   - component: {fileID: -2247917427767758802}
+  - component: {fileID: 8508756721305883436}
   m_Layer: 0
   m_Name: BasicEnemie
   m_TagString: Untagged
@@ -153,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 75
-  expAmount: 50
+  expAmount: 25
   roomSpawner: {fileID: 0}
 --- !u!114 &8928245564331845087
 MonoBehaviour:
@@ -167,12 +168,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d46b2be5ad953e408288d63000314d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2.5
+  moveSpeed: 4
   targetInRange: 0
-  playerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  roomSpawner: {fileID: 0}
+  target: {fileID: 0}
 --- !u!114 &-2247917427767758802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,6 +184,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attacking: 0
+--- !u!114 &8508756721305883436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4342466281012111629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42490fa85364eef4ea4d13393f327e7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 128
+  roomSpawner: {fileID: 0}
 --- !u!1001 &5926867998763033341
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -298,15 +315,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6069601645220011926, guid: 686e22298e8af7448883857834316708, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 6069601645220011926, guid: 686e22298e8af7448883857834316708, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 6069601645220011926, guid: 686e22298e8af7448883857834316708, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 6069601645220011926, guid: 686e22298e8af7448883857834316708, type: 3}
       propertyPath: m_LocalRotation.y
@@ -322,11 +339,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6069601645220011926, guid: 686e22298e8af7448883857834316708, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 3.125
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 6069601645220011926, guid: 686e22298e8af7448883857834316708, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 6069601645220011926, guid: 686e22298e8af7448883857834316708, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y

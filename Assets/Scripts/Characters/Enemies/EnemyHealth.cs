@@ -6,12 +6,12 @@ using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Ints")]
     public int maxHealth = 75;
     int health;
-    public int expAmount = 50;
+    public int expAmount = 25;
 
     [Header("GameObjects")]
     GameObject healthbar;
@@ -22,7 +22,7 @@ public class EnemyHealth : MonoBehaviour
     [Header("Components")]
     public RoomSpawner roomSpawner;
     ExpSoulsManager expSoulsManager;
-    Camera cam;
+    EnemySight enemySight;
 
     #endregion
 
@@ -34,16 +34,15 @@ public class EnemyHealth : MonoBehaviour
         expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
         healthImage = transform.Find("Healthbar/Background/Foreground").GetComponent<Image>();
         healthbar = transform.Find("Healthbar").gameObject;
-        cam = Camera.main;
+        enemySight = GetComponent<EnemySight>();
         
         health = maxHealth;
-        healthbar.transform.rotation = Quaternion.LookRotation(healthbar.transform.position - cam.transform.position);
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        healthbar.transform.rotation = Quaternion.LookRotation(healthbar.transform.position - cam.transform.position);
+        healthbar.transform.rotation = new Quaternion(0.707106829f, 0f, 0f, 0.707106829f);
         healthImage.fillAmount = (float)health / maxHealth;
     }
 
@@ -53,17 +52,14 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (roomSpawner.inArea)
+        if (enemySight.target)
         {
             health -= damage;
-
-            healthbar.transform.rotation = Quaternion.LookRotation(healthbar.transform.position - cam.transform.position);
-            healthImage.fillAmount = (float)health / maxHealth;
 
             if (health <= 0)
             {
                 roomSpawner.enemies.Remove(gameObject);
-                expSoulsManager.AddExperience(expAmount);
+                expSoulsManager.AddExperience(expAmount, "demon");
                 Destroy(gameObject);
             }
         }

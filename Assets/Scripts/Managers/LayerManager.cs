@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class LayerManager : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Bools")]
     bool layerGenerated;
     bool roomsDeactivated;
+    bool ready;
 
     [Header("Arrays")]
     public GameObject[] rooms;
@@ -27,13 +28,18 @@ public class LayerManager : MonoBehaviour
     {
         generator = GameObject.FindWithTag("Generator").GetComponent<LayerGenerator>();
         bossRoom = GameObject.FindWithTag("BossRoom");
-
-        bossRoom.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (bossRoom.GetComponent<BossGenerator>().ready && !ready)
+        {
+            bossRoom.SetActive(false);
+            
+            ready = true;
+        }
+
         layerGenerated = generator.layerGenerated;
 
         if (layerGenerated && !roomsDeactivated)

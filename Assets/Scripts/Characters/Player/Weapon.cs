@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Enum States")]
     public RangeState rState;
-    public MeleeAttackType mType;
+    public AttackType aType;
     public WeaponActive wActive;
 
-    [Header("Ints")]
-    public int attackSpeedMultiplier = 1;
+    [Header("Floats")]
+    public float attackSpeedMultiplier = 1;
+    public float damageMultiplier = 1;
 
     [Header("Bools")]
     public bool canAttack;
@@ -90,12 +91,18 @@ public class Weapon : MonoBehaviour
         if (ulfberhtObj.activeInHierarchy)
         {
             rState = RangeState.Melee;
-            mType = MeleeAttackType.Slash;
+            aType = AttackType.Slash;
+
+            ulfberht.weapon = this;
+            ulfAnimator.SetFloat("AttackSpeed", attackSpeedMultiplier);
         }
         else if (pugioObj.activeInHierarchy)
         {
             rState = RangeState.Melee;
-            mType = MeleeAttackType.Pierce;
+            aType = AttackType.Pierce;
+
+            pugio.weapon = this;
+            pugAnimator.SetFloat("AttackSpeed", attackSpeedMultiplier);
         }
     }
 
@@ -157,21 +164,6 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public void IncreaseAttackMultiplier(int newValue)
-    {
-        attackSpeedMultiplier += newValue;
-        Mathf.Clamp(attackSpeedMultiplier, 1, 10);
-
-        if (wActive == WeaponActive.Ulfberht)
-        {
-            ulfAnimator.SetFloat("AttackSpeed", attackSpeedMultiplier);
-        }
-        else if (wActive == WeaponActive.Pugio)
-        {
-            pugAnimator.SetFloat("AttackSpeed", attackSpeedMultiplier);
-        }
-    }
-
     #endregion
 
     #region Enums
@@ -183,7 +175,7 @@ public class Weapon : MonoBehaviour
         LongRange
     }
 
-    public enum MeleeAttackType
+    public enum AttackType
     {
         Slash,
         Pierce

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RoomBehavior : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Ints")]
     public int x;

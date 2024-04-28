@@ -4,57 +4,38 @@ using UnityEngine;
 
 public class TreasureRoom : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Enum States")]
     public TreasureType tType;
 
-    [Header("GameObjects")]
-    public GameObject soulChest;
-    public GameObject levelChest;
-    public GameObject expChest;
+    [Header("Bools")]
+    public bool ready;
 
-    [Header("Lists")]
-    public List<Transform> spawns = new();
-    readonly List<bool> spawnable = new();
+    [Header("Arrays")]
+    public GameObject[] chests;
+    public Transform[] spawns;
+    bool[] spawnable;
 
     #endregion
 
     #region StartUpdate Methods
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (tType == TreasureType.Souls)
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                spawns.Add(transform.Find("Treasure").GetChild(i));
-                spawnable.Add(false);
-            }
-        }
-        else if (tType == TreasureType.Exp)
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                spawns.Add(transform.Find("Treasure").GetChild(i));
-                spawnable.Add(false);
-            }
-        }
-        else if (tType == TreasureType.Level)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                spawns.Add(transform.Find("Treasure").GetChild(i));
-                spawnable.Add(false);
-            }
-        }
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        
+        if (!ready)
+        {
+            if (tType == TreasureType.Souls || tType == TreasureType.Exp)
+            {
+                spawnable = new bool[4];
+            }
+            else if (tType == TreasureType.Level)
+            {
+                spawnable = new bool[2];
+            }
+
+            ready = true;
+        }
     }
 
     #endregion
@@ -63,53 +44,39 @@ public class TreasureRoom : MonoBehaviour
 
     public void LoadTreasure()
     {
-        int chestAmount = 0;
-        if (tType == TreasureType.Souls || tType == TreasureType.Exp)
-        {
-            chestAmount = Random.Range(1, 5);
-        }
-        else if (tType == TreasureType.Level)
-        {
-            chestAmount = Random.Range(1, 3);
-        }
-
+        int chestAmount = Random.Range(1, spawns.Length + 1);
+        
         for (int i = chestAmount; i > 0; i--)
         {
-            int spawn = 0;
-            if (tType == TreasureType.Souls || tType == TreasureType.Exp)
+            int spawn = Random.Range(0, spawns.Length);
+            if (spawnable[spawn])
             {
-                spawn = Random.Range(0, 4);
-                if (spawnable[spawn])
-                {
-                    i += 1;
-                    continue;
-                }
-            }
-            else if (tType == TreasureType.Level)
-            {
-                spawn = Random.Range(0, 2);
-                if (spawnable[spawn])
-                {
-                    i += 1;
-                    continue;
-                }
+                i += 1;
+                continue;
             }
 
+            int chest = -1;
             if (tType == TreasureType.Souls)
             {
-                Instantiate(soulChest, spawns[spawn].position, new Quaternion(0f, 0f, 0f, 0f), spawns[spawn]);
-                spawnable[spawn] = true;
+                chest = 0;
             }
             else if (tType == TreasureType.Exp)
             {
-                Instantiate(expChest, spawns[spawn].position, new Quaternion(0f, 0f, 0f, 0f), spawns[spawn]);
-                spawnable[spawn] = true;
+                chest = 1;
             }
             else if (tType == TreasureType.Level)
             {
-                Instantiate(levelChest, spawns[spawn].position, new Quaternion(0f, 0f, 0f, 0f), spawns[spawn]);
-                spawnable[spawn] = true;
+                chest = 2;
             }
+
+            if (chest == -1)
+            {
+                i++;
+                continue;
+            }
+
+            Instantiate(chests[chest], spawns[spawn].position, new Quaternion(0f, 0f, 0f, 0f), spawns[spawn]);
+            spawnable[spawn] = true;
         }
     }
 

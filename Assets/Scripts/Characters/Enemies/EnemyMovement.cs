@@ -4,27 +4,24 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    #region Poperties
+    #region Variables
 
     [Header("Floats")]
-    public float moveSpeed = 2.5f;
+    public float moveSpeed = 4f;
 
     [Header("Bools")]
     public bool targetInRange;
 
     [Header("Transforms")]
     Transform player;
-    Transform target;
+    public Transform target;
 
     [Header("Vector3s")]
     Vector3 moveDirection;
 
-    [Header("LayerMasks")]
-    public LayerMask playerMask;
-
     [Header("Components")]
     Rigidbody rb;
-    public RoomSpawner roomSpawner;
+    EnemySight sight;
 
     #endregion
 
@@ -35,6 +32,7 @@ public class EnemyMovement : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player").transform;
         rb = GetComponent<Rigidbody>();
+        sight = GetComponent<EnemySight>();
     }
 
     void FixedUpdate()
@@ -69,38 +67,24 @@ public class EnemyMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!target)
+        if (target)
         {
-            Search();
+            LookAtTarget();
+
+            if (!sight.target)
+            {
+                target = null;
+            }
         }
         else
         {
-            LookAtTarget();
+            transform.rotation = Quaternion.identity;
         }
 
-        if (target && !TargetInArea())
+        if (sight.target)
         {
-            target = null;
+            target = sight.target;
         }
-    }
-
-    #endregion
-
-    #region FindPlayer Methods
-
-    void Search()
-    {
-        RaycastHit[] hits = Physics.SphereCastAll(transform.position, 100, transform.position, playerMask);
-        
-        if ((hits.Length > 0) && TargetInArea())
-        {
-            target = player;
-        }
-    }
-
-    bool TargetInArea()
-    {
-        return roomSpawner.inArea;
     }
 
     #endregion
@@ -113,5 +97,24 @@ public class EnemyMovement : MonoBehaviour
         transform.rotation = new Quaternion(0f, transform.rotation.y, 0f, transform.rotation.w);
     }
 
+    #endregion
+
+    #region Gizmos
+
+    void OnDrawGizmosSelected()
+    {
+        if (player)
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(transform.position, player.position);
+        }
+
+        if (target)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, target.position);
+        }
+    }
+    
     #endregion
 }

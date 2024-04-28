@@ -4,16 +4,15 @@ using UnityEngine;
 
 public class BossGenerator : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Bools")]
     public bool isBossDead;
     bool treasureSpawned;
+    public bool ready;
 
-    [Header("GameObjects")]
-    public GameObject downTreasure;
-    public GameObject rightTreasure;
-    public GameObject leftTreasure;
+    [Header("Arrays")]
+    public GameObject[] treasureRooms;
 
     [Header("Quaternions")]
     public Quaternion openRot;
@@ -31,27 +30,33 @@ public class BossGenerator : MonoBehaviour
         
         GenerateExit();
 
-        downTreasure.SetActive(false);
-        rightTreasure.SetActive(false);
-        leftTreasure.SetActive(false);
-
         if (room.door.name == "Down Door")
         {
-            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Down").GetComponent<TreasureRoom>();
-        }
-        else if (room.door.name == "Left Door")
-        {
-            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Left").GetComponent<TreasureRoom>();
+            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Levels").GetComponent<TreasureRoom>();
         }
         else if (room.door.name == "Right Door")
         {
-            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Right").GetComponent<TreasureRoom>();
+            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Souls").GetComponent<TreasureRoom>();
+        }
+        else if (room.door.name == "Left Door")
+        {
+            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Exp").GetComponent<TreasureRoom>();
         }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (treasure.ready && !ready)
+        {
+            for (int i = 0; i < treasureRooms.Length; i++)
+            {
+                treasureRooms[i].SetActive(false);
+            }
+
+            ready = true;
+        }
+
         if (isBossDead)
         {
             OpenDoor();
@@ -64,7 +69,7 @@ public class BossGenerator : MonoBehaviour
 
     void GenerateExit()
     {
-        int door = Random.Range(0, 3);
+        int door = Random.Range(0, treasureRooms.Length);
 
         if (door == 0) // Down Door
         {
@@ -89,15 +94,15 @@ public class BossGenerator : MonoBehaviour
     {
         if (room.door.name == "Down Door")
         {
-            downTreasure.SetActive(true);
+            treasureRooms[0].SetActive(true);
         }
         else if (room.door.name == "Right Door")
         {
-            rightTreasure.SetActive(true);
+            treasureRooms[1].SetActive(true);
         }
         else if (room.door.name == "Left Door")
         {
-            leftTreasure.SetActive(true);
+            treasureRooms[2].SetActive(true);
         }
 
         treasure.LoadTreasure();

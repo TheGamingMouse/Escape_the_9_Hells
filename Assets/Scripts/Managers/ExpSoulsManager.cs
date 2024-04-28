@@ -6,7 +6,7 @@ public class ExpSoulsManager : MonoBehaviour
 {
     #region Events
 
-    public delegate void ExpChangeHandler(int exp);
+    public delegate void ExpChangeHandler(int exp, string type);
     public static event ExpChangeHandler OnExpChange;
 
     public delegate void SoulsChangeHandler(int souls);
@@ -16,9 +16,9 @@ public class ExpSoulsManager : MonoBehaviour
 
     #region Methods
 
-    public void AddExperience(int exp)
+    public void AddExperience(int exp, string type)
     {
-        OnExpChange?.Invoke(exp);
+        OnExpChange?.Invoke(exp, type);
     }
 
     public void AddSouls(int souls)

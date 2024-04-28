@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class BladeCollision : MonoBehaviour
 {
-    [Header("Ints")]
-    int damage;
+    [Header("Floats")]
+    float damage;
 
     [Header("Components")]
     Ulfberht ulfberht;
@@ -14,9 +14,13 @@ public class BladeCollision : MonoBehaviour
 
     void Start()
     {
-        damage = GetComponentInParent<Ulfberht>().damage;
         ulfberht = GetComponentInParent<Ulfberht>();
         enemyAction = GetComponentInParent<EnemyAction>();
+    }
+
+    void Update()
+    {
+        damage = ulfberht.damage;
     }
 
     void OnTriggerEnter(Collider coll)
@@ -27,18 +31,18 @@ public class BladeCollision : MonoBehaviour
             {
                 if (coll.TryGetComponent<Ricky>(out Ricky ricky))
                 {
-                    ricky.TakeDamage(damage);
+                    ricky.TakeDamage((int)damage);
                 }
 
                 if (coll.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
                 {
-                    eComp.TakeDamage(damage);
+                    eComp.TakeDamage((int)damage);
                 }
             }
 
             if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent<PlayerHealth>(out PlayerHealth pComp) && enemyAction.attacking)
             {
-                pComp.TakeDamage(damage);
+                pComp.TakeDamage((int)damage);
             }
         }
     }

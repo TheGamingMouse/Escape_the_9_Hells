@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class Pugio : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
-    [Header("Ints")]
-    public readonly int damage = 6;
+    [Header("Floats")]
+    readonly float baseDamage = 6;
+    public float damage;
 
     [Header("Bools")]
     public bool piercing;
@@ -15,6 +16,7 @@ public class Pugio : MonoBehaviour
 
     [Header("Components")]
     EnemyAction enemyAction;
+    public Weapon weapon;
 
     #endregion
 
@@ -23,6 +25,18 @@ public class Pugio : MonoBehaviour
     void Start()
     {
         enemyAction = GetComponentInParent<EnemyAction>();
+    }
+
+    void Update()
+    {
+        if (enemyAction != null)
+        {
+            damage = baseDamage;
+        }
+        else if (weapon != null)
+        {
+            damage = baseDamage * weapon.damageMultiplier;
+        }
     }
 
     #endregion
@@ -37,18 +51,18 @@ public class Pugio : MonoBehaviour
             {
                 if (coll.TryGetComponent<Ricky>(out Ricky ricky))
                 {
-                    ricky.TakeDamage(damage);
+                    ricky.TakeDamage((int)damage);
                 }
                 
                 if (coll.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
                 {
-                    eComp.TakeDamage(damage);
+                    eComp.TakeDamage((int)damage);
                 }
             }
 
             if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent<PlayerHealth>(out PlayerHealth pComp) && enemyAction.attacking)
             {
-                pComp.TakeDamage(damage);
+                pComp.TakeDamage((int)damage);
             }
         }
     }

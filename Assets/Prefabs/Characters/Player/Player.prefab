@@ -47,9 +47,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rState: 0
-  mType: 0
+  aType: 0
   wActive: 0
   attackSpeedMultiplier: 1
+  damageMultiplier: 1
   canAttack: 0
   ulfberht: {fileID: 3671363839877898569}
   pugio: {fileID: 3650109309523565665}
@@ -103,6 +104,7 @@ GameObject:
   - component: {fileID: 7877418249753882365}
   - component: {fileID: 1551798212819196407}
   - component: {fileID: 936047884750885551}
+  - component: {fileID: 8716309566799278726}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -240,13 +242,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentSpeed: 0
+  speedMultiplier: 1
   startBool: 1
   groundMask:
     serializedVersion: 2
     m_Bits: 8
   rb: {fileID: 0}
   weapon: {fileID: 904703759980282549}
-  ulfberht: {fileID: 0}
 --- !u!114 &7877418249753882365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,6 +262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 0
+  resistanceMultiplier: 1
   isInvinsible: 0
 --- !u!114 &1551798212819196407
 MonoBehaviour:
@@ -288,6 +291,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c82e5291da2a1c949a9296f693691dbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  templatePerks: []
+  defencePerks: []
+  attackSpeedPerks: []
+  damagePerks: []
+  moveSpeedPerks: []
+--- !u!114 &8716309566799278726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206445994175384301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa5fe726aead7404798b7676a877716d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4180603138063181090

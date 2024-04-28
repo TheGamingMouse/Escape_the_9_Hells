@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Ints")]
     int _soulsCounterValue;
@@ -22,6 +22,10 @@ public class UIManager : MonoBehaviour
             _soulsCounterValue = value;
         }
     }
+    int demonsKilled;
+    int devilsKilled;
+    int levelsGained;
+    int soulsGained;
 
     [Header("Floats")]
     [Range(0f, 1f)]
@@ -33,16 +37,23 @@ public class UIManager : MonoBehaviour
     float fadeTime;
     readonly float fadeMax = 1.5f;
 
+    [Header("Strings")]
+    string layerReached;
+    
     [Header("Bools")]
     public bool dialogueStart;
     public bool gameStart;
     public bool openPerkMenu;
+    bool isPaused;
 
     [Header("GameObjects")]
     GameObject dialogueBox;
     GameObject player;
     GameObject damageOverlay;
     GameObject perkMenu;
+    GameObject godModeObj;
+    GameObject deathMenu;
+    GameObject pauseMenu;
 
     [Header("Transforms")]
     Transform canvas;
@@ -51,6 +62,14 @@ public class UIManager : MonoBehaviour
     [Header("TMPs")]
     TMP_Text levelText;
     TMP_Text soulsText;
+    TMP_Text dmDemonsKilled;
+    TMP_Text dmDevilsKilled;
+    TMP_Text dmLayerReached;
+    TMP_Text dmLevelsGained;
+    TMP_Text dmSoulsGained;
+
+    [Header("Coroutines")]
+    Coroutine countingCoroutine;
 
     [Header("Components")]
     Dialogue dialogue;
@@ -58,7 +77,8 @@ public class UIManager : MonoBehaviour
     ExpProgressBar progressBarHealth;
     PlayerLevel playerLevel;
     PlayerHealth playerHealth;
-    Coroutine countingCoroutine;
+    DevTools devTools;
+    PlayerMovement playerMovement;
 
     #endregion
 
@@ -67,11 +87,13 @@ public class UIManager : MonoBehaviour
     void OnEnable()
     {
         PlayerLevel.OnLevelUp += HandleLevelUp;
+        PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
     }
 
     void OnDisable()
     {
         PlayerLevel.OnLevelUp -= HandleLevelUp;
+        PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
     }
 
     #endregion
@@ -113,7 +135,7 @@ public class UIManager : MonoBehaviour
             dialogueBox.SetActive(true);
         }
 
-        if (perkMenu.GetComponent<PerkMenu>().menuClosing == true)
+        if (perkMenu.GetComponent<PerkMenu>().menuClosing == true && !playerHealth.playerDead && !isPaused)
         {
             perkMenu.SetActive(false);
             Time.timeScale = 1f;
@@ -133,6 +155,27 @@ public class UIManager : MonoBehaviour
         if (fadeTime <= 0)
         {
             fadeTime = 0;
+        }
+
+        if (devTools.godMode)
+        {
+            godModeObj.SetActive(true);
+        }
+        else
+        {
+            godModeObj.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPaused)
+            {
+                Unpause();
+            }
+            else
+            {
+                Pause();
+            }
         }
     }
 
@@ -154,9 +197,14 @@ public class UIManager : MonoBehaviour
         player = GameObject.FindWithTag("Player");
         playerLevel = player.GetComponent<PlayerLevel>();
         playerHealth = player.GetComponent<PlayerHealth>();
+        devTools = player.GetComponent<DevTools>();
+        playerMovement = player.GetComponent<PlayerMovement>();
 
         damageOverlay = canvas.Find("DamageIndicator").gameObject;
         perkMenu = menus.Find("PerkMenu").gameObject;
+        godModeObj = canvas.Find("GodModeText (TMP)").gameObject;
+        deathMenu = menus.Find("DeathMenu").gameObject;
+        pauseMenu = menus.Find("PauseMenu").gameObject;
     }
 
     void FindTextElements()
@@ -165,12 +213,21 @@ public class UIManager : MonoBehaviour
 
         levelText = canvas.Find("uf_level_elite/LevelText (TMP)").GetComponent<TextMeshProUGUI>();
         soulsText = canvas.Find("Souls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
+
+        dmDemonsKilled = deathMenu.transform.Find("StatBackground/DemonsKilledText (TMP)").GetComponent<TextMeshProUGUI>();
+        dmDevilsKilled = deathMenu.transform.Find("StatBackground/DevilsKilledText (TMP)").GetComponent<TextMeshProUGUI>();
+        dmLayerReached = deathMenu.transform.Find("StatBackground/LayerReachedText (TMP)").GetComponent<TextMeshProUGUI>();
+        dmLevelsGained = deathMenu.transform.Find("StatBackground/LevelsGainedText (TMP)").GetComponent<TextMeshProUGUI>();
+        dmSoulsGained = deathMenu.transform.Find("StatBackground/SoulsGainedText (TMP)").GetComponent<TextMeshProUGUI>();
     }
 
     void DisableObjects()
     {
         dialogueBox.SetActive(false);
         perkMenu.SetActive(false);
+        godModeObj.SetActive(false);
+        deathMenu.SetActive(false);
+        pauseMenu.SetActive(false);
     }
 
     void StartGame()
@@ -191,7 +248,7 @@ public class UIManager : MonoBehaviour
 
     void UpdateHealth()
     {
-        health = (float)playerHealth.health / 100;
+        health = playerHealth.health / 100;
         progressBarHealth.SetProgress(health);
 
         if (previousHealth > health)
@@ -271,6 +328,30 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
+    #region Button Methods
+
+    public void Pause()
+    {
+        isPaused = true;
+        pauseMenu.SetActive(true);
+
+        Time.timeScale = 0f;
+        playerMovement.startBool = false;
+    }
+
+    public void Unpause()
+    {
+        isPaused = false;
+        pauseMenu.transform.Find("ButtonMenu").gameObject.SetActive(true);
+        pauseMenu.transform.Find("SettingsMenu").gameObject.SetActive(false);
+        pauseMenu.SetActive(false);
+
+        Time.timeScale = 1f;
+        playerMovement.startBool = true;
+    }
+
+    #endregion
+
     #region SubscriptionHandler Methods
 
     void HandleLevelUp()
@@ -282,6 +363,26 @@ public class UIManager : MonoBehaviour
         perkMenu.GetComponent<PerkMenu>().perksLoaded = false;
 
         Time.timeScale = 0f;
+    }
+
+    void HandlePlayerDeath()
+    {
+        Time.timeScale = 0f;
+        deathMenu.SetActive(true);
+
+        demonsKilled = playerLevel.demonsKilled;
+        devilsKilled = playerLevel.devilsKilled;
+        layerReached = playerLevel.layerReached;
+        levelsGained = playerLevel.level;
+        soulsGained = playerLevel.souls;
+
+        dmDemonsKilled.text = $"You have killed {demonsKilled} demons";
+        dmDevilsKilled.text = $"You have killed {devilsKilled} devils";
+        dmLayerReached.text = $"You have reached the {layerReached}";
+        dmLevelsGained.text = $"You have gained {levelsGained} levels";
+        dmSoulsGained.text = $"You have gained {soulsGained} souls";
+
+        playerMovement.startBool = false;
     }
 
     #endregion

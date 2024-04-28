@@ -8,7 +8,7 @@ public class LayerGenerator : MonoBehaviour
 
     public class Cell
     {
-        #region Cell Properties
+        #region Cell Variables
 
         [Header("Bools")]
         public bool visited = false;
@@ -18,21 +18,22 @@ public class LayerGenerator : MonoBehaviour
         public bool[] doors = new bool[4];
         public bool[] backDoors = new bool[4];
 
-        #endregion Cell Properties
+        #endregion Cell Variables
     }
 
     #endregion
 
-    #region Properties
+    #region Variables
 
     [Header("Ints")]
     public int startPos = 0;
 
     [Header("Bools")]
     public bool layerGenerated;
+    public bool printPops = false;
 
-    [Header("GameObjects")]
-    public GameObject room;
+    [Header("Array")]
+    public GameObject[] rooms;
 
     [Header("Vector2s")]
     public Vector2 size;
@@ -70,7 +71,9 @@ public class LayerGenerator : MonoBehaviour
                 Cell currentCell = board[Mathf.FloorToInt(i + j * size.x)];
                 if (currentCell.visited)
                 {
-                    var newRoom = Instantiate(room, new Vector3(i * offset.x, 0, -j * offset.y), Quaternion.identity, transform).GetComponent<RoomBehavior>();
+                    int randomRoom = Random.Range(0, rooms.Length);
+
+                    var newRoom = Instantiate(rooms[randomRoom], new Vector3(i * offset.x, 0, -j * offset.y), Quaternion.identity, transform).GetComponent<RoomBehavior>();
                     newRoom.UpdateRoom(board[Mathf.FloorToInt(i + j * size.x)].status);
                     newRoom.UpdateDoors(board[Mathf.FloorToInt(i + j * size.x)].doors);
                     newRoom.UpdateBackDoors(board[Mathf.FloorToInt(i + j * size.x)].backDoors);
@@ -131,6 +134,11 @@ public class LayerGenerator : MonoBehaviour
                 else
                 {
                     currentCell = path.Pop();
+                    if (printPops)
+                    {
+                        print("Path popped");
+                    }
+                    
                 }
             }
             else

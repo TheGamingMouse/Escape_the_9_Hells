@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Dialogue : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Ints")]
     int index;

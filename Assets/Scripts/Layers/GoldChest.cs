@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GoldChest : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Enum States")]
     public RewardType rType;

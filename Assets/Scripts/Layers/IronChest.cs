@@ -5,7 +5,7 @@ using UnityEngine.Experimental.GlobalIllumination;
 
 public class IronChest : MonoBehaviour
 {
-    #region Properties
+    #region Variables
 
     [Header("Ints")]
     [SerializeField] int souls;
