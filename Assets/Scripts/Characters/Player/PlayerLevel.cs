@@ -85,7 +85,7 @@ public class PlayerLevel : MonoBehaviour
         gainSoulsEffectObj.SetActive(false);
 
         previousSouls = souls;
-        layerReached = SceneManager.GetActiveScene().name;
+        layerReached = SceneManager.GetActiveScene().name.ToLower();
     }
 
     // Update is called once per frame

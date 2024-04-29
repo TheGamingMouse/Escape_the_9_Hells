@@ -38,7 +38,7 @@ public class EnemySight : MonoBehaviour
         isInArea = TargetInArea();
 
         if (!target) FindTarget();
-        target = (isObstructed || !isInArea) ? target : null;
+        target = (isObstructed || !isInArea) ? null : target;
     }
 
     #endregion

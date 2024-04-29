@@ -30,6 +30,9 @@ public class RoomSpawner : MonoBehaviour
     readonly List<Transform> spawnPoints = new();
     public List<GameObject> enemies = new();
     readonly List<Transform> chestSpawns = new();
+    
+    [Header("Arrays")]
+    bool[] spawned;
 
     [Header("Components")]
     LayerGenerator generator;
@@ -53,6 +56,7 @@ public class RoomSpawner : MonoBehaviour
         {
             spawnPoints.Add(transform.Find("SpawnPositions").GetChild(i));
         }
+        spawned = new bool[spawnPoints.Count];
 
         for (int i = 0; i <= 3; i++)
         {
@@ -299,16 +303,25 @@ public class RoomSpawner : MonoBehaviour
 
     void SpawnEnemies()
     {
-        int enemyAmount = Random.Range(0, 6);
+        int enemyAmount = Random.Range(3, 9);
 
-        for (int i = 0; i < enemyAmount + 1; i++)
+        for (int i = 0; i < enemyAmount; i++)
         {
             int spawnIndex = Random.Range(0, spawnPoints.Count);
-            
-            var newEnemy = Instantiate(enemy, spawnPoints[spawnIndex].position, Quaternion.identity, enemyList);
-            newEnemy.GetComponent<EnemyHealth>().roomSpawner = this;
-            newEnemy.GetComponent<EnemySight>().roomSpawner = this;
-            enemies.Add(newEnemy);
+            if (spawned[spawnIndex] == false)
+            {
+                var newEnemy = Instantiate(enemy, spawnPoints[spawnIndex].position, Quaternion.identity, enemyList);
+                newEnemy.GetComponent<EnemyHealth>().roomSpawner = this;
+                newEnemy.GetComponent<EnemySight>().roomSpawner = this;
+                enemies.Add(newEnemy);
+
+                spawned[spawnIndex] = true;
+            }
+            else
+            {
+                i--;
+                continue;
+            }
         }
 
         enemiesSpawned = true;
