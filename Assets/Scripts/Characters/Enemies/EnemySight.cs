@@ -37,14 +37,8 @@ public class EnemySight : MonoBehaviour
         isObstructed = TargetObstructed();
         isInArea = TargetInArea();
 
-        if (!target)
-        {
-            FindTarget();
-        }
-        else if (isObstructed || !isInArea)
-        {
-            target = null;
-        }
+        if (!target) FindTarget();
+        target = (isObstructed || !isInArea) ? target : null;
     }
 
     #endregion
@@ -55,14 +49,7 @@ public class EnemySight : MonoBehaviour
     {
         RaycastHit[] hits = Physics.SphereCastAll(transform.position, 100, transform.position, playerMask);
         
-        if ((hits.Length > 0) && TargetInArea() && !TargetObstructed())
-        {
-            target = player;
-        }
-        else
-        {
-            target = null;
-        }
+        target = ((hits.Length > 0) && TargetInArea() && !TargetObstructed()) ? player : null;
     }
 
     bool TargetInArea()
