@@ -41,6 +41,7 @@ public class PlayerLevel : MonoBehaviour
     [Header("Components")]
     PlayerHealth playerHealth;
     UIManager uiManager;
+    ExpSoulsManager expSoulsManager;
 
     #endregion
 
@@ -67,6 +68,7 @@ public class PlayerLevel : MonoBehaviour
     {
         playerHealth = GetComponent<PlayerHealth>();
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
 
         if (level == 0)
         {
@@ -119,6 +121,8 @@ public class PlayerLevel : MonoBehaviour
         levelUpEffectObj.SetActive(true);
         levelUpEffect.Play();
 
+        expSoulsManager.AddSouls(5, true);
+
         OnLevelUp?.Invoke();
     }
 
@@ -156,12 +160,15 @@ public class PlayerLevel : MonoBehaviour
         }
     }
 
-    void HandleSoulsChange(int newSouls)
+    void HandleSoulsChange(int newSouls, bool fromLevel)
     {
         souls += newSouls;
 
-        gainSoulsEffectObj.SetActive(true);
-        gainSoulsEffect.Play();
+        if (!fromLevel)
+        {
+            gainSoulsEffectObj.SetActive(true);
+            gainSoulsEffect.Play();
+        }
     }
 
     #endregion

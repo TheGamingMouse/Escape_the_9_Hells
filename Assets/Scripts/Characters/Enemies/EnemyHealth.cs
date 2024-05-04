@@ -6,12 +6,21 @@ using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
+    #region Events
+
+    public static event Action OnBossSpawn;
+
+    #endregion
+
     #region Variables
 
     [Header("Ints")]
     public int maxHealth = 75;
     int health;
     public int expAmount = 25;
+
+    [Header("Bools")]
+    public bool boss;
 
     [Header("GameObjects")]
     GameObject healthbar;
@@ -23,6 +32,7 @@ public class EnemyHealth : MonoBehaviour
     public RoomSpawner roomSpawner;
     ExpSoulsManager expSoulsManager;
     EnemySight enemySight;
+    public BossGenerator bossGenerator;
 
     #endregion
 
@@ -32,9 +42,18 @@ public class EnemyHealth : MonoBehaviour
     void Start()
     {
         expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
-        healthImage = transform.Find("Healthbar/Background/Foreground").GetComponent<Image>();
-        healthbar = transform.Find("Healthbar").gameObject;
         enemySight = GetComponent<EnemySight>();
+
+        if (!boss)
+        {
+            healthImage = transform.Find("Healthbar/Background/Foreground").GetComponent<Image>();
+            healthbar = transform.Find("Healthbar").gameObject;
+        }
+        else
+        {
+            healthImage = GameObject.FindWithTag("Canvas").transform.Find("BossHealthbar/Background/Foreground").GetComponent<Image>();
+            OnBossSpawn?.Invoke();
+        }
         
         health = maxHealth;
     }
@@ -42,7 +61,10 @@ public class EnemyHealth : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        healthbar.transform.rotation = new Quaternion(0.707106829f, 0f, 0f, 0.707106829f);
+        if (!boss)
+        {
+            healthbar.transform.rotation = new Quaternion(0.707106829f, 0f, 0f, 0.707106829f);
+        }
         healthImage.fillAmount = (float)health / maxHealth;
     }
 
@@ -58,8 +80,16 @@ public class EnemyHealth : MonoBehaviour
 
             if (health <= 0)
             {
-                roomSpawner.enemies.Remove(gameObject);
-                expSoulsManager.AddExperience(expAmount, "demon");
+                if (!boss)
+                {
+                    roomSpawner.enemies.Remove(gameObject);
+                    expSoulsManager.AddExperience(expAmount, "demon");
+                }
+                else
+                {
+                    expSoulsManager.AddExperience(expAmount * 10, "devil");
+                    bossGenerator.isBossDead = true;
+                }
                 Destroy(gameObject);
             }
         }

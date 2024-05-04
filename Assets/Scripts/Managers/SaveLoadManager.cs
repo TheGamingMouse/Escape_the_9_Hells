@@ -12,15 +12,38 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     [Header("Ints")]
     public int layerReached;
 
+    [Header("Bools")]
+    public bool rickyStartComp;
+    public bool hub;
+    public bool mainMenu;
+
+    [Header("Lists")]
+    public List<LoadoutItemsSO> boughtWeapons = new();
+    public List<LoadoutItemsSO> boughtCompanions = new();
+    public List<LoadoutItemsSO> boughtUpperArmors = new();
+    public List<LoadoutItemsSO> boughtLowerArmors = new();
+
+    [Header("LoadoutItemsSOs")]
+    public LoadoutItemsSO weapon;
+    public LoadoutItemsSO companion;
+    public LoadoutItemsSO upperArmor;
+    public LoadoutItemsSO lowerArmor;
+
     [Header("Components")]
     PlayerLevel playerLevel;
+    ExpSoulsManager expSoulsManager;
+    PlayerLoadout playerLoadout;
+    PlayerEquipment playerEquipment;
     
     #endregion
+
     #region StartUpdate Methods
 
     void Start()
     {
         playerLevel = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>();
+        playerLoadout = GameObject.FindWithTag("Player").GetComponent<PlayerLoadout>();
+        playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
 
         if (CheckLayer() == -2 && SceneManager.GetActiveScene().buildIndex < 1)
         {
@@ -30,11 +53,6 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
         {
             layerReached = CheckLayer();
         }
-    }
-
-    void Update()
-    {
-        
     }
 
     #endregion
@@ -105,20 +123,64 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
     public void LoadData(GameData data)
     {
-        
+        if (!mainMenu)
+        {
+            rickyStartComp = data.rickyStartComp;
+
+            if (hub)
+            {
+                expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
+                expSoulsManager.AddSouls(data.souls, true);
+            }
+
+            weapon = data.weapon;
+            companion = data.companion;
+            upperArmor = data.upperArmor;
+            lowerArmor = data.lowerArmor;
+
+            boughtWeapons = data.boughtWeapons;
+            boughtCompanions = data.boughtCompanions;
+            boughtUpperArmors = data.boughtUpperArmors;
+            boughtLowerArmors = data.boughtLowerArmors;
+        }
     }
 
     public void SaveData(ref GameData data)
     {
-        data.demonsKilled += playerLevel.demonsKilled;
-        data.devilsKilled += playerLevel.devilsKilled;
-        if (layerReached > data.highestLayerReached && layerReached >= 0)
+        if (!mainMenu)
         {
-            data.highestLayerReached = layerReached;
+            data.demonsKilled += playerLevel.demonsKilled;
+            data.devilsKilled += playerLevel.devilsKilled;
+            if (layerReached > data.highestLayerReached && layerReached >= 0)
+            {
+                data.highestLayerReached = layerReached;
+            }
+            data.totalLevelUps += playerLevel.level - 1;
+            if (hub)
+            {
+                data.souls = playerLevel.souls;
+                data.totalSoulsCollected = playerLevel.souls;
+            }
+            else
+            {
+                data.souls += playerLevel.souls;
+                data.totalSoulsCollected += playerLevel.souls;
+            }
+
+            data.rickyStartComp = rickyStartComp;
+
+            data.weapon = playerLoadout.selectedWeapon;
+            data.companion = playerLoadout.selectedCompanion;
+            data.upperArmor = playerLoadout.selectedUpperArmor;
+            data.lowerArmor = playerLoadout.selectedLowerArmor;
+
+            data.boughtWeapons = playerEquipment.boughtWeapons;
+            data.boughtCompanions = playerEquipment.boughtCompanions;
+            data.boughtUpperArmors = playerEquipment.boughtUpperArmors;
+            data.boughtLowerArmors = playerEquipment.boughtLowerArmors;
         }
-        data.totalLevelUps += playerLevel.level - 1;
-        data.souls += playerLevel.souls;
-        data.totalSoulsCollected += playerLevel.souls;
+
+        // Settings to save
     }
 
     #endregion

@@ -46,13 +46,19 @@ public class Weapon : MonoBehaviour
 
         if (wActive == WeaponActive.Ulfberht)
         {
-            pugioObj.SetActive(false);
+            ulfberhtObj.SetActive(true);
             ulfberht.canDamageEnemies = true;
+            
+            pugio.canDamageEnemies = false;
+            pugioObj.SetActive(false);
         }
         else if (wActive == WeaponActive.Pugio)
         {
-            ulfberhtObj.SetActive(false);
+            pugioObj.SetActive(true);
             pugio.canDamageEnemies = true;
+            
+            ulfberht.canDamageEnemies = false;
+            ulfberhtObj.SetActive(false);
         }
 
         if (ulfberhtObj.activeInHierarchy)
@@ -161,6 +167,54 @@ public class Weapon : MonoBehaviour
             pugAnimator.SetBool("Piercing", false);
 
             canAttack = true;
+        }
+    }
+
+    #endregion
+
+    #region Weapon Swap
+
+    public void SwitchToUlfberht()
+    {
+        wActive = WeaponActive.Ulfberht;
+
+        ulfberhtObj.SetActive(true);
+        ulfberht.canDamageEnemies = true;
+        
+        pugio.canDamageEnemies = false;
+        pugioObj.SetActive(false);
+
+        ulfAnimator = ulfberhtObj.GetComponent<Animator>();
+
+        AnimationClip[] clips = ulfAnimator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip c in clips)
+        {
+            if (c.name == "Ulfberht Slash")
+            {
+                ulfClip = c;
+            }
+        }
+    }
+
+    public void SwitchToPugio()
+    {
+        wActive = WeaponActive.Pugio;
+        
+        pugioObj.SetActive(true);
+        pugio.canDamageEnemies = true;
+        
+        ulfberht.canDamageEnemies = false;
+        ulfberhtObj.SetActive(false);
+
+        pugAnimator = pugioObj.GetComponent<Animator>();
+
+        AnimationClip[] clips = pugAnimator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip c in clips)
+        {
+            if (c.name == "Pugio Pierce")
+            {
+                pugClip = c;
+            }
         }
     }
 

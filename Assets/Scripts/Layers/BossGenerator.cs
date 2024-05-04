@@ -10,9 +10,17 @@ public class BossGenerator : MonoBehaviour
     public bool isBossDead;
     bool treasureSpawned;
     public bool ready;
+    public bool inArea;
+    bool bossSpawned;
+
+    [Header("GameObjects")]
+    public GameObject boss;
 
     [Header("Arrays")]
     public GameObject[] treasureRooms;
+
+    [Header("Vector3s")]
+    public Vector3 bossPos;
 
     [Header("Quaternions")]
     public Quaternion openRot;
@@ -55,6 +63,14 @@ public class BossGenerator : MonoBehaviour
             }
 
             ready = true;
+        }
+
+        if (!bossSpawned)
+        {
+            var newBoss = Instantiate(boss, bossPos, Quaternion.identity, transform).GetComponent<EnemySight>();
+            newBoss.bossGenerator = this;
+            newBoss.GetComponent<EnemyHealth>().bossGenerator = this;
+            bossSpawned = true;
         }
 
         if (isBossDead)
@@ -115,5 +131,20 @@ public class BossGenerator : MonoBehaviour
 
         room.door.GetComponentInChildren<BoxCollider>().enabled = false;
         doorHinge.localRotation = Quaternion.Slerp(doorHinge.localRotation, openRot, Time.deltaTime);
+    }
+
+    void OnTriggerEnter(Collider coll)
+    {
+        if (coll.transform.CompareTag("Player"))
+        {
+            inArea = true;
+        }
+    }
+    void OnTriggerExit(Collider coll)
+    {
+        if (coll.transform.CompareTag("Player"))
+        {
+            inArea = false;
+        }
     }
 }

@@ -14,6 +14,7 @@ public class RoomBehavior : MonoBehaviour
     public GameObject door;
     public GameObject secondDoor;
     public GameObject backDoor;
+    public GameObject interior;
 
     [Header("Arrays")]
     public GameObject[] walls;

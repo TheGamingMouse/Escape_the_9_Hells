@@ -31,7 +31,7 @@ public class IronChest : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         player = GameObject.FindWithTag("Player").transform;
 
-        souls = Random.Range(5, 16);
+        souls = Random.Range(10, 26);
     }
 
     // Update is called once per frame
@@ -40,7 +40,7 @@ public class IronChest : MonoBehaviour
         if (Vector3.Distance(player.position, transform.position) < 2 && !chestOpened)
         {
             animator.SetTrigger("OpenChest");
-            expSoulsManager.AddSouls(souls);
+            expSoulsManager.AddSouls(souls, false);
 
             chestOpened = true;
         }

@@ -9,9 +9,6 @@ public class Follow : MonoBehaviour
     [Header("Enum States")]
     public FollowState fState;
 
-    [Header("Floats")]
-    readonly float speed = 5f;
-
     [Header("Transforms")]
     Transform player;
 
@@ -33,7 +30,7 @@ public class Follow : MonoBehaviour
     {
         if (fState == FollowState.Player)
         {
-            transform.position = Vector3.Lerp(transform.position, player.position + offset, speed);
+            transform.position = new Vector3(player.position.x + offset.x, player.position.y + offset.y, player.position.z + offset.z);
         }
     }
 

@@ -7,7 +7,7 @@ public class Pugio : MonoBehaviour
     #region Variables
 
     [Header("Floats")]
-    readonly float baseDamage = 6;
+    readonly float baseDamage = 12;
     public float damage;
 
     [Header("Bools")]
@@ -31,7 +31,7 @@ public class Pugio : MonoBehaviour
     {
         if (enemyAction != null)
         {
-            damage = baseDamage;
+            damage = baseDamage / 2;
         }
         else if (weapon != null)
         {

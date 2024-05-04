@@ -144,6 +144,7 @@ GameObject:
   - component: {fileID: 8400175933531384955}
   - component: {fileID: 2222016473014105569}
   - component: {fileID: 6087883898127004410}
+  - component: {fileID: 8970804961718526144}
   m_Layer: 0
   m_Name: Room1.Boss
   m_TagString: BossRoom
@@ -187,6 +188,7 @@ MonoBehaviour:
   door: {fileID: 0}
   secondDoor: {fileID: 0}
   backDoor: {fileID: 0}
+  interior: {fileID: 0}
   walls:
   - {fileID: 8044274774340844335}
   - {fileID: 1562484273883905173}
@@ -211,11 +213,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isBossDead: 0
   ready: 0
+  inArea: 0
+  boss: {fileID: 7151730078538460501, guid: b3f6067cf736d954983ff0382638f178, type: 3}
   treasureRooms:
   - {fileID: 238109957734174883}
   - {fileID: 7110346223352969914}
   - {fileID: 1234261664269530301}
+  bossPos: {x: 56, y: 2.5, z: -75}
   openRot: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+--- !u!65 &8970804961718526144
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5001487914795478421}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 22, y: 3, z: 22}
+  m_Center: {x: 0, y: 1.5, z: -4}
 --- !u!1 &5489255045279423939
 GameObject:
   m_ObjectHideFlags: 0

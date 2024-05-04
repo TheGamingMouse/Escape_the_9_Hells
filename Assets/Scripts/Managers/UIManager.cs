@@ -45,19 +45,26 @@ public class UIManager : MonoBehaviour
     public bool gameStart;
     public bool openPerkMenu;
     bool isPaused;
+    public bool npcsActive;
+    bool componentsFound;
+    public bool rickyTalking;
+    public bool barbaraTalking;
+    public bool alexanderTalking;
 
     [Header("GameObjects")]
-    GameObject dialogueBox;
+    public GameObject dialogueBox;
     GameObject player;
     GameObject damageOverlay;
     GameObject perkMenu;
     GameObject godModeObj;
     GameObject deathMenu;
     GameObject pauseMenu;
+    GameObject bossHealthbar;
 
     [Header("Transforms")]
     Transform canvas;
     Transform menus;
+    Transform npcs;
 
     [Header("TMPs")]
     TMP_Text levelText;
@@ -67,6 +74,10 @@ public class UIManager : MonoBehaviour
     TMP_Text dmLayerReached;
     TMP_Text dmLevelsGained;
     TMP_Text dmSoulsGained;
+    TMP_Text promtText;
+
+    [Header("Images")]
+    Image bossHealthImage;
 
     [Header("Coroutines")]
     Coroutine countingCoroutine;
@@ -79,6 +90,13 @@ public class UIManager : MonoBehaviour
     PlayerHealth playerHealth;
     DevTools devTools;
     PlayerMovement playerMovement;
+    Ricky ricky;
+    SoulsMenu rickyConvo;
+    Barbara barbara;
+    LoadoutMenu barbaraConvo;
+    NPCSpawner npcSpawner;
+    Alexander alexander;
+    EquipmentMenu alexanderConvo;
 
     #endregion
 
@@ -88,12 +106,14 @@ public class UIManager : MonoBehaviour
     {
         PlayerLevel.OnLevelUp += HandleLevelUp;
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
+        EnemyHealth.OnBossSpawn += HandleBossSpawn;
     }
 
     void OnDisable()
     {
         PlayerLevel.OnLevelUp -= HandleLevelUp;
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
+        EnemyHealth.OnBossSpawn -= HandleBossSpawn;
     }
 
     #endregion
@@ -103,24 +123,43 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        FindObjects();
-        FindTextElements();
-        DisableObjects();
-
-        soulsText.text = $"{playerLevel.souls}";
-
-        previousHealth = health;
-
-        Color c = damageOverlay.GetComponent<Image>().color;
-        c.a = fadeTime / fadeMax;
-        damageOverlay.GetComponent<Image>().color = c;
-
-        Time.timeScale = 1f;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!componentsFound)
+        {
+            FindObjects();
+            FindTextElements();
+            DisableObjects();
+
+            soulsText.text = $"{playerLevel.souls}";
+
+            previousHealth = health;
+
+            Color color = damageOverlay.GetComponent<Image>().color;
+            color.a = fadeTime / fadeMax;
+            damageOverlay.GetComponent<Image>().color = color;
+
+            Time.timeScale = 1f;
+
+            componentsFound = true;
+        }
+
+        if (npcsActive)
+        {
+            if (npcSpawner.barbSpawned)
+            {
+                barbara = npcs.GetComponentInChildren<Barbara>();
+            }
+            if (npcSpawner.alexSpawned)
+            {
+                alexander = npcs.GetComponentInChildren<Alexander>();
+            }
+        }
+
         if (!gameStart && player.transform.position.y <= 0.55f)
         {
             StartGame();
@@ -144,6 +183,8 @@ public class UIManager : MonoBehaviour
         UpdateExp();
         UpdateHealth();
         UpdateLevel();
+        UpdatePromt();
+        UpdateNPCPannels();
 
         if (fadeTime > 0)
         {
@@ -166,7 +207,7 @@ public class UIManager : MonoBehaviour
             godModeObj.SetActive(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen)
         {
             if (isPaused)
             {
@@ -176,6 +217,11 @@ public class UIManager : MonoBehaviour
             {
                 Pause();
             }
+        }
+
+        if (GameObject.FindWithTag("BossRoom").GetComponent<BossGenerator>().isBossDead)
+        {
+            bossHealthbar.SetActive(false);
         }
     }
 
@@ -205,6 +251,20 @@ public class UIManager : MonoBehaviour
         godModeObj = canvas.Find("GodModeText (TMP)").gameObject;
         deathMenu = menus.Find("DeathMenu").gameObject;
         pauseMenu = menus.Find("PauseMenu").gameObject;
+
+        bossHealthImage = canvas.Find("BossHealthbar/Background/Foreground").GetComponent<Image>();
+        bossHealthbar = canvas.Find("BossHealthbar").gameObject;
+
+        if (npcsActive)
+        {
+            npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
+            rickyConvo = menus.Find("npcConversations/Ricky").GetComponent<SoulsMenu>();
+            barbaraConvo = menus.Find("npcConversations/Barbara").GetComponent<LoadoutMenu>();
+            alexanderConvo = menus.Find("npcConversations/Alexander").GetComponent<EquipmentMenu>();
+            
+            npcs = GameObject.FindWithTag("NPC").transform;
+            ricky = npcs.GetComponentInChildren<Ricky>();
+        }
     }
 
     void FindTextElements()
@@ -219,6 +279,8 @@ public class UIManager : MonoBehaviour
         dmLayerReached = deathMenu.transform.Find("StatBackground/LayerReachedText (TMP)").GetComponent<TextMeshProUGUI>();
         dmLevelsGained = deathMenu.transform.Find("StatBackground/LevelsGainedText (TMP)").GetComponent<TextMeshProUGUI>();
         dmSoulsGained = deathMenu.transform.Find("StatBackground/SoulsGainedText (TMP)").GetComponent<TextMeshProUGUI>();
+
+        promtText = canvas.Find("PromtText (TMP)").GetComponent<TextMeshProUGUI>();
     }
 
     void DisableObjects()
@@ -228,12 +290,55 @@ public class UIManager : MonoBehaviour
         godModeObj.SetActive(false);
         deathMenu.SetActive(false);
         pauseMenu.SetActive(false);
+        bossHealthbar.SetActive(false);
+
+        playerMovement.startBool = false;
+        if (npcsActive)
+        {
+            rickyConvo.CloseStore();
+            if (npcSpawner.barbSpawned)
+            {
+                barbaraConvo.CloseStore();
+            }
+            if (npcSpawner.alexSpawned)
+            {
+                alexanderConvo.CloseStore();
+            }
+        }
     }
 
     void StartGame()
     {
-        dialogueBox.SetActive(true);
-        dialogueStart = true;
+        if (npcsActive && !ricky.dialogueStartComplete)
+        {
+            dialogueBox.SetActive(true);
+            dialogueStart = true;
+        }
+        else
+        {
+            playerMovement.startBool = true;
+            gameStart = true;
+        }
+    }
+
+    bool NPCIsTalking()
+    {
+        if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Ricky>(out Ricky rickyComp))
+        {
+            if (rickyComp.canTalk)
+            {
+                return rickyComp.talking;
+            }
+        }
+        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Barbara>(out Barbara barbaraComp))
+        {
+            return barbaraComp.talking;
+        }
+        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Alexander>(out Alexander alexanderComp))
+        {
+            return alexanderComp.talking;
+        }
+        return true;
     }
 
     #endregion
@@ -274,6 +379,37 @@ public class UIManager : MonoBehaviour
             StopCoroutine(countingCoroutine);
         }
         countingCoroutine = StartCoroutine(CountSouls(newValue));
+    }
+
+    void UpdatePromt()
+    {
+        if (player.GetComponent<Interactor>().promtFound && !NPCIsTalking())
+        {
+            promtText.gameObject.SetActive(true);
+            promtText.text = $"{player.GetComponent<Interactor>().colliders[0].GetComponent<IInteractable>().promt}";
+        }
+        else
+        {
+            promtText.gameObject.SetActive(false);
+        }
+    }
+
+    void UpdateNPCPannels()
+    {
+        if (rickyTalking)
+        {
+            rickyConvo.OpenStore();
+        }
+        
+        if (barbaraTalking)
+        {
+            barbaraConvo.OpenStore();
+        }
+
+        if (alexanderTalking)
+        {
+            alexanderConvo.OpenStore();
+        }
     }
 
     IEnumerator CountSouls(int newValue)
@@ -350,6 +486,16 @@ public class UIManager : MonoBehaviour
         playerMovement.startBool = true;
     }
 
+    public void CloseSoulsStore()
+    {
+        rickyTalking = false;
+    }
+
+    public void CloseLoadoutSelection()
+    {
+        barbaraTalking = false;
+    }
+
     #endregion
 
     #region SubscriptionHandler Methods
@@ -383,6 +529,11 @@ public class UIManager : MonoBehaviour
         dmSoulsGained.text = $"You have gained {soulsGained} souls";
 
         playerMovement.startBool = false;
+    }
+
+    void HandleBossSpawn()
+    {
+        bossHealthbar.SetActive(true);
     }
 
     #endregion

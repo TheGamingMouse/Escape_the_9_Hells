@@ -53,7 +53,7 @@ public class DevTools : MonoBehaviour
         {
             playerHealth.isInvinsible = true;
             playerMovement.speedMultiplier = 1.25f;
-            weapon.damageMultiplier = 10f;
+            weapon.damageMultiplier = 100f;
 
             godMode = true;
         }

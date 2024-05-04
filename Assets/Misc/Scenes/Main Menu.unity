@@ -1170,6 +1170,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5312373285647662301, guid: 10c0800bf2aff5649938c5d39906448d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7411566162740162557, guid: 10c0800bf2aff5649938c5d39906448d, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -1419,7 +1423,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Starting a new game will overwrite you existing save
+  m_text: Starting a new game will overwrite any existing save
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2843,6 +2847,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 747516364666025613, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
+      propertyPath: mainMenu
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1525619659044892785, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

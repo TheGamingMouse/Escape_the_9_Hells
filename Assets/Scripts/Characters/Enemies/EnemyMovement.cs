@@ -11,6 +11,7 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("Bools")]
     public bool targetInRange;
+    bool boss;
 
     [Header("Transforms")]
     Transform player;
@@ -21,7 +22,9 @@ public class EnemyMovement : MonoBehaviour
 
     [Header("Components")]
     Rigidbody rb;
-    EnemySight sight;
+    EnemySight enemySight;
+    EnemyAction enemyAction;
+    EnemyHealth enemyHealth;
 
     #endregion
 
@@ -32,30 +35,60 @@ public class EnemyMovement : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player").transform;
         rb = GetComponent<Rigidbody>();
-        sight = GetComponent<EnemySight>();
+        enemySight = GetComponent<EnemySight>();
+        enemyAction = GetComponent<EnemyAction>();
+        enemyHealth = GetComponent<EnemyHealth>();
+
+        boss = enemyHealth.boss;
+
     }
 
     void FixedUpdate()
     {
         if (target)
         {
-            if (Vector3.Distance(transform.position, player.position) > 1.75f)
+            if (boss)
             {
-                moveDirection = (target.position - transform.position).normalized;
-                rb.velocity = new Vector3(moveDirection.x * moveSpeed, 0f, moveDirection.z * moveSpeed);
-                targetInRange = false;
+                if (Vector3.Distance(transform.position, player.position) > 4.5f)
+                {
+                    targetInRange = false;
+                }
+                else
+                {
+                    targetInRange = true;
+                }
+
+                if (enemyAction.attacking)
+                {
+                    moveDirection = Vector3.zero;
+                    rb.velocity = new Vector3(0f, 0f, 0f);
+                }
+                else if (Vector3.Distance(transform.position, player.position) > 4.5f)
+                {
+                    moveDirection = (target.position - transform.position).normalized;
+                    rb.velocity = new Vector3(moveDirection.x * moveSpeed, 0f, moveDirection.z * moveSpeed);
+                }
             }
-            else if (Vector3.Distance(transform.position, player.position) > 0.75f && Vector3.Distance(transform.position, player.position) < 1.75f)
+            else
             {
-                moveDirection = Vector3.zero;
-                rb.velocity = new Vector3(0f, 0f, 0f);
-                targetInRange = true;
-            }
-            else if (Vector3.Distance(transform.position, player.position) < 0.75f)
-            {
-                moveDirection = (target.position - transform.position).normalized;
-                rb.velocity = new Vector3(-moveDirection.x * moveSpeed, 0f, -moveDirection.z * moveSpeed);
-                targetInRange = false;
+                if (Vector3.Distance(transform.position, player.position) > 1.75f)
+                {
+                    moveDirection = (target.position - transform.position).normalized;
+                    rb.velocity = new Vector3(moveDirection.x * moveSpeed, 0f, moveDirection.z * moveSpeed);
+                    targetInRange = false;
+                }
+                else if (Vector3.Distance(transform.position, player.position) > 0.75f && Vector3.Distance(transform.position, player.position) < 1.75f)
+                {
+                    moveDirection = Vector3.zero;
+                    rb.velocity = new Vector3(0f, 0f, 0f);
+                    targetInRange = true;
+                }
+                else if (Vector3.Distance(transform.position, player.position) < 0.75f)
+                {
+                    moveDirection = (target.position - transform.position).normalized;
+                    rb.velocity = new Vector3(-moveDirection.x * moveSpeed, 0f, -moveDirection.z * moveSpeed);
+                    targetInRange = false;
+                }
             }
         }
         else
@@ -69,9 +102,16 @@ public class EnemyMovement : MonoBehaviour
     {
         if (target)
         {
-            LookAtTarget();
+            if (boss && !enemyAction.attacking)
+            {
+                LookAtTarget();
+            }
+            else if (!boss)
+            {
+                LookAtTarget();
+            }
 
-            if (!sight.target)
+            if (!enemySight.target)
             {
                 target = null;
             }
@@ -81,9 +121,9 @@ public class EnemyMovement : MonoBehaviour
             transform.rotation = Quaternion.identity;
         }
 
-        if (sight.target)
+        if (enemySight.target)
         {
-            target = sight.target;
+            target = enemySight.target;
         }
     }
 

@@ -81,6 +81,11 @@ public class LayerGenerator : MonoBehaviour
                     newRoom.name += " " + i + " - " + j;
                     newRoom.x = i;
                     newRoom.y = j;
+                    if (newRoom.interior != null)
+                    {
+                        int randRot = Random.Range(0, 2);
+                        newRoom.interior.transform.rotation = Quaternion.Euler(0f, randRot * 90f, 0f);
+                    }
                 }
             }
         }

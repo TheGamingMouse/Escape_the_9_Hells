@@ -15,16 +15,16 @@ public class RoomSpawner : MonoBehaviour
     public bool inArea;
 
     [Header("GameObjects")]
-    [SerializeField] GameObject door;
-    [SerializeField] GameObject secondDoor;
-    [SerializeField] GameObject doorHinge;
-    [SerializeField] GameObject secondDoorHinge;
+    GameObject door;
+    GameObject secondDoor;
+    GameObject doorHinge;
+    GameObject secondDoorHinge;
     public GameObject enemy;
     public GameObject chest;
 
     [Header("Transforms")]
     public Transform enemyList;
-    [SerializeField] Transform chestSpawn;
+    Transform chestSpawn;
 
     [Header("Lists")]
     readonly List<Transform> spawnPoints = new();
@@ -54,7 +54,14 @@ public class RoomSpawner : MonoBehaviour
 
         for (int i = 0; i <= 7; i++)
         {
-            spawnPoints.Add(transform.Find("SpawnPositions").GetChild(i));
+            if (roomBehavior.interior != null)
+            {
+                spawnPoints.Add(transform.Find("InteriorWalls/SpawnPositions").GetChild(i));
+            }
+            else
+            {
+                spawnPoints.Add(transform.Find("SpawnPositions").GetChild(i));
+            }
         }
         spawned = new bool[spawnPoints.Count];
 
@@ -81,10 +88,6 @@ public class RoomSpawner : MonoBehaviour
                     secondDoor = roomBehavior.secondDoor;
                     secondDoorHinge = roomBehavior.secondDoor.transform.Find("DoorHinge").gameObject;
                 }
-            }
-            else
-            {
-                // TO DO - Make a chest room (or something)
             }
         }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Ricky : MonoBehaviour
+public class Ricky : MonoBehaviour, IInteractable
 {
     #region Variables
 
@@ -26,6 +26,13 @@ public class Ricky : MonoBehaviour
     bool damageable = true;
     bool dialogue2;
     bool openedDoor;
+    public bool dialogueStartComplete;
+    public bool secondPosition;
+    public bool talking;
+    bool beginDialogue;
+    bool talkingOver;
+    bool combatCanStart;
+    public bool canTalk;
 
     [Header("Strings")]
     readonly static string npcName = "Ricky";
@@ -33,14 +40,20 @@ public class Ricky : MonoBehaviour
     readonly static string line1 = "Welcome to Hell! You must be the new guy, what was your name again? Ahh, doesn't matter. You really messed up in life huh? Managed to make your way all the way down to the 9th layer of Hell, quite a feat to be honest.";
     readonly static string line2 = "Hmmmm, weird...";
     readonly static string line3 = "You doesn't seem to be on the list. You're not on any of the lists, for any of the other layers either. Shit, that can't be good. You're not supposed to be en Hell at all.";
-    readonly static string line4 = "I know what to do, although you may not like it. You are going to have to fight your way through the layers, and escape through the gates. This is going to be very difficult, but I mean, it'll be a lot better than sticking around.";
+    readonly static string line4 = "I know what to do, though you may not like it. You are going to have to fight your way through the layers, and escape through the gates. This is going to be very difficult, but I mean, it'll be a lot better than sticking around.";
     readonly static string line5 = "No need to worry too much though! Death won't be the end, as anytime you die on any layer, you will wake up right back here with me.";
-    readonly static string line6 = "Let me see what you got!";
+    readonly static string line6 = "Here, take this dagger. Let me see what you got!";
 
     readonly static string line7 = "Not bad, you might actually make it through a couple of rooms. You are going to have to get some better gear though, which, luckily for you, already comes with what you are about to do.";
-    readonly static string line8 = "You need Souls to upgrade yourself, but we'll talk about what to do with them once you have some.";
-    readonly static string line9 = "Souls can be found in a bunch of different ways, some specific demons drop Souls, but they can also be found in chests, which may be found across the layers.";
-    readonly static string line10 = "Regardless, you should get going, you only have all of eternety after all.";
+    readonly static string line8 = "You need Souls to upgrade yourself, but we'll talk more about that once you have some.";
+    readonly static string line9 = "Souls can be found in a bunch of different ways, killing devils will get you a bunch of Souls, but they can also be found in chests, which may be found across the layers.";
+    readonly static string line10 = "If you need help in the future, don't hesitate to come to me! Regardless, you should get going, you only have all of eternety after all.";
+
+    readonly static string dLine1 = "Remeber to spend your Souls! They'll make you life much easier in the layers.";
+    readonly static string dLine2 = "Different weapons are used differently, I know surpricing stuff, but remember not to stick with a weapon you don't like the attack pattern of. Go talk to Barbara, she'll sort you out.";
+    readonly static string dLine3 = "Just remember, you're gonna have to buy the equipment first. Go talk to Alexander, they won't give you a good price, but no-one else will either.";
+    readonly static string dLine4 = "Also, you might want to talk to [Not Implemented Yet], maybe they can teach you to get the maximum potential out of your equipment.";
+    // readonly static string dLine5 = "";
 
     [Header("Transforms")]
     Transform target;
@@ -52,11 +65,12 @@ public class Ricky : MonoBehaviour
 
     [Header("Vector3s")]
     Vector3 moveDirection;
-    public Vector3 postCombatPos, postCombatPlayerPos;
+    public Vector3 postCombatPlayerPos, stPos, ndPos;
 
     [Header("Arrays")]
     readonly string[] lines1 = {line1, line2, line3, line4, line5, line6};
     readonly string[] lines2 = {line7, line8, line9, line10};
+    readonly string[] defaultLines = {dLine1, dLine2, dLine3, dLine4};
 
     [Header("Lists")]
     readonly List<string[]> linesList = new();
@@ -73,6 +87,8 @@ public class Ricky : MonoBehaviour
     Rigidbody rb;
     Camera cam;
     PlayerMovement playerMovement;
+    SaveLoadManager saveLoadManager;
+    NPCSpawner spawner;
 
     #endregion
 
@@ -89,6 +105,8 @@ public class Ricky : MonoBehaviour
         cam = Camera.main;
         mainDoor = GameObject.FindWithTag("Terrain").transform.Find("ExitDoor/DoorHinge").gameObject;
         playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
+        saveLoadManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+        spawner = GetComponentInParent<NPCSpawner>();
 
         linesList.Add(lines1);
         linesList.Add(lines2);
@@ -97,18 +115,41 @@ public class Ricky : MonoBehaviour
 
         health = maxHealth;
 
-        playerMovement.startBool = false;
+        dialogueStartComplete = saveLoadManager.rickyStartComp;
+
+        dialogue.dialogueDone = false;
+        uiManager.npcsActive = true;
+        
+        if (dialogueStartComplete)
+        {
+            transform.position = ndPos;
+            spawner.rickyStart = dialogueStartComplete;
+            canTalk = true;
+        }
     }
 
     void Update()
     {
-        if (uiManager.dialogueStart && !gameStart)
+        if (dialogueStartComplete && !gameStart)
         {
-            BeginNewDialogue();
+            gameStart = true;
+            health = 0;
+            combatDone = true;
+            secondPosition = true;
+            dialogue2 = true;
+        }
+        else if (uiManager.dialogueStart && !gameStart)
+        {
+            BeginNewDialogue(false);
             gameStart = true;
         }
 
-        if ((dialogue.dialogueDone || playerMovement.startBool) && !combatDone)
+        if (dialogue.dialogueDone)
+        {
+            combatCanStart = true;
+        }
+
+        if ((dialogue.dialogueDone || playerMovement.startBool) && !combatDone && combatCanStart)
         {
             Combat();
 
@@ -120,7 +161,7 @@ public class Ricky : MonoBehaviour
             healthbar.SetActive(false);
         }
 
-        if (combatDone)
+        if (combatDone && !secondPosition)
         {
             if (Vector3.Distance(player.transform.position, postCombatPlayerPos) > 0.2f && !dialogue.dialogueDone)
             {
@@ -135,26 +176,26 @@ public class Ricky : MonoBehaviour
                 player.rotation = new Quaternion(0f, 0f, 0f, 1f);
             }
 
-            if (Vector3.Distance(transform.position, postCombatPos) > 0.2f)
+            if (Vector3.Distance(transform.position, stPos) > 0.2f)
             {
-                moveDirection = (postCombatPos - transform.position).normalized;
+                moveDirection = (stPos - transform.position).normalized;
                 rb.velocity = new Vector3(moveDirection.x * speed, 0f, moveDirection.z * speed);
             }
             else
             {
                 rb.velocity = Vector3.zero;
 
-                if (!dialogue2)
+                if (!dialogue2 && !dialogueStartComplete)
                 {
                     dialogue.dialogueDone = false;
 
                     if (dialogue.gameObject.activeInHierarchy)
                     {
-                        BeginNewDialogue();
+                        BeginNewDialogue(false);
                         dialogue2 = true;
                     }
                 }
-                else if (dialogue.dialogueDone)
+                else if (dialogue.dialogueDone || dialogueStartComplete)
                 {
                     if (!openedDoor)
                     {
@@ -165,9 +206,37 @@ public class Ricky : MonoBehaviour
                             openedDoor = true;
                         }
                         playerMovement.startBool = true;
+                        dialogueStartComplete = true;
+                        saveLoadManager.rickyStartComp = dialogueStartComplete;
                     }
                 }
             }
+        }
+        else if (secondPosition)
+        {
+            if (!openedDoor)
+            {
+                mainDoor.GetComponentInChildren<BoxCollider>().enabled = false;
+                mainDoor.transform.localRotation = Quaternion.Slerp(mainDoor.transform.localRotation, new Quaternion(0f, 0.707106829f, 0f, 0.707106829f), Time.deltaTime);
+                if (mainDoor.transform.rotation == new Quaternion(0f, 0.707106829f, 0f, 0.707106829f))
+                {
+                    openedDoor = true;
+                }
+            }
+        }
+
+        if (beginDialogue && uiManager.dialogueBox.activeInHierarchy)
+        {
+            BeginNewDialogue(true);
+            beginDialogue = false;
+        }
+        else if (dialogue.dialogueDone && !talkingOver && dialogueStartComplete)
+        {
+            playerMovement.startBool = true;
+            talking = false;
+            uiManager.dialogueStart = false;
+
+            talkingOver = true;
         }
     }
 
@@ -180,6 +249,7 @@ public class Ricky : MonoBehaviour
         if (health <= 0)
         {
             combatDone = true;
+            combatCanStart = false;
         }
 
         rb.constraints = RigidbodyConstraints.None;
@@ -260,16 +330,49 @@ public class Ricky : MonoBehaviour
         dialogue.npcSprite = npcSprite;
     }
 
-    void BeginNewDialogue()
+    void BeginNewDialogue(bool advice)
     {
         playerMovement.startBool = false;
 
-        dialogue.lines = linesList[listIndex];
+        if (advice)
+        {
+            dialogue.lines = defaultLines;
+        }
+        else
+        {
+            dialogue.lines = linesList[listIndex];
+            listIndex++;
+        }
+
         dialogue.nameString = npcName;
         dialogue.npcSprite = npcSprite;
 
         dialogue.StartDialogue();
-        listIndex++;
+    }
+
+    #endregion
+
+    #region IInteractable
+
+    public string promt => "Ricky" + "\n" + "\n" + "Press E to Shop" + "\n" + "Press Q to Talk";
+
+    public bool InteractE(Interactor interactor)
+    {
+        talking = true;
+        uiManager.rickyTalking = true;
+        
+        return true;
+    }
+    public bool InteractQ(Interactor interactor)
+    {
+        talking = true;
+        talkingOver = false;
+
+        dialogue.dialogueDone = false;
+        uiManager.dialogueStart = true;
+        beginDialogue = true;
+        
+        return true;
     }
 
     #endregion

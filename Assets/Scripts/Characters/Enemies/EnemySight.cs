@@ -9,6 +9,7 @@ public class EnemySight : MonoBehaviour
     [Header("Bools")]
     public bool isObstructed;
     public bool isInArea;
+    [SerializeField] bool boss;
 
     [Header("Transforms")]
     public Transform target;
@@ -20,6 +21,8 @@ public class EnemySight : MonoBehaviour
 
     [Header("Components")]
     public RoomSpawner roomSpawner;
+    public BossGenerator bossGenerator;
+    EnemyHealth enemyHealth;
 
     #endregion
 
@@ -29,6 +32,9 @@ public class EnemySight : MonoBehaviour
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;
+        enemyHealth = GetComponent<EnemyHealth>();
+
+        boss = enemyHealth.boss;
     }
 
     // Update is called once per frame
@@ -54,7 +60,14 @@ public class EnemySight : MonoBehaviour
 
     bool TargetInArea()
     {
-        return roomSpawner.inArea;
+        if (boss)
+        {
+            return bossGenerator.inArea;
+        }
+        else
+        {
+            return roomSpawner.inArea;
+        }
     }
 
     bool TargetObstructed()

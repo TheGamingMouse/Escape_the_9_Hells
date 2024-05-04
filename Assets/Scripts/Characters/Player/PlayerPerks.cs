@@ -11,10 +11,10 @@ public class PlayerPerks : MonoBehaviour
     float attackSpeed;
     float damage;
     float moveSpeed;
-    readonly float defenceMod = 0.3f;
-    readonly float attackSpeedMod = 0.2f;
-    readonly float damageMod = 0.35f;
-    readonly float moveSpeedMod = 0.05f;
+    readonly float defenceMod = 0.25f;
+    readonly float attackSpeedMod = 0.25f;
+    readonly float damageMod = 0.2f;
+    readonly float moveSpeedMod = 0.075f;
 
     [Header("Lists")]
     public List<PerkItemsSO> templatePerks = new();

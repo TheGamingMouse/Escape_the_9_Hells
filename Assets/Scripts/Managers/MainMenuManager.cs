@@ -22,7 +22,7 @@ public class MainMenuManager : MonoBehaviour
     {
         DisableButtons();
         DataPersistenceManager.Instance.NewGame();
-        SceneManager.LoadSceneAsync("Hub");
+        SceneManager.LoadScene("Hub");
     }
 
     public void ContinueButton()

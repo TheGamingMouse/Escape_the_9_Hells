@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5774074460272781032}
   - component: {fileID: 1018124072973464398}
   - component: {fileID: 7437394198222296374}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ricky
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 0e4311401fd359842a1b16e606f3521b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -149,8 +149,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c6fca2d308ea504da1dfbdd229d80e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  postCombatPos: {x: 0, y: 1.05, z: 2}
+  dialogueStartComplete: 0
+  secondPosition: 0
   postCombatPlayerPos: {x: 0, y: 0.55, z: 0}
+  stPos: {x: 0, y: 1.05, z: 2}
+  ndPos: {x: -8, y: 1.05, z: 2}
   npcSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!1001 &2660115851036194195
 PrefabInstance:

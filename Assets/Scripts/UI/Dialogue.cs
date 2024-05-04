@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using Unity.VisualScripting;
+using System;
 
 public class Dialogue : MonoBehaviour
 {
@@ -46,7 +48,7 @@ public class Dialogue : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (dialogue.text == lines[index])
+        if (lines.Length > 0 && dialogue.text == lines[index])
         {
             clickForNext.SetActive(true);
         }
