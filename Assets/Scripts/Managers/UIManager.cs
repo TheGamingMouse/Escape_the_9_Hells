@@ -50,6 +50,7 @@ public class UIManager : MonoBehaviour
     public bool rickyTalking;
     public bool barbaraTalking;
     public bool alexanderTalking;
+    bool cursorObjSpawned;
 
     [Header("GameObjects")]
     public GameObject dialogueBox;
@@ -60,6 +61,8 @@ public class UIManager : MonoBehaviour
     GameObject deathMenu;
     GameObject pauseMenu;
     GameObject bossHealthbar;
+    GameObject promt;
+    public GameObject cursorObj;
 
     [Header("Transforms")]
     Transform canvas;
@@ -75,12 +78,16 @@ public class UIManager : MonoBehaviour
     TMP_Text dmLevelsGained;
     TMP_Text dmSoulsGained;
     TMP_Text promtText;
+    TMP_Text npcName;
 
     [Header("Images")]
     Image bossHealthImage;
 
     [Header("Coroutines")]
     Coroutine countingCoroutine;
+
+    [Header("LayerMasks")]
+    public LayerMask groundMask;
 
     [Header("Components")]
     Dialogue dialogue;
@@ -97,6 +104,8 @@ public class UIManager : MonoBehaviour
     NPCSpawner npcSpawner;
     Alexander alexander;
     EquipmentMenu alexanderConvo;
+    public BossGenerator bossGenerator;
+    SaveLoadManager saveLoadManager;
 
     #endregion
 
@@ -106,14 +115,16 @@ public class UIManager : MonoBehaviour
     {
         PlayerLevel.OnLevelUp += HandleLevelUp;
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
-        EnemyHealth.OnBossSpawn += HandleBossSpawn;
+        RoomSpawner.OnBossSpawn += HandleBossSpawn;
+        BossGenerator.OnBossDeath += HandleBossDeath;
     }
 
     void OnDisable()
     {
         PlayerLevel.OnLevelUp -= HandleLevelUp;
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
-        EnemyHealth.OnBossSpawn -= HandleBossSpawn;
+        RoomSpawner.OnBossSpawn -= HandleBossSpawn;
+        BossGenerator.OnBossDeath -= HandleBossDeath;
     }
 
     #endregion
@@ -124,6 +135,11 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         
+    }
+
+    void FixedUpdate()
+    {
+        UpdateCursorPosition();
     }
 
     // Update is called once per frame
@@ -144,6 +160,7 @@ public class UIManager : MonoBehaviour
             damageOverlay.GetComponent<Image>().color = color;
 
             Time.timeScale = 1f;
+            Cursor.visible = false;
 
             componentsFound = true;
         }
@@ -174,10 +191,12 @@ public class UIManager : MonoBehaviour
             dialogueBox.SetActive(true);
         }
 
-        if (perkMenu.GetComponent<PerkMenu>().menuClosing == true && !playerHealth.playerDead && !isPaused)
+        if (perkMenu.GetComponent<PerkMenu>().menuClosing && !playerHealth.playerDead && !isPaused)
         {
             perkMenu.SetActive(false);
             Time.timeScale = 1f;
+
+            StartCoroutine(CheckTimesLeveled());
         }
 
         UpdateExp();
@@ -207,21 +226,33 @@ public class UIManager : MonoBehaviour
             godModeObj.SetActive(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape) && !rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
+            if (rickyConvo && barbaraConvo && alexanderConvo)
             {
-                Unpause();
+                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen)
+                {
+                    if (isPaused)
+                    {
+                        Unpause();
+                    }
+                    else
+                    {
+                        Pause();
+                    }
+                }
             }
-            else
+            else if (!perkMenu.GetComponent<PerkMenu>().menuOpen)
             {
-                Pause();
+                if (isPaused)
+                {
+                    Unpause();
+                }
+                else
+                {
+                    Pause();
+                }
             }
-        }
-
-        if (GameObject.FindWithTag("BossRoom").GetComponent<BossGenerator>().isBossDead)
-        {
-            bossHealthbar.SetActive(false);
         }
     }
 
@@ -245,6 +276,7 @@ public class UIManager : MonoBehaviour
         playerHealth = player.GetComponent<PlayerHealth>();
         devTools = player.GetComponent<DevTools>();
         playerMovement = player.GetComponent<PlayerMovement>();
+        saveLoadManager = GetComponent<SaveLoadManager>();
 
         damageOverlay = canvas.Find("DamageIndicator").gameObject;
         perkMenu = menus.Find("PerkMenu").gameObject;
@@ -252,8 +284,10 @@ public class UIManager : MonoBehaviour
         deathMenu = menus.Find("DeathMenu").gameObject;
         pauseMenu = menus.Find("PauseMenu").gameObject;
 
-        bossHealthImage = canvas.Find("BossHealthbar/Background/Foreground").GetComponent<Image>();
-        bossHealthbar = canvas.Find("BossHealthbar").gameObject;
+        bossHealthImage = canvas.Find("BossHealthBar/Health Bar Fill").GetComponent<Image>();
+        bossHealthbar = canvas.Find("BossHealthBar").gameObject;
+
+        promt = canvas.Find("Promt").gameObject;
 
         if (npcsActive)
         {
@@ -280,7 +314,8 @@ public class UIManager : MonoBehaviour
         dmLevelsGained = deathMenu.transform.Find("StatBackground/LevelsGainedText (TMP)").GetComponent<TextMeshProUGUI>();
         dmSoulsGained = deathMenu.transform.Find("StatBackground/SoulsGainedText (TMP)").GetComponent<TextMeshProUGUI>();
 
-        promtText = canvas.Find("PromtText (TMP)").GetComponent<TextMeshProUGUI>();
+        promtText = promt.transform.Find("PromtText (TMP)").GetComponent<TextMeshProUGUI>();
+        npcName = promt.transform.Find("Name/NameText (TMP)").GetComponent<TextMeshProUGUI>();
     }
 
     void DisableObjects()
@@ -341,6 +376,16 @@ public class UIManager : MonoBehaviour
         return true;
     }
 
+    IEnumerator CheckTimesLeveled()
+    {
+        yield return new WaitForEndOfFrame();
+
+        if (playerLevel.timesLeveledUp > 0)
+        {
+            HandleLevelUp();
+        }
+    }
+
     #endregion
 
     #region Update Methods
@@ -385,12 +430,13 @@ public class UIManager : MonoBehaviour
     {
         if (player.GetComponent<Interactor>().promtFound && !NPCIsTalking())
         {
-            promtText.gameObject.SetActive(true);
+            promt.SetActive(true);
             promtText.text = $"{player.GetComponent<Interactor>().colliders[0].GetComponent<IInteractable>().promt}";
+            npcName.text = $"{player.GetComponent<Interactor>().colliders[0].GetComponent<IInteractable>().npcName}";
         }
         else
         {
-            promtText.gameObject.SetActive(false);
+            promt.SetActive(false);
         }
     }
 
@@ -462,6 +508,49 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    void UpdateCursorPosition()
+    {
+        if (Input.mousePosition.x >= 0 && Input.mousePosition.x <= 1920 && Input.mousePosition.y >= 0 && Input.mousePosition.y <= 1080 && !isPaused)
+        {
+            if (rickyConvo && barbaraConvo && alexanderConvo)
+            {
+                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen)
+                {
+                    UpdateCursor();
+                }
+            }
+            else if (!perkMenu.GetComponent<PerkMenu>().menuOpen)
+            {
+                UpdateCursor();
+            }
+        }
+    }
+
+    void UpdateCursor()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, groundMask))
+        {
+            if (!cursorObjSpawned)
+            {
+                cursorObj = Instantiate(cursorObj, hit.point, Quaternion.LookRotation(hit.normal));
+
+                cursorObjSpawned = true;
+            }
+
+            var mousePos = hit.point;
+            if (saveLoadManager.hub)
+            {
+                mousePos.y += 0.1f;
+            }
+            else
+            {
+                mousePos.y += 13.6f;
+            }
+            cursorObj.transform.position = mousePos;
+        }
+    }
+
     #endregion
 
     #region Button Methods
@@ -473,6 +562,7 @@ public class UIManager : MonoBehaviour
 
         Time.timeScale = 0f;
         playerMovement.startBool = false;
+        Cursor.visible = true;
     }
 
     public void Unpause()
@@ -484,6 +574,7 @@ public class UIManager : MonoBehaviour
 
         Time.timeScale = 1f;
         playerMovement.startBool = true;
+        Cursor.visible = false;
     }
 
     public void CloseSoulsStore()
@@ -529,11 +620,17 @@ public class UIManager : MonoBehaviour
         dmSoulsGained.text = $"You have gained {soulsGained} souls";
 
         playerMovement.startBool = false;
+        Cursor.visible = true;
     }
 
     void HandleBossSpawn()
     {
         bossHealthbar.SetActive(true);
+    }
+
+    void HandleBossDeath()
+    {
+        bossHealthbar.SetActive(false);
     }
 
     #endregion

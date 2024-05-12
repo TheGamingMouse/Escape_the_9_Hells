@@ -6,12 +6,6 @@ using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
-    #region Events
-
-    public static event Action OnBossSpawn;
-
-    #endregion
-
     #region Variables
 
     [Header("Ints")]
@@ -33,6 +27,7 @@ public class EnemyHealth : MonoBehaviour
     ExpSoulsManager expSoulsManager;
     EnemySight enemySight;
     public BossGenerator bossGenerator;
+    PlayerLevel playerLevel;
 
     #endregion
 
@@ -43,16 +38,16 @@ public class EnemyHealth : MonoBehaviour
     {
         expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
         enemySight = GetComponent<EnemySight>();
+        playerLevel = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>();
 
         if (!boss)
         {
-            healthImage = transform.Find("Healthbar/Background/Foreground").GetComponent<Image>();
-            healthbar = transform.Find("Healthbar").gameObject;
+            healthImage = transform.Find("HealthBarCanvas/Health Bar Fill").GetComponent<Image>();
+            healthbar = transform.Find("HealthBarCanvas").gameObject;
         }
         else
         {
-            healthImage = GameObject.FindWithTag("Canvas").transform.Find("BossHealthbar/Background/Foreground").GetComponent<Image>();
-            OnBossSpawn?.Invoke();
+            healthImage = GameObject.FindWithTag("Canvas").transform.Find("BossHealthBar/Health Bar Fill").GetComponent<Image>();
         }
         
         health = maxHealth;
@@ -87,7 +82,8 @@ public class EnemyHealth : MonoBehaviour
                 }
                 else
                 {
-                    expSoulsManager.AddExperience(expAmount * 10, "devil");
+                    expSoulsManager.AddExperience((int)playerLevel.expMultiplier * 3, "devil");
+                    expSoulsManager.AddSouls(50, false);
                     bossGenerator.isBossDead = true;
                 }
                 Destroy(gameObject);

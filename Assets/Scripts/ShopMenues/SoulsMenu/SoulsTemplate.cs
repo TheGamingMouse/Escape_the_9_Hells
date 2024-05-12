@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class SoulsTemplate : MonoBehaviour
 {
@@ -7,4 +8,8 @@ public class SoulsTemplate : MonoBehaviour
     public TMP_Text titleText;
     public TMP_Text descriptionText;
     public TMP_Text priceText;
+
+    [Header("Images")]
+    public Image counter1;
+    public Image counter2;
 }

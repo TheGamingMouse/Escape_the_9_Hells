@@ -16,16 +16,12 @@ public class Barbara : MonoBehaviour, IInteractable
     bool talkingOver;
 
     [Header("Strings")]
-    readonly static string npcName = "Barbara";
-    
-    readonly static string dLine1 = "Line 1";
-    readonly static string dLine2 = "Line 2";
-    // readonly static string dLine3 = "";
-    // readonly static string dLine4 = "";
-    // readonly static string dLine5 = "";
+    readonly static string dLine1 = "Hello there new face, welcome to the 9th. Ricky tells me you ain't here for your fault, that's some tough shit newbie.";
+    readonly static string dLine2 = "I can help you out sorting you eqiupment though. You won't be able to carry more than one of each kind of equipment, but I'll hold on to any of the stuff you're not running around with.";
+    readonly static string dLine3 = "You can always just come talk to me, if you want to switch it up, but make sure to talk to Alexander as well, he's the one selling the stuff.";
 
     [Header("Arrays")]
-    readonly string[] defaultLines = {dLine1, dLine2};
+    readonly string[] defaultLines = {dLine1, dLine2, dLine3};
 
     [Header("Lists")]
     readonly List<string[]> linesList = new();
@@ -96,7 +92,9 @@ public class Barbara : MonoBehaviour, IInteractable
 
     #region IInteractable
 
-    public string promt => "Barbara" + "\n" + "\n" + "Press E to Shop" + "\n" + "Press Q to Talk";
+    public string promt => "Press E to Edit Loadout" + "\n" + "Press Q to Talk";
+
+    public string npcName => "Barbara";
 
     public bool InteractE(Interactor interactor)
     {

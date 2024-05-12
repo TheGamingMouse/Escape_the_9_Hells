@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class BossGenerator : MonoBehaviour
 {
+    #region Events
+
+    public static event System.Action OnBossDeath;
+
+    #endregion
+
     #region Variables
 
     [Header("Bools")]
@@ -28,6 +34,7 @@ public class BossGenerator : MonoBehaviour
     [Header("Components")]
     RoomBehavior room;
     TreasureRoom treasure;
+    UIManager uiManager;
     
     #endregion
 
@@ -50,6 +57,8 @@ public class BossGenerator : MonoBehaviour
         {
             treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Exp").GetComponent<TreasureRoom>();
         }
+
+        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
     }
 
     // Update is called once per frame
@@ -70,11 +79,15 @@ public class BossGenerator : MonoBehaviour
             var newBoss = Instantiate(boss, bossPos, Quaternion.identity, transform).GetComponent<EnemySight>();
             newBoss.bossGenerator = this;
             newBoss.GetComponent<EnemyHealth>().bossGenerator = this;
+            
+            uiManager.bossGenerator = this;
+            
             bossSpawned = true;
         }
 
         if (isBossDead)
         {
+            OnBossDeath?.Invoke();
             OpenDoor();
             if (!treasureSpawned)
             {

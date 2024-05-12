@@ -15,16 +15,18 @@ public class PerkMenu : MonoBehaviour
     public bool menuClosing;
 
     [Header("Lists")]
-    readonly List<PerkItemsSO> selectedPerkItemsSO = new();
+    readonly List<PerkItemsSO> selectedPerks = new();
 
     [Header("Arrays")]
     public PerkItemsSO[] perkItemsSO;
     public PerkTemplate[] perkPannels;
     public GameObject[] perkPannelsSO;
+    [SerializeField] bool[] perksSelected;
 
     [Header("Components")]
     PlayerMovement playerMovement;
     PlayerPerks playerPerks;
+    PlayerLevel playerLevel;
 
     #endregion
 
@@ -35,6 +37,9 @@ public class PerkMenu : MonoBehaviour
     {
         playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
         playerPerks = GameObject.FindWithTag("Player").GetComponent<PlayerPerks>();
+        playerLevel = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>();
+
+        perksSelected = new bool[perkItemsSO.Length];
     }
 
     // Update is called once per frame
@@ -49,11 +54,14 @@ public class PerkMenu : MonoBehaviour
         {
             playerMovement.startBool = false;
             menuClosing = false;
+            Cursor.visible = true;
         }
         else
         {
+            playerLevel.timesLeveledUp--;
             playerMovement.startBool = true;
             menuClosing = true;
+            Cursor.visible = false;
         }
     }
 
@@ -67,20 +75,28 @@ public class PerkMenu : MonoBehaviour
         {
             for (int i = 0; i < 3; i++)
             {
-                perkPannels[i].titleText.text = selectedPerkItemsSO[i].title;
-                perkPannels[i].descriptionText.text = selectedPerkItemsSO[i].description;
+                perkPannels[i].titleText.text = selectedPerks[i].title;
+                perkPannels[i].descriptionText.text = selectedPerks[i].description;
             }
 
             pannelsLoaded = true;
         }
         else
         {
-            selectedPerkItemsSO.Clear();
-            for (int i = 0; i < 3; i++)
+            selectedPerks.Clear();
+            perksSelected = new bool[perkItemsSO.Length];
+            for (int i = 3; i > 0; i--)
             {
                 int selectedPerk = Random.Range(0, perkItemsSO.Length);
 
-                selectedPerkItemsSO.Add(perkItemsSO[selectedPerk]);
+                if (perksSelected[selectedPerk])
+                {
+                    i++;
+                    continue;
+                }
+
+                selectedPerks.Add(perkItemsSO[selectedPerk]);
+                perksSelected[selectedPerk] = true;
             }
 
             perksLoaded = true;
@@ -89,7 +105,7 @@ public class PerkMenu : MonoBehaviour
 
     public void SelectedPerk(int btnNo)
     {
-        playerPerks.AddPerk(selectedPerkItemsSO[btnNo]);
+        playerPerks.AddPerk(selectedPerks[btnNo]);
 
         menuOpen = false;
     }

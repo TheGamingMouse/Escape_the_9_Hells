@@ -15,16 +15,14 @@ public class Alexander : MonoBehaviour, IInteractable
     bool talkingOver;
 
     [Header("Strings")]
-    readonly static string npcName = "Alexander";
-    
-    readonly static string dLine1 = "Line 1";
-    readonly static string dLine2 = "Line 2";
-    // readonly static string dLine3 = "";
-    // readonly static string dLine4 = "";
-    // readonly static string dLine5 = "";
+    readonly static string dLine1 = "Ricky's told me you've fallen down here by mistake, however the fuck that's even possible. I'm Alexander, I've got all the good goods you could ever want.";
+    readonly static string dLine2 = "You can buy weapons here, seems kind of self explanitory what you can do with those, but in case it doesn't. You use them to either hit demons, or shoot them, depending on whether you're using a melee or a ranged weapon.";
+    readonly static string dLine3 = "You can also buy companions here. They'll follow you around, and help keep you safe. They are mostly good for killing demons, but there are some of them that does it differently.";
+    readonly static string dLine4 = "I've also got armor. Armor is used mainly for the sake of defence. It can do you greatly to have a heavy piece of armor, if you want to tank a lot of hits. Just remeber that the heavier the armor, the slower you're gonna be.";
+    // readonly static string dLine5 = "Lastly there's the [tbd].";
 
     [Header("Arrays")]
-    readonly string[] defaultLines = {dLine1, dLine2};
+    readonly string[] defaultLines = {dLine1, dLine2, dLine3, dLine4};
 
     [Header("Lists")]
     readonly List<string[]> linesList = new();
@@ -95,7 +93,9 @@ public class Alexander : MonoBehaviour, IInteractable
 
     #region IInteractable
 
-    public string promt => "Barbara" + "\n" + "\n" + "Press E to Shop" + "\n" + "Press Q to Talk";
+    public string promt => "Press E to Shop" + "\n" + "Press Q to Talk";
+
+    public string npcName => "Alexander";
 
     public bool InteractE(Interactor interactor)
     {

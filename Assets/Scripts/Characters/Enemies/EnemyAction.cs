@@ -49,32 +49,24 @@ public class EnemyAction : MonoBehaviour
         animator = pugio.GetComponentInParent<Animator>();
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
 
+        string clipName = "";
         if (!boss)
         {
-            foreach (AnimationClip c in clips)
-            {
-                if (c.name == "Pugio Pierce")
-                {
-                    clip = c;
-                }
-            }
+            clipName = "Pugio Pierce";
         }
         else
         {
-            foreach (AnimationClip c in clips)
+            clipName = "BasicBoss Slam";
+        }
+        foreach (AnimationClip c in clips)
+        {
+            if (c.name == clipName)
             {
-                if (c.name == "BasicBoss Slam")
-                {
-                    clip = c;
-                }
+                clip = c;
             }
-
-            attackSpeed *= 4;
-            pugio.damage *= 10f;
         }
 
         animator.SetFloat("AttackSpeed", attackSpeed);
-        animator.SetBool("Boss", boss);
 
         canAttack = true;
     }
@@ -88,6 +80,7 @@ public class EnemyAction : MonoBehaviour
         }
         else if (enemyMovement.targetInRange && canAttack)
         {
+            animator.SetBool("Boss", boss);
             BossAttack();
         }
     }

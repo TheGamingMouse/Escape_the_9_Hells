@@ -51,7 +51,7 @@ public class TreasureRoom : MonoBehaviour
             int spawn = Random.Range(0, spawns.Length);
             if (spawnable[spawn])
             {
-                i += 1;
+                i++;
                 continue;
             }
 

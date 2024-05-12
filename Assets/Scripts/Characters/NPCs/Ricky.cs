@@ -33,27 +33,28 @@ public class Ricky : MonoBehaviour, IInteractable
     bool talkingOver;
     bool combatCanStart;
     public bool canTalk;
+    public bool daggerGiven;
+    bool weaponsActivated;
 
     [Header("Strings")]
-    readonly static string npcName = "Ricky";
-
-    readonly static string line1 = "Welcome to Hell! You must be the new guy, what was your name again? Ahh, doesn't matter. You really messed up in life huh? Managed to make your way all the way down to the 9th layer of Hell, quite a feat to be honest.";
+    readonly static string line1 = "Welcome to Hell! You must be the new guy, what was your name again? Ahh, doesn't matter, I just need a drop of blood. *Stabs your hand with dagger*. You really messed up in life huh? Managed to make your way all the way down to the 9th layer of Hell, quite a feat to be honest.";
     readonly static string line2 = "Hmmmm, weird...";
-    readonly static string line3 = "You doesn't seem to be on the list. You're not on any of the lists, for any of the other layers either. Shit, that can't be good. You're not supposed to be en Hell at all.";
-    readonly static string line4 = "I know what to do, though you may not like it. You are going to have to fight your way through the layers, and escape through the gates. This is going to be very difficult, but I mean, it'll be a lot better than sticking around.";
-    readonly static string line5 = "No need to worry too much though! Death won't be the end, as anytime you die on any layer, you will wake up right back here with me.";
-    readonly static string line6 = "Here, take this dagger. Let me see what you got!";
+    readonly static string line3 = "You don't seem to be on the list. You're not on any of the lists actually. Shit, that can't be good. You weren't supposed t ogo to Hell.";
+    readonly static string line4 = "Okay, let me think for a second. *Snaps finger like he got an idea* I know what to do! Although you might not like it. You are going to have to fight your way through the layers, and escape through the gates. This is going to be very difficult, but I mean, it'll be a lot better than sticking around, and you got the time.";
+    readonly static string line5 = "No need to worry too much though! Death isn't the end down here, as anytime you die on any layer, you will just wake up, right back here with me.";
+    readonly static string line6 = "Here, take this dagger, don't mind the blood, you know where it came from. Let me see what you got!";
 
-    readonly static string line7 = "Not bad, you might actually make it through a couple of rooms. You are going to have to get some better gear though, which, luckily for you, already comes with what you are about to do.";
-    readonly static string line8 = "You need Souls to upgrade yourself, but we'll talk more about that once you have some.";
+    readonly static string line7 = "Not terrible, who knows, you might actually make it through a couple of rooms. You are going to have to get some better gear though, which, luckily for you, already comes with what you are about to do.";
+    readonly static string line8 = "You need Souls to upgrade yourself and your gear, but we'll talk more about that once you actually have some Souls.";
     readonly static string line9 = "Souls can be found in a bunch of different ways, killing devils will get you a bunch of Souls, but they can also be found in chests, which may be found across the layers.";
-    readonly static string line10 = "If you need help in the future, don't hesitate to come to me! Regardless, you should get going, you only have all of eternety after all.";
+    readonly static string line10 = "Devils, I should clarify, are the big ugly guardians at the end of every layer. Taking out one of those assholes is no small feat though.";
+    readonly static string line11 = "To reiterete, come see me after you have some Souls, we'll talk. If you need help again in the future, don't hesitate to come talk to me again! Regardless, you should get going, you only have all of eternety after all.";
 
     readonly static string dLine1 = "Remeber to spend your Souls! They'll make you life much easier in the layers.";
-    readonly static string dLine2 = "Different weapons are used differently, I know surpricing stuff, but remember not to stick with a weapon you don't like the attack pattern of. Go talk to Barbara, she'll sort you out.";
-    readonly static string dLine3 = "Just remember, you're gonna have to buy the equipment first. Go talk to Alexander, they won't give you a good price, but no-one else will either.";
-    readonly static string dLine4 = "Also, you might want to talk to [Not Implemented Yet], maybe they can teach you to get the maximum potential out of your equipment.";
-    // readonly static string dLine5 = "";
+    readonly static string dLine2 = "For example, you could spend some of them with me, and I can infuse some of that energy into you. Essentially that just means, that I'll make you stronger, if you pay me for it.";
+    readonly static string dLine3 = "Additionally, keep in mind, that different weapons are used differently. I know truely thought provoking stuff, but I mean it, remember not to stick with a weapon you don't like the attack pattern of. Go talk to Barbara, she'll sort you out.";
+    readonly static string dLine4 = "You should also remember, you're gonna have to buy the equipment first. Go talk to Alexander, he won't give you a good price, but no-one else will either.";
+    // readonly static string dLine5 = "Also, you might want to talk to [Not Implemented Yet], they can teach you to get the maximum potential out of your equipment.";
 
     [Header("Transforms")]
     Transform target;
@@ -62,6 +63,7 @@ public class Ricky : MonoBehaviour, IInteractable
     [Header("GameObjects")]
     GameObject healthbar;
     GameObject mainDoor;
+    GameObject weapon;
 
     [Header("Vector3s")]
     Vector3 moveDirection;
@@ -69,7 +71,7 @@ public class Ricky : MonoBehaviour, IInteractable
 
     [Header("Arrays")]
     readonly string[] lines1 = {line1, line2, line3, line4, line5, line6};
-    readonly string[] lines2 = {line7, line8, line9, line10};
+    readonly string[] lines2 = {line7, line8, line9, line10, line11};
     readonly string[] defaultLines = {dLine1, dLine2, dLine3, dLine4};
 
     [Header("Lists")]
@@ -100,13 +102,14 @@ public class Ricky : MonoBehaviour, IInteractable
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
         rb = GetComponent<Rigidbody>();
         player = GameObject.FindWithTag("Player").transform;
-        healthImage = transform.Find("Healthbar/Background/Foreground").GetComponent<Image>();
-        healthbar = transform.Find("Healthbar").gameObject;
+        healthImage = transform.Find("HealthBarCanvas/Health Bar Fill").GetComponent<Image>();
+        healthbar = transform.Find("HealthBarCanvas").gameObject;
         cam = Camera.main;
         mainDoor = GameObject.FindWithTag("Terrain").transform.Find("ExitDoor/DoorHinge").gameObject;
         playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
         saveLoadManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
         spawner = GetComponentInParent<NPCSpawner>();
+        weapon = player.GetComponentInChildren<Weapon>().gameObject;
 
         linesList.Add(lines1);
         linesList.Add(lines2);
@@ -125,7 +128,10 @@ public class Ricky : MonoBehaviour, IInteractable
             transform.position = ndPos;
             spawner.rickyStart = dialogueStartComplete;
             canTalk = true;
+            daggerGiven = true;
         }
+
+        weapon.SetActive(daggerGiven);
     }
 
     void Update()
@@ -142,6 +148,7 @@ public class Ricky : MonoBehaviour, IInteractable
         {
             BeginNewDialogue(false);
             gameStart = true;
+            daggerGiven = false;
         }
 
         if (dialogue.dialogueDone)
@@ -152,6 +159,7 @@ public class Ricky : MonoBehaviour, IInteractable
         if ((dialogue.dialogueDone || playerMovement.startBool) && !combatDone && combatCanStart)
         {
             Combat();
+            daggerGiven = true;
 
             healthbar.transform.rotation = Quaternion.LookRotation(healthbar.transform.position - cam.transform.position);
             healthImage.fillAmount = health / maxHealth;
@@ -159,6 +167,12 @@ public class Ricky : MonoBehaviour, IInteractable
         else
         {
             healthbar.SetActive(false);
+        }
+
+        if (!weaponsActivated && daggerGiven)
+        {
+            weapon.SetActive(true);
+            weaponsActivated = true;
         }
 
         if (combatDone && !secondPosition)
@@ -354,7 +368,9 @@ public class Ricky : MonoBehaviour, IInteractable
 
     #region IInteractable
 
-    public string promt => "Ricky" + "\n" + "\n" + "Press E to Shop" + "\n" + "Press Q to Talk";
+    public string promt => "Press E to Shop" + "\n" + "Press Q to Talk";
+
+    public string npcName => "Ricky";
 
     public bool InteractE(Interactor interactor)
     {

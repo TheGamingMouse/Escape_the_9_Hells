@@ -30,7 +30,7 @@ public class LayerGenerator : MonoBehaviour
 
     [Header("Bools")]
     public bool layerGenerated;
-    public bool printPops = false;
+    public bool printPops;
 
     [Header("Array")]
     public GameObject[] rooms;
@@ -73,7 +73,8 @@ public class LayerGenerator : MonoBehaviour
                 {
                     int randomRoom = Random.Range(0, rooms.Length);
 
-                    var newRoom = Instantiate(rooms[randomRoom], new Vector3(i * offset.x, 0, -j * offset.y), Quaternion.identity, transform).GetComponent<RoomBehavior>();
+                    var newRoom = Instantiate(rooms[randomRoom], new Vector3(i * offset.x, 0, -j * offset.y), 
+                        Quaternion.identity, transform).GetComponent<RoomBehavior>();
                     newRoom.UpdateRoom(board[Mathf.FloorToInt(i + j * size.x)].status);
                     newRoom.UpdateDoors(board[Mathf.FloorToInt(i + j * size.x)].doors);
                     newRoom.UpdateBackDoors(board[Mathf.FloorToInt(i + j * size.x)].backDoors);
@@ -122,7 +123,7 @@ public class LayerGenerator : MonoBehaviour
                 layerGenerated = true;
                 break;
             }
-            if (currentCell == 0)
+            if (currentCell == startPos)
             {
                 board[currentCell].status[0] = true;
                 board[currentCell].backDoors[0] = true;

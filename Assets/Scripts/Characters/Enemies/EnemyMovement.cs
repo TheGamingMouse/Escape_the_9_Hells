@@ -133,7 +133,7 @@ public class EnemyMovement : MonoBehaviour
 
     void LookAtTarget()
     {
-        transform.forward = target.position - new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        transform.forward = target.position - transform.position;
         transform.rotation = new Quaternion(0f, transform.rotation.y, 0f, transform.rotation.w);
     }
 

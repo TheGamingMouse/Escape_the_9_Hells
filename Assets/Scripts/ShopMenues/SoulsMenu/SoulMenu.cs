@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class SoulsMenu : MonoBehaviour
 {
+    [Header("Ints")]
+    readonly int soulsMax = 6;
+    int soulsCount;
+
     [Header("Floats")]
     public float souls;
 
@@ -45,9 +49,7 @@ public class SoulsMenu : MonoBehaviour
                 soulsPannelsSO[i].SetActive(true);
             }
 
-            soulContents.transform.position = new Vector3(10000f, contents.transform.position.y, contents.transform.position.z);
-
-            CheckSoulsPurchaseable();
+            soulContents.transform.position = new Vector3(10000f, soulContents.transform.position.y, soulContents.transform.position.z);
 
             uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
             playerSouls = GameObject.FindWithTag("Player").GetComponent<PlayerSouls>();
@@ -56,6 +58,8 @@ public class SoulsMenu : MonoBehaviour
             {
                 ricky = GameObject.FindWithTag("NPC").GetComponentInChildren<Ricky>();
             }
+
+            CheckSoulsPurchaseable();
 
             pannelsActivated = true;
         }
@@ -75,6 +79,7 @@ public class SoulsMenu : MonoBehaviour
             Time.timeScale = 0f;
             GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().startBool = false;
             playerStoped = true;
+            Cursor.visible = true;
         }
         else
         {
@@ -84,6 +89,7 @@ public class SoulsMenu : MonoBehaviour
                 Time.timeScale = 1f;
                 GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().startBool = true;
                 playerStoped = false;
+                Cursor.visible = false;
             }
         }
     }
@@ -95,6 +101,60 @@ public class SoulsMenu : MonoBehaviour
             soulsPannels[i].titleText.text = soulsItemsSO[i].title;
             soulsPannels[i].descriptionText.text = soulsItemsSO[i].description;
             soulsPannels[i].priceText.text = "Price: " + soulsItemsSO[i].price.ToString();
+
+            if (soulsItemsSO[i].title == "Attack Speed Soul")
+            {
+                soulsCount = playerSouls.attackSpeedSouls.Count;
+            }
+            else if (soulsItemsSO[i].title == "Damage Soul")
+            {
+                soulsCount = playerSouls.damageSouls.Count;
+            }
+            else if (soulsItemsSO[i].title == "Defence Soul")
+            {
+                soulsCount = playerSouls.defenceSouls.Count;
+            }
+            else if (soulsItemsSO[i].title == "Movement Speed Soul")
+            {
+                soulsCount = playerSouls.movementSpeedSouls.Count;
+            }
+            switch (soulsCount)
+                {
+                    case 0:
+                        soulsPannels[i].counter1.fillAmount = 0f;
+                        soulsPannels[i].counter2.fillAmount = 0f;
+                        break;
+                    
+                    case 1:
+                        soulsPannels[i].counter1.fillAmount = 0.3f;
+                        soulsPannels[i].counter2.fillAmount = 0f;
+                        break;
+                    
+                    case 2:
+                        soulsPannels[i].counter1.fillAmount = 0.7f;
+                        soulsPannels[i].counter2.fillAmount = 0f;
+                        break;
+                    
+                    case 3:
+                        soulsPannels[i].counter1.fillAmount = 1f;
+                        soulsPannels[i].counter2.fillAmount = 0f;
+                        break;
+                    
+                    case 4:
+                        soulsPannels[i].counter1.fillAmount = 1f;
+                        soulsPannels[i].counter2.fillAmount = 0.3f;
+                        break;
+                    
+                    case 5:
+                        soulsPannels[i].counter1.fillAmount = 1f;
+                        soulsPannels[i].counter2.fillAmount = 0.7f;
+                        break;
+                    
+                    case 6:
+                        soulsPannels[i].counter1.fillAmount = 1f;
+                        soulsPannels[i].counter2.fillAmount = 1f;
+                        break;
+                }
         }
 
         pannelsLoaded = true;
@@ -107,6 +167,23 @@ public class SoulsMenu : MonoBehaviour
         for (int i = 0; i < soulsItemsSO.Length; i++)
         {
             purchaseSoulsButtons[i].interactable = souls >= soulsItemsSO[i].price;
+
+            if (soulsItemsSO[i].title == "Attack Speed Soul" && playerSouls.attackSpeedSouls.Count == soulsMax)
+            {
+                purchaseSoulsButtons[i].interactable = false;
+            }
+            else if (soulsItemsSO[i].title == "Damage Soul" && playerSouls.damageSouls.Count == soulsMax)
+            {
+                purchaseSoulsButtons[i].interactable = false;
+            }
+            else if (soulsItemsSO[i].title == "Defence Soul" && playerSouls.defenceSouls.Count == soulsMax)
+            {
+                purchaseSoulsButtons[i].interactable = false;
+            }
+            else if (soulsItemsSO[i].title == "Movement Speed Soul" && playerSouls.movementSpeedSouls.Count == soulsMax)
+            {
+                purchaseSoulsButtons[i].interactable = false;
+            }
         }
     }
 
@@ -119,6 +196,8 @@ public class SoulsMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerSouls.AddSouls(soulsItemsSO[btnNo]);
+
+            pannelsLoaded = false;
         }
     }
 

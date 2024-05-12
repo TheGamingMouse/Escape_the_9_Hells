@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Template Companion
   description: This is a template, it doesn not have any features.
+  price: 0

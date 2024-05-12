@@ -5,11 +5,17 @@ using UnityEngine;
 
 public class RoomSpawner : MonoBehaviour
 {
+    #region Events
+
+    public static event System.Action OnBossSpawn;
+
+    #endregion
+
     #region Variables
 
     [Header("Bools")]
     bool layerGenerated;
-    bool enemiesDefeated;
+    public bool enemiesDefeated;
     bool nextRoomLoaded;
     bool enemiesSpawned;
     public bool inArea;
@@ -137,6 +143,7 @@ public class RoomSpawner : MonoBehaviour
             if (roomBehavior.x == 4 && roomBehavior.y == 4)
             {
                 layerManager.bossRoom.SetActive(true);
+                OnBossSpawn?.Invoke();
                 return;
             }
 

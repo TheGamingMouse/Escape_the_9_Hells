@@ -24,8 +24,8 @@ public class EquipmentMenu : MonoBehaviour
     [Header("Transforms")]
     public Transform weaponContents;
     public Transform companionContents;
-    public Transform upperArmorContents;
-    public Transform lowerArmorContents;
+    public Transform armorContents;
+    public Transform TBDContents;
 
     [Header("TMP_Pros")]
     public TMP_Text soulsText;
@@ -33,20 +33,20 @@ public class EquipmentMenu : MonoBehaviour
     [Header("Arrays")]
     public LoadoutItemsSO[] equipmentItemsSOWeapons;
     public LoadoutItemsSO[] equipmentItemsSOCompanion;
-    public LoadoutItemsSO[] equipmentItemsSOUpperArmor;
-    public LoadoutItemsSO[] equipmentItemsSOLowerArmor;
+    public LoadoutItemsSO[] equipmentItemsSOArmor;
+    public LoadoutItemsSO[] equipmentItemsSOTBD;
     public LoadoutTemplate[] equipmentPannelsWeapons;
     public LoadoutTemplate[] equipmentPannelsCompanion;
-    public LoadoutTemplate[] equipmentPannelsUpperArmor;
-    public LoadoutTemplate[] equipmentPannelsLowerArmor;
+    public LoadoutTemplate[] equipmentPannelsArmor;
+    public LoadoutTemplate[] equipmentPannelsTBD;
     public GameObject[] equipmentPannelsSOWeapons;
     public GameObject[] equipmentPannelsSOCompanion;
-    public GameObject[] equipmentPannelsSOUpperArmor;
-    public GameObject[] equipmentPannelsSOLowerArmor;
+    public GameObject[] equipmentPannelsSOArmor;
+    public GameObject[] equipmentPannelsSOTBD;
     public Button[] equipmentButtonsWeapons;
     public Button[] equipmentButtonsCompanion;
-    public Button[] equipmentButtonsUpperArmor;
-    public Button[] equipmentButtonsLowerArmor;
+    public Button[] equipmentButtonsArmor;
+    public Button[] equipmentButtonsTBD;
 
     [Header("Components")]
     Alexander alexander;
@@ -97,35 +97,35 @@ public class EquipmentMenu : MonoBehaviour
                     equipmentPannelsSOCompanion[i].SetActive(false);
                 }
             }
-            for (int i = 0; i < equipmentItemsSOUpperArmor.Length; i++)
+            for (int i = 0; i < equipmentItemsSOArmor.Length; i++)
             {
-                if (!playerEquipment.boughtUpperArmors.Contains(equipmentItemsSOUpperArmor[i]))
+                if (!playerEquipment.boughtArmors.Contains(equipmentItemsSOArmor[i]))
                 {
-                    equipmentPannelsSOUpperArmor[i].SetActive(true);
-                    equipmentPannelsUpperArmor[i].priceObj.SetActive(true);
+                    equipmentPannelsSOArmor[i].SetActive(true);
+                    equipmentPannelsArmor[i].priceObj.SetActive(true);
                 }
                 else
                 {
-                    equipmentPannelsSOUpperArmor[i].SetActive(false);
+                    equipmentPannelsSOArmor[i].SetActive(false);
                 }
             }
-            for (int i = 0; i < equipmentItemsSOLowerArmor.Length; i++)
+            for (int i = 0; i < equipmentItemsSOTBD.Length; i++)
             {
-                if (!playerEquipment.boughtLowerArmors.Contains(equipmentItemsSOLowerArmor[i]))
+                if (!playerEquipment.boughtTBDs.Contains(equipmentItemsSOTBD[i]))
                 {
-                    equipmentPannelsSOLowerArmor[i].SetActive(true);
-                    equipmentPannelsLowerArmor[i].priceObj.SetActive(true);
+                    equipmentPannelsSOTBD[i].SetActive(true);
+                    equipmentPannelsTBD[i].priceObj.SetActive(true);
                 }
                 else
                 {
-                    equipmentPannelsSOLowerArmor[i].SetActive(false);
+                    equipmentPannelsSOTBD[i].SetActive(false);
                 }
             }
 
             weaponContents.position = new Vector3(weaponContents.position.x, -10000f, 0);
             companionContents.position = new Vector3(companionContents.position.x, -10000f, 0f);
-            upperArmorContents.position = new Vector3(upperArmorContents.position.x, -10000f, 0f);
-            lowerArmorContents.position = new Vector3(lowerArmorContents.position.x, -10000f, 0f);
+            armorContents.position = new Vector3(armorContents.position.x, -10000f, 0f);
+            TBDContents.position = new Vector3(TBDContents.position.x, -10000f, 0f);
 
             CheckEquipmentPurchaseable();
 
@@ -148,6 +148,7 @@ public class EquipmentMenu : MonoBehaviour
             Time.timeScale = 0f;
             GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().startBool = false;
             playerStoped = true;
+            Cursor.visible = true;
         }
         else
         {
@@ -157,6 +158,7 @@ public class EquipmentMenu : MonoBehaviour
                 Time.timeScale = 1f;
                 GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().startBool = true;
                 playerStoped = false;
+                Cursor.visible = false;
             }
         }
 
@@ -184,19 +186,19 @@ public class EquipmentMenu : MonoBehaviour
             equipmentPannelsCompanion[i].priceText.text = "Price: " + equipmentItemsSOCompanion[i].price.ToString();
             equipmentPannelsCompanion[i].buttonText.text = "Purchase";
         }
-        for (int i = 0; i < equipmentItemsSOUpperArmor.Length; i++)
+        for (int i = 0; i < equipmentItemsSOArmor.Length; i++)
         {
-            equipmentPannelsUpperArmor[i].titleText.text = equipmentItemsSOUpperArmor[i].title;
-            equipmentPannelsUpperArmor[i].descriptionText.text = equipmentItemsSOUpperArmor[i].description;
-            equipmentPannelsUpperArmor[i].priceText.text = "Price: " + equipmentItemsSOUpperArmor[i].price.ToString();
-            equipmentPannelsUpperArmor[i].buttonText.text = "Purchase";
+            equipmentPannelsArmor[i].titleText.text = equipmentItemsSOArmor[i].title;
+            equipmentPannelsArmor[i].descriptionText.text = equipmentItemsSOArmor[i].description;
+            equipmentPannelsArmor[i].priceText.text = "Price: " + equipmentItemsSOArmor[i].price.ToString();
+            equipmentPannelsArmor[i].buttonText.text = "Purchase";
         }
-        for (int i = 0; i < equipmentItemsSOLowerArmor.Length; i++)
+        for (int i = 0; i < equipmentItemsSOTBD.Length; i++)
         {
-            equipmentPannelsLowerArmor[i].titleText.text = equipmentItemsSOLowerArmor[i].title;
-            equipmentPannelsLowerArmor[i].descriptionText.text = equipmentItemsSOLowerArmor[i].description;
-            equipmentPannelsLowerArmor[i].priceText.text = "Price: " + equipmentItemsSOLowerArmor[i].price.ToString();
-            equipmentPannelsLowerArmor[i].buttonText.text = "Purchase";
+            equipmentPannelsTBD[i].titleText.text = equipmentItemsSOTBD[i].title;
+            equipmentPannelsTBD[i].descriptionText.text = equipmentItemsSOTBD[i].description;
+            equipmentPannelsTBD[i].priceText.text = "Price: " + equipmentItemsSOTBD[i].price.ToString();
+            equipmentPannelsTBD[i].buttonText.text = "Purchase";
         }
 
         pannelsLoaded = true;
@@ -204,6 +206,8 @@ public class EquipmentMenu : MonoBehaviour
 
     void CheckEquipmentPurchaseable()
     {
+        soulsText.text = $"{souls}";
+        
         for (int i = 0; i < equipmentItemsSOWeapons.Length; i++)
         {
             equipmentButtonsWeapons[i].interactable = souls >= equipmentItemsSOWeapons[i].price;
@@ -212,13 +216,13 @@ public class EquipmentMenu : MonoBehaviour
         {
             equipmentButtonsCompanion[i].interactable = souls >= equipmentItemsSOCompanion[i].price;
         }
-        for (int i = 0; i < equipmentItemsSOUpperArmor.Length; i++)
+        for (int i = 0; i < equipmentItemsSOArmor.Length; i++)
         {
-            equipmentButtonsUpperArmor[i].interactable = souls >= equipmentItemsSOUpperArmor[i].price;
+            equipmentButtonsArmor[i].interactable = souls >= equipmentItemsSOArmor[i].price;
         }
-        for (int i = 0; i < equipmentItemsSOLowerArmor.Length; i++)
+        for (int i = 0; i < equipmentItemsSOTBD.Length; i++)
         {
-            equipmentButtonsLowerArmor[i].interactable = souls >= equipmentItemsSOLowerArmor[i].price;
+            equipmentButtonsTBD[i].interactable = souls >= equipmentItemsSOTBD[i].price;
         }
     }
 
@@ -252,33 +256,33 @@ public class EquipmentMenu : MonoBehaviour
         }
     }
 
-    public void PurchaseEquipmentUpperArmor(int btnNo)
+    public void PurchaseEquipmentArmor(int btnNo)
     {
-        if (souls >= equipmentItemsSOUpperArmor[btnNo].price)
+        if (souls >= equipmentItemsSOArmor[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOUpperArmor[btnNo].price;
+            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOArmor[btnNo].price;
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
 
             pannelsActivated = false;
             loadoutMenu.pannelsActivated = false;
 
             //Unlock purchased item.
-            playerEquipment.PurchaseUpperArmor(equipmentItemsSOUpperArmor[btnNo]);
+            playerEquipment.PurchaseArmor(equipmentItemsSOArmor[btnNo]);
         }
     }
 
-    public void PurchaseEquipmentLowerArmor(int btnNo)
+    public void PurchaseEquipmentTBD(int btnNo)
     {
-        if (souls >= equipmentItemsSOLowerArmor[btnNo].price)
+        if (souls >= equipmentItemsSOTBD[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOLowerArmor[btnNo].price;
+            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOTBD[btnNo].price;
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
 
             pannelsActivated = false;
             loadoutMenu.pannelsActivated = false;
 
             //Unlock purchased item.
-            playerEquipment.PurchaseLowerArmor(equipmentItemsSOLowerArmor[btnNo]);
+            playerEquipment.PurchaseTBD(equipmentItemsSOTBD[btnNo]);
         }
     }
     

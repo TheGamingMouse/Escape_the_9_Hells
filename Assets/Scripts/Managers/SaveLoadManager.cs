@@ -20,20 +20,26 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     [Header("Lists")]
     public List<LoadoutItemsSO> boughtWeapons = new();
     public List<LoadoutItemsSO> boughtCompanions = new();
-    public List<LoadoutItemsSO> boughtUpperArmors = new();
-    public List<LoadoutItemsSO> boughtLowerArmors = new();
+    public List<LoadoutItemsSO> boughtArmors = new();
+    public List<LoadoutItemsSO> boughtTBDs = new();
+
+    public List<SoulsItemsSO> attackSpeedSoulsBought = new();
+    public List<SoulsItemsSO> damageSoulsBought = new();
+    public List<SoulsItemsSO> defenceSoulsBought = new();
+    public List<SoulsItemsSO> movementSpeedSoulsBought = new();
 
     [Header("LoadoutItemsSOs")]
     public LoadoutItemsSO weapon;
     public LoadoutItemsSO companion;
-    public LoadoutItemsSO upperArmor;
-    public LoadoutItemsSO lowerArmor;
+    public LoadoutItemsSO armor;
+    public LoadoutItemsSO TBD;
 
     [Header("Components")]
     PlayerLevel playerLevel;
     ExpSoulsManager expSoulsManager;
     PlayerLoadout playerLoadout;
     PlayerEquipment playerEquipment;
+    PlayerSouls playerSouls;
     
     #endregion
 
@@ -44,6 +50,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
         playerLevel = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>();
         playerLoadout = GameObject.FindWithTag("Player").GetComponent<PlayerLoadout>();
         playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
+        playerSouls = GameObject.FindWithTag("Player").GetComponent<PlayerSouls>();
 
         if (CheckLayer() == -2 && SceneManager.GetActiveScene().buildIndex < 1)
         {
@@ -135,13 +142,18 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
             weapon = data.weapon;
             companion = data.companion;
-            upperArmor = data.upperArmor;
-            lowerArmor = data.lowerArmor;
+            armor = data.armor;
+            TBD = data.TBD;
 
             boughtWeapons = data.boughtWeapons;
             boughtCompanions = data.boughtCompanions;
-            boughtUpperArmors = data.boughtUpperArmors;
-            boughtLowerArmors = data.boughtLowerArmors;
+            boughtArmors = data.boughtArmors;
+            boughtTBDs = data.boughtTBDs;
+
+            attackSpeedSoulsBought = data.attackSpeedSoulsBought;
+            damageSoulsBought = data.damageSoulsBought;
+            defenceSoulsBought = data.defenceSoulsBought;
+            movementSpeedSoulsBought = data.movementSpeedSoulsBought;
         }
     }
 
@@ -171,13 +183,18 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
             data.weapon = playerLoadout.selectedWeapon;
             data.companion = playerLoadout.selectedCompanion;
-            data.upperArmor = playerLoadout.selectedUpperArmor;
-            data.lowerArmor = playerLoadout.selectedLowerArmor;
+            data.armor = playerLoadout.selectedArmor;
+            data.TBD = playerLoadout.selectedTBD;
 
             data.boughtWeapons = playerEquipment.boughtWeapons;
             data.boughtCompanions = playerEquipment.boughtCompanions;
-            data.boughtUpperArmors = playerEquipment.boughtUpperArmors;
-            data.boughtLowerArmors = playerEquipment.boughtLowerArmors;
+            data.boughtArmors = playerEquipment.boughtArmors;
+            data.boughtTBDs = playerEquipment.boughtTBDs;
+
+            data.attackSpeedSoulsBought = playerSouls.attackSpeedSouls;
+            data.damageSoulsBought = playerSouls.damageSouls;
+            data.defenceSoulsBought = playerSouls.defenceSouls;
+            data.movementSpeedSoulsBought = playerSouls.movementSpeedSouls;
         }
 
         // Settings to save

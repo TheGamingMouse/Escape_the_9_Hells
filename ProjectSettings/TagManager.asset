@@ -16,6 +16,8 @@ TagManager:
   - StartLevel
   - BossRoom
   - Wall
+  - PrefabStorage
+  - Companions
   layers:
   - Default
   - TransparentFX
@@ -26,7 +28,7 @@ TagManager:
   - Player
   - Obstruction
   - Interactable
-  - 
+  - Enemy
   - 
   - 
   - 

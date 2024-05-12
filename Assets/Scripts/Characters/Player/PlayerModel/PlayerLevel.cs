@@ -1,0 +1,181 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class PlayerLevel : MonoBehaviour
+{
+    #region Events
+
+    public static event Action OnLevelUp;
+
+    #endregion
+
+    #region Variables
+
+    [Header("Ints")]
+    public int level;
+    public int souls;
+    int previousSouls;
+    public int demonsKilled;
+    public int devilsKilled;
+    public int timesLeveledUp;
+
+    [Header("Floats")]
+    [Range(0f, 1.5f)]
+    public float exp;
+    public float expMultiplier;
+    [SerializeField] float preExpMultiplier;
+
+    [Header("Strings")]
+    public string layerReached;
+
+    [Header("GameObjects")]
+    public GameObject levelUpEffectObj;
+    public GameObject gainSoulsEffectObj;
+
+    [Header("Particle Systems")]
+    ParticleSystem levelUpEffect;
+    ParticleSystem gainSoulsEffect;
+
+    [Header("Components")]
+    PlayerHealth playerHealth;
+    UIManager uiManager;
+    ExpSoulsManager expSoulsManager;
+
+    #endregion
+
+    #region Subscription Methods
+
+    void OnEnable()
+    {
+        ExpSoulsManager.OnExpChange += HandleExpChange;
+        ExpSoulsManager.OnSoulsChange += HandleSoulsChange;
+    }
+
+    void OnDisable()
+    {
+        ExpSoulsManager.OnExpChange -= HandleExpChange;
+        ExpSoulsManager.OnSoulsChange -= HandleSoulsChange;
+    }
+
+    #endregion
+
+    #region StartUpdate Methods
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        playerHealth = GetComponent<PlayerHealth>();
+        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
+
+        if (level == 0)
+        {
+            level = 1;
+            expMultiplier = 100;
+            preExpMultiplier = expMultiplier;
+        }
+
+        levelUpEffect = levelUpEffectObj.GetComponent<ParticleSystem>();
+        gainSoulsEffect = gainSoulsEffectObj.GetComponent<ParticleSystem>();
+
+        levelUpEffect.Stop();
+        gainSoulsEffect.Stop();
+
+        levelUpEffectObj.SetActive(false);
+        gainSoulsEffectObj.SetActive(false);
+
+        previousSouls = souls;
+        layerReached = SceneManager.GetActiveScene().name.ToLower();
+
+        timesLeveledUp++;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (previousSouls != souls)
+        {
+            uiManager.SoulsCounterValue = souls;
+            previousSouls = souls;
+        }
+    }
+
+    #endregion
+
+    #region General Methods
+
+    public void LevelUp(bool expLoss)
+    {
+        timesLeveledUp++;
+
+        playerHealth.health = playerHealth.maxHealth;
+        level++;
+        if (expLoss)
+        {
+            exp -= 1f;
+        }
+        preExpMultiplier = expMultiplier;
+
+        expMultiplier = preExpMultiplier * 2;
+
+        levelUpEffectObj.SetActive(true);
+        levelUpEffect.Play();
+
+        expSoulsManager.AddSouls(2 * level, true);
+
+        OnLevelUp?.Invoke();
+    }
+
+    public void AddExperience(float expPercent)
+    {
+        if (expPercent > 0 && expPercent < 100)
+        {
+            exp += (float)expPercent / 100;
+            if (exp >= 1f)
+            {
+                LevelUp(true);
+            }
+        }
+    }
+
+    #endregion
+
+    #region SubscriptionHandler Methods
+
+    void HandleExpChange(int newExp, string enemyType)
+    {
+        exp += newExp / expMultiplier;
+        if (exp >= 1f)
+        {
+            while (exp >= 1f)
+            {
+                LevelUp(true);
+            }
+        }
+
+        if (enemyType.ToLower() == "demon")
+        {
+            demonsKilled++;
+        }
+        else if (enemyType.ToLower() == "devil")
+        {
+            devilsKilled++;
+        }
+    }
+
+    void HandleSoulsChange(int newSouls, bool fromLevel)
+    {
+        souls += newSouls;
+
+        if (!fromLevel)
+        {
+            gainSoulsEffectObj.SetActive(true);
+            gainSoulsEffect.Play();
+        }
+    }
+
+    #endregion
+}

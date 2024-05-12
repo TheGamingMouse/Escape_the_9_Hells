@@ -16,13 +16,18 @@ public class GameData
 
     public LoadoutItemsSO weapon;
     public LoadoutItemsSO companion;
-    public LoadoutItemsSO upperArmor;
-    public LoadoutItemsSO lowerArmor;
+    public LoadoutItemsSO armor;
+    public LoadoutItemsSO TBD;
 
     public List<LoadoutItemsSO> boughtWeapons;
     public List<LoadoutItemsSO> boughtCompanions;
-    public List<LoadoutItemsSO> boughtUpperArmors;
-    public List<LoadoutItemsSO> boughtLowerArmors;
+    public List<LoadoutItemsSO> boughtArmors;
+    public List<LoadoutItemsSO> boughtTBDs;
+
+    public List<SoulsItemsSO> attackSpeedSoulsBought;
+    public List<SoulsItemsSO> damageSoulsBought;
+    public List<SoulsItemsSO> defenceSoulsBought;
+    public List<SoulsItemsSO> movementSpeedSoulsBought;
     
     public GameData()
     {
@@ -37,12 +42,17 @@ public class GameData
 
         weapon = null;
         companion = null;
-        upperArmor = null;
-        lowerArmor = null;
+        armor = null;
+        TBD = null;
 
         boughtWeapons = new();
         boughtCompanions = new();
-        boughtLowerArmors = new();
-        boughtUpperArmors = new();
+        boughtTBDs = new();
+        boughtArmors = new();
+
+        attackSpeedSoulsBought = new();
+        damageSoulsBought = new();
+        defenceSoulsBought = new();
+        movementSpeedSoulsBought = new();
     }
 }
