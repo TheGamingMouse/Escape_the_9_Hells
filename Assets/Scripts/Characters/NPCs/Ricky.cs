@@ -368,7 +368,7 @@ public class Ricky : MonoBehaviour, IInteractable
 
     #region IInteractable
 
-    public string promt => "Press E to Shop" + "\n" + "Press Q to Talk";
+    public string promt => "Press E to Open Shop" + "\n" + "Press Q to Talk";
 
     public string npcName => "Ricky";
 

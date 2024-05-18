@@ -57,6 +57,7 @@ MonoBehaviour:
   rickyTalking: 0
   barbaraTalking: 0
   alexanderTalking: 0
+  jensTalking: 0
   dialogueBox: {fileID: 0}
   cursorObj: {fileID: 6733111507750563268, guid: 089336d8cc4c08248a2aec4c8803fbbd, type: 3}
   groundMask:
@@ -75,6 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a284bad8e43b8724496fd66435276cc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showroom: 0
   rooms: []
   bossRoom: {fileID: 0}
 --- !u!114 &7329601029268765206
@@ -120,7 +122,7 @@ MonoBehaviour:
   boughtWeapons: []
   boughtCompanions: []
   boughtArmors: []
-  boughtTBDs: []
+  boughtBacks: []
   attackSpeedSoulsBought: []
   damageSoulsBought: []
   defenceSoulsBought: []
@@ -128,7 +130,7 @@ MonoBehaviour:
   weapon: {fileID: 0}
   companion: {fileID: 0}
   armor: {fileID: 0}
-  TBD: {fileID: 0}
+  back: {fileID: 0}
 --- !u!1001 &3386537418556697263
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -137,6 +139,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7671186955645619629}
     m_Modifications:
+    - target: {fileID: 1336143449444844633, guid: d8bd481f1370d9a4db0d4a9f0d2866b1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 731.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336143449444844633, guid: d8bd481f1370d9a4db0d4a9f0d2866b1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -174.37
+      objectReference: {fileID: 0}
     - target: {fileID: 1505558530697294891, guid: d8bd481f1370d9a4db0d4a9f0d2866b1, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

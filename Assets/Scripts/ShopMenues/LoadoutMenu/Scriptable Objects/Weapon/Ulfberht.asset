@@ -17,3 +17,4 @@ MonoBehaviour:
     use it right. It can be a little slow to swing with, but can make decent work
     of a group of foes.
   price: 25
+  equipmentType: Weapon

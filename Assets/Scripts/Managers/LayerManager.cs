@@ -10,6 +10,7 @@ public class LayerManager : MonoBehaviour
     bool layerGenerated;
     bool roomsDeactivated;
     bool ready;
+    public bool showroom;
 
     [Header("Arrays")]
     public GameObject[] rooms;
@@ -26,13 +27,16 @@ public class LayerManager : MonoBehaviour
     void Start()
     {
         generator = GameObject.FindWithTag("Generator").GetComponent<LayerGenerator>();
-        bossRoom = GameObject.FindWithTag("BossRoom");
+        if (!showroom)
+        {
+            bossRoom = GameObject.FindWithTag("BossRoom");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (bossRoom.GetComponent<BossGenerator>().ready && !ready)
+        if (bossRoom && bossRoom.GetComponent<BossGenerator>().ready && !ready)
         {
             bossRoom.SetActive(false);
             
@@ -45,9 +49,12 @@ public class LayerManager : MonoBehaviour
         {
             rooms = GameObject.FindGameObjectsWithTag("LayerRoom");
 
-            foreach (GameObject r in rooms)
+            if (!showroom)
             {
-                r.SetActive(false);
+                foreach (GameObject r in rooms)
+                {
+                    r.SetActive(false);
+                }
             }
             roomsDeactivated = true;
         }

@@ -10,6 +10,10 @@ public class Companion : MonoBehaviour
     public CompanionType cType;
     public CompanionActive cActive;
 
+    [Header("Floats")]
+    public float abilityRateMultiplier = 1f;
+    public float abilityStrengthMultiplier = 1f;
+
     [Header("GameObjects")]
     GameObject loyalSphereObj;
     GameObject attackSquareObj;

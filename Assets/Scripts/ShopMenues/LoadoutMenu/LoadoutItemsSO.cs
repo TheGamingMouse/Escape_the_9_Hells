@@ -7,4 +7,5 @@ public class LoadoutItemsSO : ScriptableObject
     public string title;
     public string description;
     public int price;
+    public string equipmentType;
 }

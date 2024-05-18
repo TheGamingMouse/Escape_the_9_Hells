@@ -7,19 +7,26 @@ public class PlayerLoadout : MonoBehaviour
     #region Variables
 
     [Header("Bools")]
-    bool start;
+    public bool start;
 
     [Header("LoadoutItemsSO")]
     public LoadoutItemsSO selectedWeapon;
     public LoadoutItemsSO selectedCompanion;
     public LoadoutItemsSO selectedArmor;
-    public LoadoutItemsSO selectedTBD;
+    public LoadoutItemsSO selectedBack;
+
+    public LoadoutItemsSO defaultWeapon;
+    public LoadoutItemsSO defaultCompanion;
+    public LoadoutItemsSO defaultArmor;
+    public LoadoutItemsSO defaultBack;
 
     [Header("Components")]
     Weapon playerWeapon;
     SaveLoadManager slManager;
     Companion playerCompanion;
     Armor playerArmor;
+    Backs playerBack;
+    PlayerUpgrades playerUpgrades;
 
     #endregion
 
@@ -34,15 +41,22 @@ public class PlayerLoadout : MonoBehaviour
             slManager = GameObject.Find("Managers").GetComponent<SaveLoadManager>();
             playerCompanion = GameObject.FindWithTag("Companions").GetComponent<Companion>();
             playerArmor = GetComponentInChildren<Armor>();
+            playerBack = GetComponentInChildren<Backs>();
+            playerUpgrades = GetComponent<PlayerUpgrades>();
 
             selectedWeapon = slManager.weapon;
             selectedCompanion = slManager.companion;
             selectedArmor = slManager.armor;
-            selectedTBD = slManager.TBD;
+            selectedBack = slManager.back;
 
             // Weapon
             if (playerWeapon != null)
             {
+                UpdateWeapon();
+            }
+            if (!selectedWeapon)
+            {
+                selectedWeapon = defaultWeapon;
                 UpdateWeapon();
             }
 
@@ -51,15 +65,33 @@ public class PlayerLoadout : MonoBehaviour
             {
                 UpdateCompanion();
             }
+            if (!selectedCompanion)
+            {
+                selectedCompanion = defaultCompanion;
+                UpdateCompanion();
+            }
 
             // Armor
             if (playerArmor != null)
             {
                 UpdateArmor();
             }
+            if (!selectedArmor)
+            {
+                selectedArmor = defaultArmor;
+                UpdateArmor();
+            }
 
-            // TBD
-
+            // Back
+            if (playerBack != null)
+            {
+                UpdateBack();
+            }
+            if (!selectedBack)
+            {
+                selectedBack = defaultBack;
+                UpdateBack();
+            }
 
             start = true;
         }
@@ -69,17 +101,17 @@ public class PlayerLoadout : MonoBehaviour
 
     #region General Methods
 
-    public void SetLoadout(LoadoutItemsSO weapon, LoadoutItemsSO companion, LoadoutItemsSO armor, LoadoutItemsSO TBD)
+    public void SetLoadout(LoadoutItemsSO weapon, LoadoutItemsSO companion, LoadoutItemsSO armor, LoadoutItemsSO back)
     {
         selectedWeapon = weapon;
         selectedCompanion = companion;
         selectedArmor = armor;
-        selectedTBD = TBD;
+        selectedBack = back;
 
         UpdateWeapon();
         UpdateCompanion();
         UpdateArmor();
-        UpdateTBD();
+        UpdateBack();
     }
 
     void UpdateWeapon()
@@ -92,6 +124,7 @@ public class PlayerLoadout : MonoBehaviour
         {
             playerWeapon.SwitchToUlfberht();
         }
+        playerUpgrades.weaponUpdated = false;
     }
 
     void UpdateCompanion()
@@ -108,6 +141,7 @@ public class PlayerLoadout : MonoBehaviour
         {
             playerCompanion.SwitchToAttackSquare();
         }
+        playerUpgrades.companionUpdated = false;
     }
 
     void UpdateArmor()
@@ -134,9 +168,25 @@ public class PlayerLoadout : MonoBehaviour
         }
     }
 
-    void UpdateTBD()
+    void UpdateBack()
     {
-
+        if (selectedBack == null || selectedBack.title == "Unequiped")
+        {
+            playerBack.SwitchToNone();
+        }
+        else if (selectedBack.title == "Angel Wings")
+        {
+            playerBack.SwitchToAngelWings();
+        }
+        else if (selectedBack.title == "Steel Wings")
+        {
+            playerBack.SwitchToSteelWings();
+        }
+        else if (selectedBack.title == "Backpack")
+        {
+            playerBack.SwitchToBackPack();
+        }
+        playerUpgrades.backUpdated = false;
     }
 
     #endregion

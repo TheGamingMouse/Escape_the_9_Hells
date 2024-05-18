@@ -16,3 +16,4 @@ MonoBehaviour:
   description: The ring mail armor is for those who would want more protection than
     hide offers, and don't mind carrying a little extra.
   price: 55
+  equipmentType: Armor

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerEquipment : MonoBehaviour
@@ -13,13 +14,13 @@ public class PlayerEquipment : MonoBehaviour
     public List<LoadoutItemsSO> boughtWeapons = new();
     public List<LoadoutItemsSO> boughtCompanions = new();
     public List<LoadoutItemsSO> boughtArmors = new();
-    public List<LoadoutItemsSO> boughtTBDs = new();
+    public List<LoadoutItemsSO> boughtBacks = new();
 
     [Header("LoadoutItemsSOs")]
     public LoadoutItemsSO defaultWeapon;
     public LoadoutItemsSO defaultCompanion;
     public LoadoutItemsSO defaultArmor;
-    public LoadoutItemsSO defaultTBD;
+    public LoadoutItemsSO defaultBacks;
 
     [Header("Components")]
     SaveLoadManager saveLoadManager;
@@ -32,36 +33,120 @@ public class PlayerEquipment : MonoBehaviour
     void Start()
     {
         saveLoadManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
-
-        boughtWeapons = saveLoadManager.boughtWeapons;
-        boughtCompanions = saveLoadManager.boughtCompanions;
-        boughtArmors = saveLoadManager.boughtArmors;
-        boughtTBDs = saveLoadManager.boughtTBDs;
-
-        if (boughtWeapons.Count == 0 || boughtWeapons[0] == null)
-        {
-            boughtWeapons.Add(defaultWeapon);
-        }
-        if (boughtCompanions.Count == 0 || boughtCompanions[0] == null)
-        {
-            boughtCompanions.Add(defaultCompanion);
-        }
-        if (boughtArmors.Count == 0 || boughtArmors[0] == null)
-        {
-            boughtArmors.Add(defaultArmor);
-        }
-        if (boughtTBDs.Count == 0 || boughtTBDs[0] == null)
-        {
-            boughtTBDs.Add(defaultTBD);
-        }
-
-        equipmentLoaded = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (!equipmentLoaded)
+        {
+            boughtWeapons = saveLoadManager.boughtWeapons;
+            boughtCompanions = saveLoadManager.boughtCompanions;
+            boughtArmors = saveLoadManager.boughtArmors;
+            boughtBacks = saveLoadManager.boughtBacks;
+
+            // Weapons
+            int countWeapons = 0;
+            foreach (var weapon in boughtWeapons)
+            {
+                if (!weapon || weapon.equipmentType.ToLower() != "weapon")
+                {
+                    boughtWeapons.Remove(weapon);
+                    continue;
+                }
+                else if (weapon.title == defaultWeapon.title)
+                {
+                    countWeapons++;
+                    if (countWeapons > 1)
+                    {
+                        boughtWeapons.Remove(weapon);
+                        countWeapons--;
+                        continue;
+                    }
+                } 
+            }
+            if (countWeapons == 0)
+            {
+                boughtWeapons.Add(defaultWeapon);
+            }
+
+            // Companions
+            int countCompanions = 0;
+            foreach (var companion in boughtCompanions)
+            {
+                if (!companion || companion.equipmentType.ToLower() != "companion")
+                {
+                    boughtCompanions.Remove(companion);
+                    continue;
+                }
+                else if (companion.title == defaultCompanion.title)
+                {
+                    countCompanions++;
+                    if (countCompanions > 1)
+                    {
+                        boughtCompanions.Remove(companion);
+                        countCompanions--;
+                        continue;
+                    }
+                }
+            }
+            if (countCompanions == 0)
+            {
+                boughtCompanions.Add(defaultCompanion);
+            }
+
+            // Armors
+            int countArmors = 0;
+            foreach (var armor in boughtArmors)
+            {
+                if (!armor || armor.equipmentType.ToLower() != "armor")
+                {
+                    boughtArmors.Remove(armor);
+                    continue;
+                }
+                else if (armor.title == defaultArmor.title)
+                {
+                    countArmors++;
+                    if (countArmors > 1)
+                    {
+                        boughtArmors.Remove(armor);
+                        countArmors--;
+                        continue;
+                    }
+                }
+            }
+            if (countArmors == 0)
+            {
+                boughtArmors.Add(defaultArmor);
+            }
+
+            // Backs
+            int countBacks = 0;
+            foreach (var back in boughtBacks)
+            {
+                if (!back || back.equipmentType.ToLower() != "back")
+                {
+                    boughtBacks.Remove(back);
+                    continue;
+                }
+                else if (back.title == defaultBacks.title)
+                {
+                    countBacks++;
+                    if (countBacks > 1)
+                    {
+                        boughtBacks.Remove(back);
+                        countBacks--;
+                        continue;
+                    }
+                }
+            }
+            if (countBacks == 0)
+            {
+                boughtBacks.Add(defaultBacks);
+            }
+
+            equipmentLoaded = true;
+        }
     }
 
     #endregion
@@ -83,9 +168,9 @@ public class PlayerEquipment : MonoBehaviour
         boughtArmors.Add(armor);
     }
     
-    public void PurchaseTBD(LoadoutItemsSO TBD)
+    public void PurchaseBack(LoadoutItemsSO back)
     {
-        boughtTBDs.Add(TBD);
+        boughtBacks.Add(back);
     }
 
     #endregion

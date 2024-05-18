@@ -16,3 +16,4 @@ MonoBehaviour:
   description: While hide certainly offers more protection than leather, it is also
     a little heavier.
   price: 35
+  equipmentType: Armor

@@ -10,6 +10,11 @@ public class RoomBehavior : MonoBehaviour
     public int x;
     public int y;
 
+    [Header("Bools")]
+    public bool doInterior;
+    bool activating;
+    public bool completed;
+
     [Header("GameObjects")]
     public GameObject door;
     public GameObject secondDoor;
@@ -19,6 +24,19 @@ public class RoomBehavior : MonoBehaviour
     [Header("Arrays")]
     public GameObject[] walls;
     public GameObject[] doors;
+
+    #endregion
+
+    #region StartUpdate Methods
+
+    void Update()
+    {
+        if (!activating)
+        {
+            StartCoroutine(ActivatingRoutine());
+            activating = true;
+        }
+    }
 
     #endregion
 
@@ -37,17 +55,14 @@ public class RoomBehavior : MonoBehaviour
     {
         for (int i = 0; i < activeDoors.Length; i++)
         {
-            if (activeDoors[i] == doors[i])
+            if (door == null && activeDoors[i] == doors[i])
             {
                 door = doors[i];
             }
-        }
-
-        for (int i = 0; i < activeDoors.Length; i++)
-        {
-            if (activeDoors[i] == doors[i] && doors[i] != door)
+            else if (activeDoors[i] == doors[i])
             {
                 secondDoor = doors[i];
+                return;
             }
         }
     }
@@ -59,6 +74,43 @@ public class RoomBehavior : MonoBehaviour
             if (activeDoors[i] == doors[i])
             {
                 backDoor = doors[i];
+                return;
+            }
+        }
+    }
+
+    IEnumerator ActivatingRoutine()
+    {
+        yield return new WaitForSeconds(3f);
+
+        string errorMsg = "Not all rooms were complete at: " + x + "-" + y;
+
+        if (door)
+        {
+            if (!door.GetComponentInChildren<FrontEntranceChecker>().active || 
+            !door.GetComponentInChildren<BackEntranceChecker>().active)
+            {
+                if (secondDoor)
+                {
+                    if (!secondDoor.GetComponentInChildren<FrontEntranceChecker>().active || !secondDoor.GetComponentInChildren<BackEntranceChecker>().active)
+                    {
+                        Debug.LogError(errorMsg + " Second Door");
+                        Application.Quit();
+                    }
+                    else
+                    {
+                        completed = true;
+                    }
+                }
+                else
+                {
+                    Debug.LogError(errorMsg);
+                    Application.Quit();
+                }
+            }
+            else if (!secondDoor)
+            {
+                completed = true;
             }
         }
     }

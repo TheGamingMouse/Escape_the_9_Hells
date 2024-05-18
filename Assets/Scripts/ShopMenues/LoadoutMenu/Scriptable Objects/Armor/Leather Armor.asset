@@ -16,3 +16,4 @@ MonoBehaviour:
   description: The leather armor is a light piece of armor. It won't slow you down
     too much, though it doesn't offer that much protection either.
   price: 20
+  equipmentType: Armor

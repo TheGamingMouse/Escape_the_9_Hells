@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Unequiped
   description: Unequip Companion.
+  price: 0
+  equipmentType: Companion

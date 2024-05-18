@@ -14,9 +14,11 @@ public class Weapon : MonoBehaviour
     [Header("Floats")]
     public float attackSpeedMultiplier = 1;
     public float damageMultiplier = 1;
+    public float specialCooldownMultiplier = 1;
 
     [Header("Bools")]
     public bool canAttack;
+    public bool specialAttack;
 
     [Header("GameObjects")]
     GameObject ulfberhtObj;

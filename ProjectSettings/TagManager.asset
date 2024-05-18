@@ -18,6 +18,9 @@ TagManager:
   - Wall
   - PrefabStorage
   - Companions
+  - WallChecks
+  - FloorChecks
+  - FloorTile
   layers:
   - Default
   - TransparentFX

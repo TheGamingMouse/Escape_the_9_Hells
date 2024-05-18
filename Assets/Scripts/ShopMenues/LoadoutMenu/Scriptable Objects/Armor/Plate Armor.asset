@@ -16,3 +16,4 @@ MonoBehaviour:
   description: Plate is the heaviest of the bunch, but it also offers significantly
     more defence than any other piece of armor.
   price: 120
+  equipmentType: Armor

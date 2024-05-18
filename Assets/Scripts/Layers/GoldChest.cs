@@ -21,6 +21,7 @@ public class GoldChest : MonoBehaviour
     [Header("Components")]
     Animator animator;
     PlayerLevel playerLevel;
+    LayerManager layerManager;
 
     #endregion
 
@@ -29,15 +30,20 @@ public class GoldChest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponentInChildren<Animator>();
-        player = GameObject.FindWithTag("Player").transform;
-        playerLevel = player.GetComponent<PlayerLevel>();
+        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+
+        if (!layerManager.showroom)
+        {
+            animator = GetComponentInChildren<Animator>();
+            player = GameObject.FindWithTag("Player").transform;
+            playerLevel = player.GetComponent<PlayerLevel>();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Vector3.Distance(player.position, transform.position) < 2 && !chestOpened)
+        if (!layerManager.showroom && Vector3.Distance(player.position, transform.position) < 2 && !chestOpened)
         {
             animator.SetTrigger("OpenChest");
 

@@ -54,20 +54,14 @@ public class PlayerSouls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (ricky != null && ricky.daggerGiven && !soulsUpdated)
+        if (ricky != null && ricky.daggerGiven)
         {
             health = GameObject.FindWithTag("Player").GetComponent<PlayerHealth>();
             weapon = GameObject.FindWithTag("Player").GetComponentInChildren<Weapon>();
             movement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
-            
-            weapon.attackSpeedMultiplier += attackSpeedSouls.Count * attackSpeedMod;
-            weapon.damageMultiplier += damageSouls.Count * damageMod;
-            health.resistanceMultiplier += defenceSouls.Count * defenceMod;
-            movement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
-
-            soulsUpdated = true;
         }
-        else if (ricky == null && !soulsUpdated)
+
+        if (!soulsUpdated)
         {
             weapon.attackSpeedMultiplier += attackSpeedSouls.Count * attackSpeedMod;
             weapon.damageMultiplier += damageSouls.Count * damageMod;
@@ -91,21 +85,29 @@ public class PlayerSouls : MonoBehaviour
         }
         else if (soul.title == "Attack Speed Soul")
         {
+            weapon.attackSpeedMultiplier -= attackSpeedSouls.Count * attackSpeedMod;
+
             attackSpeedSouls.Add(soul);
             weapon.attackSpeedMultiplier += attackSpeedSouls.Count * attackSpeedMod;
         }
         else if (soul.title == "Damage Soul")
         {
+            weapon.damageMultiplier -= damageSouls.Count * damageMod;
+
             damageSouls.Add(soul);
             weapon.damageMultiplier += damageSouls.Count * damageMod;
         }
         else if (soul.title == "Defence Soul")
         {
+            health.resistanceMultiplier -= defenceSouls.Count * defenceMod;
+
             defenceSouls.Add(soul);
             health.resistanceMultiplier += defenceSouls.Count * defenceMod;
         }
         else if (soul.title == "Movement Speed Soul")
         {
+            movement.speedMultiplier -= movementSpeedSouls.Count * moveSpeedMod;
+
             movementSpeedSouls.Add(soul);
             movement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
         }

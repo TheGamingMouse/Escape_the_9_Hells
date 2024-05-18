@@ -35,6 +35,7 @@ public class BossGenerator : MonoBehaviour
     RoomBehavior room;
     TreasureRoom treasure;
     UIManager uiManager;
+    LayerManager layerManager;
     
     #endregion
 
@@ -42,6 +43,8 @@ public class BossGenerator : MonoBehaviour
     void Start()
     {
         room = GetComponent<RoomBehavior>();
+        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
         
         GenerateExit();
 
@@ -58,7 +61,11 @@ public class BossGenerator : MonoBehaviour
             treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Exp").GetComponent<TreasureRoom>();
         }
 
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        if (layerManager.showroom)
+        {
+            bossSpawned = true;
+            isBossDead = true;
+        }
     }
 
     // Update is called once per frame

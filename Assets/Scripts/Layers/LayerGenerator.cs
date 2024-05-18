@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LayerGenerator : MonoBehaviour
@@ -27,10 +28,17 @@ public class LayerGenerator : MonoBehaviour
 
     [Header("Ints")]
     public int startPos = 0;
+    [Range(0, 20)]
+    public int internalMaxHoles = 7;
 
     [Header("Bools")]
     public bool layerGenerated;
     public bool printPops;
+    public bool doInterior;
+
+    [Header("GameObjects")]
+    public GameObject internalCell;
+    public GameObject internalFloorRemover;
 
     [Header("Array")]
     public GameObject[] rooms;
@@ -42,6 +50,9 @@ public class LayerGenerator : MonoBehaviour
     [Header("Lists")]
     List<Cell> board;
 
+    [Header("Components")]
+    LayerManager layerManager;
+
     #endregion
 
     #region StartUpdate Methods
@@ -49,6 +60,8 @@ public class LayerGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+
         Generator();
     }
 
@@ -72,6 +85,10 @@ public class LayerGenerator : MonoBehaviour
                 if (currentCell.visited)
                 {
                     int randomRoom = Random.Range(0, rooms.Length);
+                    if (doInterior)
+                    {
+                        randomRoom = 0;
+                    }
 
                     var newRoom = Instantiate(rooms[randomRoom], new Vector3(i * offset.x, 0, -j * offset.y), 
                         Quaternion.identity, transform).GetComponent<RoomBehavior>();
@@ -82,10 +99,26 @@ public class LayerGenerator : MonoBehaviour
                     newRoom.name += " " + i + " - " + j;
                     newRoom.x = i;
                     newRoom.y = j;
-                    if (newRoom.interior != null)
+                    newRoom.doInterior = doInterior;
+                    if (!doInterior && newRoom.interior != null)
                     {
                         int randRot = Random.Range(0, 2);
                         newRoom.interior.transform.rotation = Quaternion.Euler(0f, randRot * 90f, 0f);
+                    }
+
+                    if (doInterior)
+                    {
+                        var maze = newRoom.gameObject.AddComponent<InternalMaze>();
+
+                        maze.internalCell = internalCell;
+                        maze.floorRemover = internalFloorRemover;
+                        maze.roomBehavior = newRoom;
+                        maze.size = new Vector2(7f, 7f);
+                        maze.offset = new Vector2(2f, 2f);
+                        maze.roomOffset = offset;
+                        maze.maxHoles = internalMaxHoles;
+
+                        maze.MazeGenerator();
                     }
                 }
             }
@@ -118,8 +151,11 @@ public class LayerGenerator : MonoBehaviour
 
             if (currentCell == board.Count - 1)
             {
-                board[currentCell].status[1] = true;
-                board[currentCell].doors[1] = true;
+                if (!layerManager.showroom)
+                {
+                    board[currentCell].status[1] = true;
+                    board[currentCell].doors[1] = true;
+                }
                 layerGenerated = true;
                 break;
             }

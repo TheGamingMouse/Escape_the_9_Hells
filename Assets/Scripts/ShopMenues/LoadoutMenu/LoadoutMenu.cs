@@ -22,31 +22,31 @@ public class LoadoutMenu : MonoBehaviour
     public Transform weaponContents;
     public Transform companionContents;
     public Transform armorContents;
-    public Transform TBDContents;
+    public Transform backContents;
 
     [Header("Arrays")]
     public LoadoutItemsSO[] loadoutItemsSOWeapons;
     public LoadoutItemsSO[] loadoutItemsSOCompanion;
     public LoadoutItemsSO[] loadoutItemsSOArmor;
-    public LoadoutItemsSO[] loadoutItemsSOTBD;
+    public LoadoutItemsSO[] loadoutItemsSOBack;
     public LoadoutTemplate[] loadoutPannelsWeapons;
     public LoadoutTemplate[] loadoutPannelsCompanion;
     public LoadoutTemplate[] loadoutPannelsArmor;
-    public LoadoutTemplate[] loadoutPannelsTBD;
+    public LoadoutTemplate[] loadoutPannelsBack;
     public GameObject[] loadoutPannelsSOWeapons;
     public GameObject[] loadoutPannelsSOCompanion;
     public GameObject[] loadoutPannelsSOArmor;
-    public GameObject[] loadoutPannelsSOTBD;
+    public GameObject[] loadoutPannelsSOBack;
     public Button[] selectLoadoutButtonsWeapons;
     public Button[] selectLoadoutButtonsCompanion;
     public Button[] selectLoadoutButtonsArmor;
-    public Button[] selectLoadoutButtonsTBD;
+    public Button[] selectLoadoutButtonsBack;
 
     [Header("LoadoutItemsSO")]
     LoadoutItemsSO selectedWeapon;
     LoadoutItemsSO selectedCompanion;
     LoadoutItemsSO selectedArmor;
-    LoadoutItemsSO selectedTBD;
+    LoadoutItemsSO selectedBack;
 
     [Header("Components")]
     Barbara barbara;
@@ -94,18 +94,18 @@ public class LoadoutMenu : MonoBehaviour
                     loadoutPannelsSOArmor[i].SetActive(true);
                 }
             }
-            for (int i = 0; i < loadoutItemsSOTBD.Length; i++)
+            for (int i = 0; i < loadoutItemsSOBack.Length; i++)
             {
-                if (playerEquipment.boughtTBDs.Contains(loadoutItemsSOTBD[i]))
+                if (playerEquipment.boughtBacks.Contains(loadoutItemsSOBack[i]))
                 {
-                    loadoutPannelsSOTBD[i].SetActive(true);
+                    loadoutPannelsSOBack[i].SetActive(true);
                 }
             }
 
             weaponContents.position = new Vector3(weaponContents.position.x, -10000f);
             companionContents.position = new Vector3(companionContents.position.x, -10000f);
             armorContents.position = new Vector3(armorContents.position.x, -10000f);
-            TBDContents.position = new Vector3(TBDContents.position.x, -10000f);
+            backContents.position = new Vector3(backContents.position.x, -10000f);
 
             pannelsActivated = true;
         }
@@ -192,19 +192,19 @@ public class LoadoutMenu : MonoBehaviour
                 selectLoadoutButtonsArmor[i].interactable = true;
             }
         }
-        for (int i = 0; i < loadoutItemsSOTBD.Length; i++)
+        for (int i = 0; i < loadoutItemsSOBack.Length; i++)
         {
-            loadoutPannelsTBD[i].titleText.text = loadoutItemsSOTBD[i].title;
-            loadoutPannelsTBD[i].descriptionText.text = loadoutItemsSOTBD[i].description;
+            loadoutPannelsBack[i].titleText.text = loadoutItemsSOBack[i].title;
+            loadoutPannelsBack[i].descriptionText.text = loadoutItemsSOBack[i].description;
 
-            if (playerLoadout.selectedTBD && loadoutItemsSOTBD[i].title == playerLoadout.selectedTBD.title)
+            if (playerLoadout.selectedBack && loadoutItemsSOBack[i].title == playerLoadout.selectedBack.title)
             {
-                selectedTBD = loadoutItemsSOTBD[i];
-                selectLoadoutButtonsTBD[i].interactable = false;
+                selectedBack = loadoutItemsSOBack[i];
+                selectLoadoutButtonsBack[i].interactable = false;
             }
             else
             {
-                selectLoadoutButtonsTBD[i].interactable = true;
+                selectLoadoutButtonsBack[i].interactable = true;
             }
         }
 
@@ -223,10 +223,10 @@ public class LoadoutMenu : MonoBehaviour
             selectedArmor = loadoutItemsSOArmor[0];
             selectLoadoutButtonsArmor[0].interactable = false;
         }
-        if (!selectedTBD)
+        if (!selectedBack)
         {
-            selectedTBD = loadoutItemsSOTBD[0];
-            selectLoadoutButtonsTBD[0].interactable = false;
+            selectedBack = loadoutItemsSOBack[0];
+            selectLoadoutButtonsBack[0].interactable = false;
         }
 
         pannelsLoaded = true;
@@ -277,32 +277,27 @@ public class LoadoutMenu : MonoBehaviour
             }
         }
     }
-    public void SelectedLoadoutTBD(int btnNo)
+    public void SelectedLoadoutBack(int btnNo)
     {
-        selectedTBD = loadoutItemsSOTBD[btnNo];
-        for (int i = 0; i < selectLoadoutButtonsTBD.Length; i++)
+        selectedBack = loadoutItemsSOBack[btnNo];
+        for (int i = 0; i < selectLoadoutButtonsBack.Length; i++)
         {
-            if (selectLoadoutButtonsTBD[i] == selectLoadoutButtonsTBD[btnNo])
+            if (selectLoadoutButtonsBack[i] == selectLoadoutButtonsBack[btnNo])
             {
-                selectLoadoutButtonsTBD[i].interactable = false;
+                selectLoadoutButtonsBack[i].interactable = false;
             }
             else
             {
-                selectLoadoutButtonsTBD[i].interactable = true;
+                selectLoadoutButtonsBack[i].interactable = true;
             }
         }
     }
 
     public void ConfirmSelected()
     {
-        playerLoadout.SetLoadout(selectedWeapon, selectedCompanion, selectedArmor, selectedTBD);
+        playerLoadout.SetLoadout(selectedWeapon, selectedCompanion, selectedArmor, selectedBack);
 
-        selectedWeapon = null;
-        selectedCompanion = null;
-        selectedArmor = null;
-        selectedTBD = null;
-        LoadLoadoutPannels();
-        CloseStore();
+        ExitStore();
     }
 
     public void ExitStore()
@@ -310,7 +305,7 @@ public class LoadoutMenu : MonoBehaviour
         selectedWeapon = null;
         selectedCompanion = null;
         selectedArmor = null;
-        selectedTBD = null;
+        selectedBack = null;
         LoadLoadoutPannels();
         CloseStore();
     }

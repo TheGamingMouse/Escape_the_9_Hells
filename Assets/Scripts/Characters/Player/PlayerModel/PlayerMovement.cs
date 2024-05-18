@@ -35,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
     public BossGenerator bossGenerator;
     public RoomSpawner roomSpawner;
     UIManager uiManager;
+    Backs backs;
 
     #endregion
 
@@ -46,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         mainCam = Camera.main;
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        backs = GetComponentInChildren<Backs>();
 
         dashSpeed = baseSpeed * 1.5f;
         currentSpeed = baseSpeed;
@@ -121,12 +123,34 @@ public class PlayerMovement : MonoBehaviour
 
         GetComponent<MeshRenderer>().material.SetColor("_Color", dashColor);
 
+        if (backs.angelWings.active && backs.bActive == Backs.BackActive.AngelWings)
+        {
+            backs.angelWings.SwitchAnimation(2, dashDuration);
+        }
+        else if (backs.steelWings.active && backs.bActive == Backs.BackActive.SteelWings)
+        {
+            backs.steelWings.SwitchAnimation(2, dashDuration);
+        }
+
         yield return new WaitForSeconds(dashDuration);
 
         currentSpeed = baseSpeed;
         isDashing = false;
 
-        StartCoroutine(DashCooldown());
+        if (backs.angelWings.active && backs.angelWings.bonusDash)
+        {
+            StartCoroutine(backs.angelWings.BonusDash(dashCooldownTime));
+            GetComponent<MeshRenderer>().material.SetColor("_Color", normalColor);
+        }
+        else if (backs.steelWings.active)
+        {
+            StartCoroutine(backs.steelWings.SteelDash(dashCooldownTime));
+            StartCoroutine(DashCooldown());
+        }
+        else
+        {
+            StartCoroutine(DashCooldown());
+        }
     }
 
     IEnumerator DashCooldown()

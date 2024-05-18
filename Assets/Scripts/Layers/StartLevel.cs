@@ -37,7 +37,7 @@ public class StartLevel : MonoBehaviour
 
     void Update()
     {
-        if (doorOpening)
+        if (doorOpening || layerManager.showroom)
         {
             OpenDoor();
             if (!firstRoomLoaded)

@@ -16,3 +16,4 @@ MonoBehaviour:
   description: The Loyal Sphere follows you around loyally, while raining hell onto
     your enemies. Pun intended.
   price: 35
+  equipmentType: Companion

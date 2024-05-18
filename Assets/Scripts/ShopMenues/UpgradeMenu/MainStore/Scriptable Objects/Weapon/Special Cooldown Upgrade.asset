@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42f5109e4b32ea642a99f2736566b991, type: 3}
-  m_Name: Template LowerArmor
+  m_Script: {fileID: 11500000, guid: 2ef4198e6f40b954f8ab1d9a09572b42, type: 3}
+  m_Name: Special Cooldown Upgrade
   m_EditorClassIdentifier: 
-  title: Template TBD
-  description: This is a template, it doesn not have any features.
+  title: Special Cooldown
+  description: This will reduce the cooldown for your special attack, for the given
+    weapon.
   price: 0

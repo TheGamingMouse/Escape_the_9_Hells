@@ -25,7 +25,7 @@ public class EquipmentMenu : MonoBehaviour
     public Transform weaponContents;
     public Transform companionContents;
     public Transform armorContents;
-    public Transform TBDContents;
+    public Transform backContents;
 
     [Header("TMP_Pros")]
     public TMP_Text soulsText;
@@ -34,19 +34,19 @@ public class EquipmentMenu : MonoBehaviour
     public LoadoutItemsSO[] equipmentItemsSOWeapons;
     public LoadoutItemsSO[] equipmentItemsSOCompanion;
     public LoadoutItemsSO[] equipmentItemsSOArmor;
-    public LoadoutItemsSO[] equipmentItemsSOTBD;
+    public LoadoutItemsSO[] equipmentItemsSOBack;
     public LoadoutTemplate[] equipmentPannelsWeapons;
     public LoadoutTemplate[] equipmentPannelsCompanion;
     public LoadoutTemplate[] equipmentPannelsArmor;
-    public LoadoutTemplate[] equipmentPannelsTBD;
+    public LoadoutTemplate[] equipmentPannelsBack;
     public GameObject[] equipmentPannelsSOWeapons;
     public GameObject[] equipmentPannelsSOCompanion;
     public GameObject[] equipmentPannelsSOArmor;
-    public GameObject[] equipmentPannelsSOTBD;
+    public GameObject[] equipmentPannelsSOBack;
     public Button[] equipmentButtonsWeapons;
     public Button[] equipmentButtonsCompanion;
     public Button[] equipmentButtonsArmor;
-    public Button[] equipmentButtonsTBD;
+    public Button[] equipmentButtonsBack;
 
     [Header("Components")]
     Alexander alexander;
@@ -54,6 +54,7 @@ public class EquipmentMenu : MonoBehaviour
     NPCSpawner npcSpawner;
     PlayerEquipment playerEquipment;
     LoadoutMenu loadoutMenu;
+    UpgradeMenu upgradeMenu;
 
     #endregion
 
@@ -65,6 +66,7 @@ public class EquipmentMenu : MonoBehaviour
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
         playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
         loadoutMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Barbara").GetComponent<LoadoutMenu>();
+        upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
 
         if (uiManager.npcsActive)
         {
@@ -109,23 +111,23 @@ public class EquipmentMenu : MonoBehaviour
                     equipmentPannelsSOArmor[i].SetActive(false);
                 }
             }
-            for (int i = 0; i < equipmentItemsSOTBD.Length; i++)
+            for (int i = 0; i < equipmentItemsSOBack.Length; i++)
             {
-                if (!playerEquipment.boughtTBDs.Contains(equipmentItemsSOTBD[i]))
+                if (!playerEquipment.boughtBacks.Contains(equipmentItemsSOBack[i]))
                 {
-                    equipmentPannelsSOTBD[i].SetActive(true);
-                    equipmentPannelsTBD[i].priceObj.SetActive(true);
+                    equipmentPannelsSOBack[i].SetActive(true);
+                    equipmentPannelsBack[i].priceObj.SetActive(true);
                 }
                 else
                 {
-                    equipmentPannelsSOTBD[i].SetActive(false);
+                    equipmentPannelsSOBack[i].SetActive(false);
                 }
             }
 
             weaponContents.position = new Vector3(weaponContents.position.x, -10000f, 0);
             companionContents.position = new Vector3(companionContents.position.x, -10000f, 0f);
             armorContents.position = new Vector3(armorContents.position.x, -10000f, 0f);
-            TBDContents.position = new Vector3(TBDContents.position.x, -10000f, 0f);
+            backContents.position = new Vector3(backContents.position.x, -10000f, 0f);
 
             CheckEquipmentPurchaseable();
 
@@ -193,12 +195,12 @@ public class EquipmentMenu : MonoBehaviour
             equipmentPannelsArmor[i].priceText.text = "Price: " + equipmentItemsSOArmor[i].price.ToString();
             equipmentPannelsArmor[i].buttonText.text = "Purchase";
         }
-        for (int i = 0; i < equipmentItemsSOTBD.Length; i++)
+        for (int i = 0; i < equipmentItemsSOBack.Length; i++)
         {
-            equipmentPannelsTBD[i].titleText.text = equipmentItemsSOTBD[i].title;
-            equipmentPannelsTBD[i].descriptionText.text = equipmentItemsSOTBD[i].description;
-            equipmentPannelsTBD[i].priceText.text = "Price: " + equipmentItemsSOTBD[i].price.ToString();
-            equipmentPannelsTBD[i].buttonText.text = "Purchase";
+            equipmentPannelsBack[i].titleText.text = equipmentItemsSOBack[i].title;
+            equipmentPannelsBack[i].descriptionText.text = equipmentItemsSOBack[i].description;
+            equipmentPannelsBack[i].priceText.text = "Price: " + equipmentItemsSOBack[i].price.ToString();
+            equipmentPannelsBack[i].buttonText.text = "Purchase";
         }
 
         pannelsLoaded = true;
@@ -220,9 +222,9 @@ public class EquipmentMenu : MonoBehaviour
         {
             equipmentButtonsArmor[i].interactable = souls >= equipmentItemsSOArmor[i].price;
         }
-        for (int i = 0; i < equipmentItemsSOTBD.Length; i++)
+        for (int i = 0; i < equipmentItemsSOBack.Length; i++)
         {
-            equipmentButtonsTBD[i].interactable = souls >= equipmentItemsSOTBD[i].price;
+            equipmentButtonsBack[i].interactable = souls >= equipmentItemsSOBack[i].price;
         }
     }
 
@@ -235,6 +237,7 @@ public class EquipmentMenu : MonoBehaviour
 
             pannelsActivated = false;
             loadoutMenu.pannelsActivated = false;
+            upgradeMenu.ReloadPannels();
 
             //Unlock purchased item.
             playerEquipment.PurchaseWeapon(equipmentItemsSOWeapons[btnNo]);
@@ -250,6 +253,7 @@ public class EquipmentMenu : MonoBehaviour
 
             pannelsActivated = false;
             loadoutMenu.pannelsActivated = false;
+            upgradeMenu.ReloadPannels();
 
             //Unlock purchased item.
             playerEquipment.PurchaseCompanion(equipmentItemsSOCompanion[btnNo]);
@@ -265,24 +269,26 @@ public class EquipmentMenu : MonoBehaviour
 
             pannelsActivated = false;
             loadoutMenu.pannelsActivated = false;
+            upgradeMenu.ReloadPannels();
 
             //Unlock purchased item.
             playerEquipment.PurchaseArmor(equipmentItemsSOArmor[btnNo]);
         }
     }
 
-    public void PurchaseEquipmentTBD(int btnNo)
+    public void PurchaseEquipmentBack(int btnNo)
     {
-        if (souls >= equipmentItemsSOTBD[btnNo].price)
+        if (souls >= equipmentItemsSOBack[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOTBD[btnNo].price;
+            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOBack[btnNo].price;
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
 
             pannelsActivated = false;
             loadoutMenu.pannelsActivated = false;
+            upgradeMenu.ReloadPannels();
 
             //Unlock purchased item.
-            playerEquipment.PurchaseTBD(equipmentItemsSOTBD[btnNo]);
+            playerEquipment.PurchaseBack(equipmentItemsSOBack[btnNo]);
         }
     }
     

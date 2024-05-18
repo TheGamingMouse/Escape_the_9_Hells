@@ -21,7 +21,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     public List<LoadoutItemsSO> boughtWeapons = new();
     public List<LoadoutItemsSO> boughtCompanions = new();
     public List<LoadoutItemsSO> boughtArmors = new();
-    public List<LoadoutItemsSO> boughtTBDs = new();
+    public List<LoadoutItemsSO> boughtBacks = new();
 
     public List<SoulsItemsSO> attackSpeedSoulsBought = new();
     public List<SoulsItemsSO> damageSoulsBought = new();
@@ -32,7 +32,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     public LoadoutItemsSO weapon;
     public LoadoutItemsSO companion;
     public LoadoutItemsSO armor;
-    public LoadoutItemsSO TBD;
+    public LoadoutItemsSO back;
 
     [Header("Components")]
     PlayerLevel playerLevel;
@@ -143,12 +143,12 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             weapon = data.weapon;
             companion = data.companion;
             armor = data.armor;
-            TBD = data.TBD;
+            back = data.back;
 
             boughtWeapons = data.boughtWeapons;
             boughtCompanions = data.boughtCompanions;
             boughtArmors = data.boughtArmors;
-            boughtTBDs = data.boughtTBDs;
+            boughtBacks = data.boughtBacks;
 
             attackSpeedSoulsBought = data.attackSpeedSoulsBought;
             damageSoulsBought = data.damageSoulsBought;
@@ -184,12 +184,12 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             data.weapon = playerLoadout.selectedWeapon;
             data.companion = playerLoadout.selectedCompanion;
             data.armor = playerLoadout.selectedArmor;
-            data.TBD = playerLoadout.selectedTBD;
+            data.back = playerLoadout.selectedBack;
 
             data.boughtWeapons = playerEquipment.boughtWeapons;
             data.boughtCompanions = playerEquipment.boughtCompanions;
             data.boughtArmors = playerEquipment.boughtArmors;
-            data.boughtTBDs = playerEquipment.boughtTBDs;
+            data.boughtBacks = playerEquipment.boughtBacks;
 
             data.attackSpeedSoulsBought = playerSouls.attackSpeedSouls;
             data.damageSoulsBought = playerSouls.damageSouls;

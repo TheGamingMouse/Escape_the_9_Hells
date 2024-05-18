@@ -19,6 +19,8 @@ public class IronChest : MonoBehaviour
     [Header("Components")]
     ExpSoulsManager expSoulsManager;
     Animator animator;
+    LayerManager layerManager;
+    
 
     #endregion
 
@@ -27,9 +29,14 @@ public class IronChest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
-        animator = GetComponentInChildren<Animator>();
-        player = GameObject.FindWithTag("Player").transform;
+        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+
+        if (!layerManager.showroom)
+        {
+            expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
+            animator = GetComponentInChildren<Animator>();
+            player = GameObject.FindWithTag("Player").transform;
+        }
 
         souls = Random.Range(10, 26);
     }
@@ -37,7 +44,7 @@ public class IronChest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Vector3.Distance(player.position, transform.position) < 2 && !chestOpened)
+        if (!layerManager.showroom && Vector3.Distance(player.position, transform.position) < 2 && !chestOpened)
         {
             animator.SetTrigger("OpenChest");
             expSoulsManager.AddSouls(souls, false);

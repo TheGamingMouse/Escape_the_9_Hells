@@ -51,6 +51,7 @@ public class UIManager : MonoBehaviour
     public bool barbaraTalking;
     public bool alexanderTalking;
     bool cursorObjSpawned;
+    public bool jensTalking;
 
     [Header("GameObjects")]
     public GameObject dialogueBox;
@@ -106,6 +107,8 @@ public class UIManager : MonoBehaviour
     EquipmentMenu alexanderConvo;
     public BossGenerator bossGenerator;
     SaveLoadManager saveLoadManager;
+    UpgradeMenu jensConvo;
+    Jens jens;
 
     #endregion
 
@@ -175,6 +178,10 @@ public class UIManager : MonoBehaviour
             {
                 alexander = npcs.GetComponentInChildren<Alexander>();
             }
+            if (npcSpawner.jensSpawned)
+            {
+                jens = npcs.GetComponentInChildren<Jens>();
+            }
         }
 
         if (!gameStart && player.transform.position.y <= 0.55f)
@@ -228,9 +235,9 @@ public class UIManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (rickyConvo && barbaraConvo && alexanderConvo)
+            if (rickyConvo && barbaraConvo && alexanderConvo && jensConvo)
             {
-                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen)
+                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen && !jensConvo.menuOpen)
                 {
                     if (isPaused)
                     {
@@ -291,12 +298,13 @@ public class UIManager : MonoBehaviour
 
         if (npcsActive)
         {
-            npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
+            npcs = GameObject.FindWithTag("NPC").transform;
+            npcSpawner = npcs.GetComponent<NPCSpawner>();
             rickyConvo = menus.Find("npcConversations/Ricky").GetComponent<SoulsMenu>();
             barbaraConvo = menus.Find("npcConversations/Barbara").GetComponent<LoadoutMenu>();
             alexanderConvo = menus.Find("npcConversations/Alexander").GetComponent<EquipmentMenu>();
-            
-            npcs = GameObject.FindWithTag("NPC").transform;
+            jensConvo = menus.Find("npcConversations/Jens").GetComponent<UpgradeMenu>();
+
             ricky = npcs.GetComponentInChildren<Ricky>();
         }
     }
@@ -339,6 +347,10 @@ public class UIManager : MonoBehaviour
             {
                 alexanderConvo.CloseStore();
             }
+            if (npcSpawner.jensSpawned)
+            {
+                jensConvo.CloseStore();
+            }
         }
     }
 
@@ -372,6 +384,10 @@ public class UIManager : MonoBehaviour
         else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Alexander>(out Alexander alexanderComp))
         {
             return alexanderComp.talking;
+        }
+        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Jens>(out Jens jensComp))
+        {
+            return jensComp.talking;
         }
         return true;
     }
@@ -456,6 +472,11 @@ public class UIManager : MonoBehaviour
         {
             alexanderConvo.OpenStore();
         }
+
+        if (jensTalking)
+        {
+            jensConvo.OpenStore();
+        }
     }
 
     IEnumerator CountSouls(int newValue)
@@ -512,14 +533,14 @@ public class UIManager : MonoBehaviour
     {
         if (Input.mousePosition.x >= 0 && Input.mousePosition.x <= 1920 && Input.mousePosition.y >= 0 && Input.mousePosition.y <= 1080 && !isPaused)
         {
-            if (rickyConvo && barbaraConvo && alexanderConvo)
+            if (rickyConvo && barbaraConvo && alexanderConvo && jensConvo)
             {
-                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen)
+                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen && !jensConvo.menuOpen)
                 {
                     UpdateCursor();
                 }
             }
-            else if (!perkMenu.GetComponent<PerkMenu>().menuOpen)
+            else if (perkMenu && !perkMenu.GetComponent<PerkMenu>().menuOpen)
             {
                 UpdateCursor();
             }

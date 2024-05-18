@@ -106,7 +106,7 @@ public class RoomSpawner : MonoBehaviour
             }
         }
         
-        if (!enemiesSpawned)
+        if (!enemiesSpawned && !layerManager.showroom)
         {
             SpawnEnemies();
         }
@@ -139,8 +139,7 @@ public class RoomSpawner : MonoBehaviour
     {
         if (door != null)
         {
-
-            if (roomBehavior.x == 4 && roomBehavior.y == 4)
+            if (roomBehavior.x == 4 && roomBehavior.y == 4 && !layerManager.showroom)
             {
                 layerManager.bossRoom.SetActive(true);
                 OnBossSpawn?.Invoke();
@@ -156,7 +155,10 @@ public class RoomSpawner : MonoBehaviour
                     if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
                     {
                         r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                        r.SetActive(true);
+                        if (!layerManager.showroom)
+                        {
+                            r.SetActive(true);
+                        }
                         
                         nextRoomLoaded = true;
                     }
@@ -166,11 +168,7 @@ public class RoomSpawner : MonoBehaviour
                     if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
                     {
                         r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                        if (roomBehavior.x == 4 && roomBehavior.y == 4)
-                        {
-                            layerManager.bossRoom.SetActive(true);
-                        }
-                        else
+                        if (!layerManager.showroom)
                         {
                             r.SetActive(true);
                         }
@@ -183,11 +181,7 @@ public class RoomSpawner : MonoBehaviour
                     if (r.GetComponent<RoomBehavior>().x == roomBehavior.x + 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
                     {
                         r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                        if (roomBehavior.x == 4 && roomBehavior.y == 4)
-                        {
-                            layerManager.bossRoom.SetActive(true);
-                        }
-                        else
+                        if (!layerManager.showroom)
                         {
                             r.SetActive(true);
                         }
@@ -200,11 +194,7 @@ public class RoomSpawner : MonoBehaviour
                     if (r.GetComponent<RoomBehavior>().x == roomBehavior.x - 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
                     {
                         r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                        if (roomBehavior.x == 4 && roomBehavior.y == 4)
-                        {
-                            layerManager.bossRoom.SetActive(true);
-                        }
-                        else
+                        if (!layerManager.showroom)
                         {
                             r.SetActive(true);
                         }
@@ -220,7 +210,10 @@ public class RoomSpawner : MonoBehaviour
                         if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
                         {
                             r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                            r.SetActive(true);
+                            if (!layerManager.showroom)
+                            {
+                                r.SetActive(true);
+                            }
 
                             nextRoomLoaded = true;
                         }
@@ -230,7 +223,10 @@ public class RoomSpawner : MonoBehaviour
                         if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
                         {
                             r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                            r.SetActive(true);
+                            if (!layerManager.showroom)
+                            {
+                                r.SetActive(true);
+                            }
 
                             nextRoomLoaded = true;
                         }
@@ -240,7 +236,9 @@ public class RoomSpawner : MonoBehaviour
                         if (r.GetComponent<RoomBehavior>().x == roomBehavior.x + 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
                         {
                             r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                            r.SetActive(true);
+                            {
+                                r.SetActive(true);
+                            }
                             
                             nextRoomLoaded = true;
                         }
@@ -250,7 +248,9 @@ public class RoomSpawner : MonoBehaviour
                         if (r.GetComponent<RoomBehavior>().x == roomBehavior.x - 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
                         {
                             r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                            r.SetActive(true);
+                            {
+                                r.SetActive(true);
+                            }
                             
                             nextRoomLoaded = true;
                         }
