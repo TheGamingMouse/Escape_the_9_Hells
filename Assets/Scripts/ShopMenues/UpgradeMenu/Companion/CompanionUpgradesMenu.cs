@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -147,6 +148,13 @@ public class CompanionUpgradesMenu : MonoBehaviour
             PannelsLoyalSphere[i].titleText.text = itemsSO[i].title;
             PannelsLoyalSphere[i].descriptionText.text = itemsSO[i].description;
             PannelsLoyalSphere[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsLoyalSphere[i].counter.fillAmount = playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsLoyalSphere[i].lights.SetActive(true);
+            }
         }
 
         // AttackSquare
@@ -155,6 +163,13 @@ public class CompanionUpgradesMenu : MonoBehaviour
             PannelsAttackSquare[i].titleText.text = itemsSO[i].title;
             PannelsAttackSquare[i].descriptionText.text = itemsSO[i].description;
             PannelsAttackSquare[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsAttackSquare[i].counter.fillAmount = playerUpgrades.upgradesAttackSquare.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesAttackSquare.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsAttackSquare[i].lights.SetActive(true);
+            }
         }
 
         // Companion1
@@ -163,6 +178,13 @@ public class CompanionUpgradesMenu : MonoBehaviour
             PannelsCompanions1[i].titleText.text = itemsSO[i].title;
             PannelsCompanions1[i].descriptionText.text = itemsSO[i].description;
             PannelsCompanions1[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsCompanions1[i].counter.fillAmount = playerUpgrades.upgradesCompanion1.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesCompanion1.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsCompanions1[i].lights.SetActive(true);
+            }
         }
 
         // Companion2
@@ -171,6 +193,13 @@ public class CompanionUpgradesMenu : MonoBehaviour
             PannelsCompanions2[i].titleText.text = itemsSO[i].title;
             PannelsCompanions2[i].descriptionText.text = itemsSO[i].description;
             PannelsCompanions2[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsCompanions2[i].counter.fillAmount = playerUpgrades.upgradesCompanion2.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesCompanion2.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsCompanions2[i].lights.SetActive(true);
+            }
         }
 
         // Companion3
@@ -179,6 +208,13 @@ public class CompanionUpgradesMenu : MonoBehaviour
             PannelsCompanions3[i].titleText.text = itemsSO[i].title;
             PannelsCompanions3[i].descriptionText.text = itemsSO[i].description;
             PannelsCompanions3[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsCompanions3[i].counter.fillAmount = playerUpgrades.upgradesCompanion3.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesCompanion3.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsCompanions3[i].lights.SetActive(true);
+            }
         }
 
         // Companion4
@@ -187,6 +223,13 @@ public class CompanionUpgradesMenu : MonoBehaviour
             PannelsCompanions4[i].titleText.text = itemsSO[i].title;
             PannelsCompanions4[i].descriptionText.text = itemsSO[i].description;
             PannelsCompanions4[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsCompanions4[i].counter.fillAmount = playerUpgrades.upgradesCompanion4.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesCompanion4.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsCompanions4[i].lights.SetActive(true);
+            }
         }
 
         pannelsLoaded = true;
@@ -197,37 +240,79 @@ public class CompanionUpgradesMenu : MonoBehaviour
         // LoyalSphere
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsLoyalSphere[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsLoyalSphere[i].interactable = true;
+            }
+            else
+            {
+                ButtonsLoyalSphere[i].interactable = false;
+            }
         }
 
         // AttackSquare
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsAttackSquare[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesAttackSquare.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsAttackSquare[i].interactable = true;
+            }
+            else
+            {
+                ButtonsAttackSquare[i].interactable = true;
+            }
         }
 
         // Companion1
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsCompanions1[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesCompanion1.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsCompanions1[i].interactable = true;
+            }
+            else
+            {
+                ButtonsCompanions1[i].interactable = false;
+            }
         }
 
         // Companion2
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsCompanions2[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesCompanion2.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsCompanions2[i].interactable = true;
+            }
+            else
+            {
+                ButtonsCompanions2[i].interactable = false;
+            }
         }
 
         // Companion3
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsCompanions3[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesCompanion3.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsCompanions3[i].interactable = true;
+            }
+            else
+            {
+                ButtonsCompanions3[i].interactable = false;
+            }
         }
 
         // Companion4
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsCompanions4[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesCompanion4.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsCompanions4[i].interactable = true;
+            }
+            else
+            {
+                ButtonsCompanions4[i].interactable = false;
+            }
         }
     }
 
@@ -239,6 +324,7 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddLoyalSphereUpgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 
@@ -250,6 +336,7 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddAttackSquareUpgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 
@@ -261,6 +348,7 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddCompanion1Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -272,6 +360,7 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddCompanion2Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -283,6 +372,7 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddCompanion3Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -294,6 +384,7 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddCompanion4Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 

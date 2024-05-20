@@ -33,6 +33,8 @@ public class UpgradeMenu : MonoBehaviour
     NPCSpawner npcSpawner;
     public WeaponUpgradesMenu weaponsMenu;
     public CompanionUpgradesMenu companionMenu;
+    public ArmorUpgradesMenu armorMenu;
+    public BackUpgradesMenu backMenu;
 
     #endregion
 
@@ -103,6 +105,8 @@ public class UpgradeMenu : MonoBehaviour
     {
         weaponsMenu.pannelsActivated = false;
         companionMenu.pannelsActivated = false;
+        armorMenu.pannelsActivated = false;
+        backMenu.pannelsActivated = false;
     }
 
     public void ChangeHeader()

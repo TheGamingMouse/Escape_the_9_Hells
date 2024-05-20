@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Ability Strength
   description: Increases the strength of the companions ability.
-  price: 0
+  price: 20
+  max: 15

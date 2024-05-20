@@ -73,7 +73,7 @@ public class EquipmentMenu : MonoBehaviour
             npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
         }
         
-        if (!pannelsActivated)
+        if (!pannelsActivated && playerEquipment.equipmentLoaded)
         {
             for (int i = 0; i < equipmentItemsSOWeapons.Length; i++)
             {

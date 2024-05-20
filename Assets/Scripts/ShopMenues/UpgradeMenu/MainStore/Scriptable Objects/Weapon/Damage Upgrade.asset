@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Damage Upgrade
   description: This will make your attacks hit harder, with the given weapon.
-  price: 0
+  price: 3
+  max: 15

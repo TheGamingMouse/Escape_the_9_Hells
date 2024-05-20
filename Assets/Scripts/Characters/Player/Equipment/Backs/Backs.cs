@@ -16,7 +16,6 @@ public class Backs : MonoBehaviour
     [Header("GameObjects")]
     GameObject angelWingsObj;
     GameObject steelWingsObj;
-    GameObject backpackObj;
 
     [Header("Lists")]
     readonly List<GameObject> backObjs = new();
@@ -24,7 +23,6 @@ public class Backs : MonoBehaviour
     [Header("Components")]
     public AngelWings angelWings;
     public SteelWings steelWings;
-    // public BackPack backpack;
 
     #endregion
 
@@ -35,11 +33,9 @@ public class Backs : MonoBehaviour
     {
         angelWingsObj = angelWings.gameObject;
         steelWingsObj = steelWings.gameObject;
-        // backpackObj = backpack.gameObject;
 
         backObjs.Add(angelWingsObj);
         backObjs.Add(steelWingsObj);
-        // backObjs.Add(backpackObj);
 
         SwitchToNone();
     }
@@ -55,10 +51,6 @@ public class Backs : MonoBehaviour
         {
             bType = BackType.Wings;
         }
-        // else if (backpackObj.activeInHierarchy)
-        // {
-        //     bType = BackType.Packs;
-        // }
         else
         {
             bType = BackType.None;
@@ -97,18 +89,6 @@ public class Backs : MonoBehaviour
         if (steelWingsObj)
         {
             steelWingsObj.SetActive(true);
-        }
-    }
-
-    public void SwitchToBackPack()
-    {
-        bActive = BackActive.BackPack;
-
-        DisableElements();
-
-        if (backpackObj)
-        {
-            backpackObj.SetActive(true);
         }
     }
 

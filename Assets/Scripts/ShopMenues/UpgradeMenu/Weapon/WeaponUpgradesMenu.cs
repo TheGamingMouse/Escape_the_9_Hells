@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -147,6 +148,17 @@ public class WeaponUpgradesMenu : MonoBehaviour
             PannelsPugio[i].titleText.text = itemsSO[i].title;
             PannelsPugio[i].descriptionText.text = itemsSO[i].description;
             PannelsPugio[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsPugio[i].counter.fillAmount = playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+            if (PannelsPugio[i].titleText.text == "Special Attack")
+            {
+                PannelsPugio[i].border.SetActive(false);
+            }
+
+            if (playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsPugio[i].lights.SetActive(true);
+            }
         }
 
         // Ulfberht
@@ -155,6 +167,17 @@ public class WeaponUpgradesMenu : MonoBehaviour
             PannelsUlfberht[i].titleText.text = itemsSO[i].title;
             PannelsUlfberht[i].descriptionText.text = itemsSO[i].description;
             PannelsUlfberht[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsUlfberht[i].counter.fillAmount = playerUpgrades.upgradesUlfberht.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+            if (PannelsUlfberht[i].titleText.text == "Special Attack")
+            {
+                PannelsUlfberht[i].border.SetActive(false);
+            }
+
+            if (playerUpgrades.upgradesUlfberht.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsUlfberht[i].lights.SetActive(true);
+            }
         }
 
         // Weapon1
@@ -163,6 +186,17 @@ public class WeaponUpgradesMenu : MonoBehaviour
             PannelsWeapons1[i].titleText.text = itemsSO[i].title;
             PannelsWeapons1[i].descriptionText.text = itemsSO[i].description;
             PannelsWeapons1[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsWeapons1[i].counter.fillAmount = playerUpgrades.upgradesWeapon1.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+            if (PannelsWeapons1[i].titleText.text == "Special Attack")
+            {
+                PannelsWeapons1[i].border.SetActive(false);
+            }
+
+            if (playerUpgrades.upgradesWeapon1.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsWeapons1[i].lights.SetActive(true);
+            }
         }
 
         // Weapon2
@@ -171,6 +205,17 @@ public class WeaponUpgradesMenu : MonoBehaviour
             PannelsWeapons2[i].titleText.text = itemsSO[i].title;
             PannelsWeapons2[i].descriptionText.text = itemsSO[i].description;
             PannelsWeapons2[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsWeapons2[i].counter.fillAmount = playerUpgrades.upgradesWeapon2.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+            if (PannelsWeapons2[i].titleText.text == "Special Attack")
+            {
+                PannelsWeapons2[i].border.SetActive(false);
+            }
+
+            if (playerUpgrades.upgradesWeapon2.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsWeapons2[i].lights.SetActive(true);
+            }
         }
 
         // Weapon3
@@ -179,6 +224,17 @@ public class WeaponUpgradesMenu : MonoBehaviour
             PannelsWeapons3[i].titleText.text = itemsSO[i].title;
             PannelsWeapons3[i].descriptionText.text = itemsSO[i].description;
             PannelsWeapons3[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsWeapons3[i].counter.fillAmount = playerUpgrades.upgradesWeapon3.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+            if (PannelsWeapons3[i].titleText.text == "Special Attack")
+            {
+                PannelsWeapons3[i].border.SetActive(false);
+            }
+
+            if (playerUpgrades.upgradesWeapon3.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsWeapons3[i].lights.SetActive(true);
+            }
         }
 
         // Weapon4
@@ -187,6 +243,17 @@ public class WeaponUpgradesMenu : MonoBehaviour
             PannelsWeapons4[i].titleText.text = itemsSO[i].title;
             PannelsWeapons4[i].descriptionText.text = itemsSO[i].description;
             PannelsWeapons4[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsWeapons4[i].counter.fillAmount = playerUpgrades.upgradesWeapon4.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+            if (PannelsWeapons4[i].titleText.text == "Special Attack")
+            {
+                PannelsWeapons4[i].border.SetActive(false);
+            }
+
+            if (playerUpgrades.upgradesWeapon4.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsWeapons4[i].lights.SetActive(true);
+            }
         }
 
         pannelsLoaded = true;
@@ -201,7 +268,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
             {
                 for (int j = 0; j < playerUpgrades.upgradesPugio.Count; j++)
                 {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesPugio[j].title.Contains("Special Attack"))
+                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesPugio[j].title.Contains("Special Attack") && playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
                     {
                         ButtonsPugio[i].interactable = true;
                         break;
@@ -214,7 +281,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
                 {
                     for (int j = 0; j < playerUpgrades.upgradesPugio.Count; j++)
                     {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesPugio[j].title.Contains("Special Attack"))
+                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesPugio[j].title.Contains(itemsSO[i].title))
                         {
                             ButtonsPugio[i].interactable = true;
                         }
@@ -230,9 +297,13 @@ public class WeaponUpgradesMenu : MonoBehaviour
                     ButtonsPugio[i].interactable = true;
                 }
             }
+            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsPugio[i].interactable = true;
+            }
             else
             {
-                ButtonsPugio[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+                ButtonsPugio[i].interactable = false;
             }
         }
 
@@ -243,7 +314,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
             {
                 for (int j = 0; j < playerUpgrades.upgradesUlfberht.Count; j++)
                 {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesUlfberht[j].title.Contains("Special Attack"))
+                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesUlfberht[j].title.Contains("Special Attack") && playerUpgrades.upgradesUlfberht.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
                     {
                         ButtonsUlfberht[i].interactable = true;
                         break;
@@ -256,7 +327,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
                 {
                     for (int j = 0; j < playerUpgrades.upgradesUlfberht.Count; j++)
                     {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesUlfberht[j].title.Contains("Special Attack"))
+                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesUlfberht[j].title.Contains(itemsSO[i].title))
                         {
                             ButtonsUlfberht[i].interactable = true;
                         }
@@ -272,9 +343,13 @@ public class WeaponUpgradesMenu : MonoBehaviour
                     ButtonsUlfberht[i].interactable = true;
                 }
             }
+            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesUlfberht.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsUlfberht[i].interactable = true;
+            }
             else
             {
-                ButtonsUlfberht[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+                ButtonsUlfberht[i].interactable = false;
             }
         }
 
@@ -285,7 +360,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
             {
                 for (int j = 0; j < playerUpgrades.upgradesWeapon1.Count; j++)
                 {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon1[j].title.Contains("Special Attack"))
+                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon1[j].title.Contains("Special Attack") && playerUpgrades.upgradesWeapon1.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
                     {
                         ButtonsWeapons1[i].interactable = true;
                         break;
@@ -298,7 +373,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
                 {
                     for (int j = 0; j < playerUpgrades.upgradesWeapon1.Count; j++)
                     {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon1[j].title.Contains("Special Attack"))
+                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon1[j].title.Contains(itemsSO[i].title))
                         {
                             ButtonsWeapons1[i].interactable = true;
                         }
@@ -314,9 +389,13 @@ public class WeaponUpgradesMenu : MonoBehaviour
                     ButtonsWeapons1[i].interactable = true;
                 }
             }
+            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon1.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsWeapons1[i].interactable = true;
+            }
             else
             {
-                ButtonsWeapons1[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+                ButtonsWeapons1[i].interactable = false;
             }
         }
 
@@ -327,7 +406,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
             {
                 for (int j = 0; j < playerUpgrades.upgradesWeapon2.Count; j++)
                 {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon2[j].title.Contains("Special Attack"))
+                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon2[j].title.Contains("Special Attack") && playerUpgrades.upgradesWeapon2.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
                     {
                         ButtonsWeapons2[i].interactable = true;
                         break;
@@ -340,7 +419,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
                 {
                     for (int j = 0; j < playerUpgrades.upgradesWeapon2.Count; j++)
                     {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon2[j].title.Contains("Special Attack"))
+                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon2[j].title.Contains(itemsSO[i].title))
                         {
                             ButtonsWeapons2[i].interactable = true;
                         }
@@ -356,9 +435,13 @@ public class WeaponUpgradesMenu : MonoBehaviour
                     ButtonsWeapons2[i].interactable = true;
                 }
             }
+            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon2.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsWeapons2[i].interactable = true;
+            }
             else
             {
-                ButtonsWeapons2[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+                ButtonsWeapons2[i].interactable = false;
             }
         }
 
@@ -369,7 +452,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
             {
                 for (int j = 0; j < playerUpgrades.upgradesWeapon3.Count; j++)
                 {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon3[j].title.Contains("Special Attack"))
+                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon3[j].title.Contains("Special Attack") && playerUpgrades.upgradesWeapon3.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
                     {
                         ButtonsWeapons3[i].interactable = true;
                         break;
@@ -382,7 +465,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
                 {
                     for (int j = 0; j < playerUpgrades.upgradesWeapon3.Count; j++)
                     {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon3[j].title.Contains("Special Attack"))
+                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon3[j].title.Contains(itemsSO[i].title))
                         {
                             ButtonsWeapons3[i].interactable = true;
                         }
@@ -398,9 +481,13 @@ public class WeaponUpgradesMenu : MonoBehaviour
                     ButtonsWeapons3[i].interactable = true;
                 }
             }
+            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon3.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsWeapons3[i].interactable = true;
+            }
             else
             {
-                ButtonsWeapons3[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+                ButtonsWeapons3[i].interactable = false;
             }
         }
 
@@ -411,7 +498,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
             {
                 for (int j = 0; j < playerUpgrades.upgradesWeapon4.Count; j++)
                 {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon4[j].title.Contains("Special Attack"))
+                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon4[j].title.Contains("Special Attack") && playerUpgrades.upgradesWeapon4.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
                     {
                         ButtonsWeapons4[i].interactable = true;
                         break;
@@ -424,7 +511,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
                 {
                     for (int j = 0; j < playerUpgrades.upgradesWeapon4.Count; j++)
                     {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon4[j].title.Contains("Special Attack"))
+                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon4[j].title.Contains(itemsSO[i].title))
                         {
                             ButtonsWeapons4[i].interactable = true;
                         }
@@ -440,9 +527,13 @@ public class WeaponUpgradesMenu : MonoBehaviour
                     ButtonsWeapons4[i].interactable = true;
                 }
             }
+            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon4.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsWeapons4[i].interactable = true;
+            }
             else
             {
-                ButtonsWeapons4[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+                ButtonsWeapons4[i].interactable = false;
             }
         }
     }
@@ -455,6 +546,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddPugioUpgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 
@@ -466,6 +558,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddUlfberhtUpgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 
@@ -477,6 +570,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddWeapon1Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -488,6 +582,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddWeapon2Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -499,6 +594,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddWeapon3Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -510,6 +606,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddWeapon4Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 

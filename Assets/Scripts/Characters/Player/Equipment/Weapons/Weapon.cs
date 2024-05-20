@@ -12,13 +12,16 @@ public class Weapon : MonoBehaviour
     public WeaponActive wActive;
 
     [Header("Floats")]
-    public float attackSpeedMultiplier = 1;
-    public float damageMultiplier = 1;
-    public float specialCooldownMultiplier = 1;
+    public float attackSpeedMultiplier = 1f;
+    public float damageMultiplier = 1f;
+    public float specialCooldownMultiplier = 1f;
+    readonly float baseSpecialCooldown = 10f;
+    float specialCooldown;
 
     [Header("Bools")]
     public bool canAttack;
     public bool specialAttack;
+    public bool canSpecial;
 
     [Header("GameObjects")]
     GameObject ulfberhtObj;
@@ -34,6 +37,8 @@ public class Weapon : MonoBehaviour
     [Header("AnimationClips")]
     AnimationClip ulfClip;
     AnimationClip pugClip;
+    AnimationClip pugSpecialClip;
+    AnimationClip ulfSpecialClip;
 
     [Header("Components")]
     public Ulfberht ulfberht;
@@ -63,37 +68,22 @@ public class Weapon : MonoBehaviour
 
         if (ulfberhtObj.activeInHierarchy)
         {
-            ulfAnimator = ulfberhtObj.GetComponent<Animator>();
-
-            AnimationClip[] clips = ulfAnimator.runtimeAnimatorController.animationClips;
-            foreach (AnimationClip c in clips)
-            {
-                if (c.name == "Ulfberht Slash")
-                {
-                    ulfClip = c;
-                }
-            }
+            SetUlfberhtAnimator();
         }
         else if (pugioObj.activeInHierarchy)
         {
-            pugAnimator = pugioObj.GetComponent<Animator>();
-
-            AnimationClip[] clips = pugAnimator.runtimeAnimatorController.animationClips;
-            foreach (AnimationClip c in clips)
-            {
-                if (c.name == "Pugio Pierce")
-                {
-                    pugClip = c;
-                }
-            }
+            SetPugioAnimator();
         }
 
         canAttack = true;
+        canSpecial = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        specialCooldown = baseSpecialCooldown / specialCooldownMultiplier;
+
         if (ulfberhtObj.activeInHierarchy)
         {
             rState = RangeState.Melee;
@@ -115,6 +105,25 @@ public class Weapon : MonoBehaviour
     #endregion
 
     #region Attack - Melee
+
+    // Ulfberht
+    void SetUlfberhtAnimator()
+    {
+        ulfAnimator = ulfberhtObj.GetComponent<Animator>();
+
+        AnimationClip[] clips = ulfAnimator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip c in clips)
+        {
+            if (c.name == "Ulfberht Slash")
+            {
+                ulfClip = c;
+            }
+            else if (c.name == "Ulfberht Special Attack")
+            {
+                ulfSpecialClip = c;
+            }
+        }
+    }
 
     public void Slash()
     {
@@ -143,6 +152,58 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    public void UlfberhtSpecial()
+    {
+        if (wActive == WeaponActive.Ulfberht)
+        {
+            ulfberht.specialAttacking = true;
+            ulfAnimator.SetBool("Special Attack", true);
+
+            StartCoroutine(UlfberhtUnSpecial());
+
+            canAttack = false;
+            canSpecial = false;
+        }
+    }
+
+    IEnumerator UlfberhtUnSpecial()
+    {
+        if (wActive == WeaponActive.Ulfberht)
+        {
+            float clipLength = ulfSpecialClip.length / ulfAnimator.GetFloat("AttackSpeed") - ulfSpecialClip.length * 0.1f;
+
+            yield return new WaitForSeconds(clipLength * 4f);
+
+            ulfberht.specialAttacking = false;
+            ulfAnimator.SetBool("Special Attack", false);
+
+            canAttack = true;
+
+            yield return new WaitForSeconds(specialCooldown);
+
+            canSpecial = true;
+        }
+    }
+
+    // Pugio
+    void SetPugioAnimator()
+    {
+        pugAnimator = pugioObj.GetComponent<Animator>();
+
+        AnimationClip[] clips = pugAnimator.runtimeAnimatorController.animationClips;
+        foreach (AnimationClip c in clips)
+        {
+            if (c.name == "Pugio Pierce")
+            {
+                pugClip = c;
+            }
+            else if (c.name == "Pugio Special Attack")
+            {
+                pugSpecialClip = c;
+            }
+        }
+    }
+    
     public void Pierce()
     {
         if (wActive == WeaponActive.Pugio)
@@ -170,6 +231,38 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    public void PugioSpecial()
+    {
+        if (wActive == WeaponActive.Pugio)
+        {
+            pugio.specialAttacking = true;
+            pugAnimator.SetBool("Special Attack", true);
+            StartCoroutine(PugioUnSpecial());
+
+            canAttack = false;
+            canSpecial = false;
+        }
+    }
+
+    IEnumerator PugioUnSpecial()
+    {
+        if (wActive == WeaponActive.Pugio)
+        {
+            float clipLength = pugSpecialClip.length / pugAnimator.GetFloat("AttackSpeed") - pugSpecialClip.length * 0.1f;
+
+            yield return new WaitForSeconds(clipLength);
+
+            pugio.specialAttacking = false;
+            pugAnimator.SetBool("Special Attack", false);
+
+            canAttack = true;
+
+            yield return new WaitForSeconds(specialCooldown);
+
+            canSpecial = true;
+        }
+    }
+
     #endregion
 
     #region Weapon Swap
@@ -191,14 +284,7 @@ public class Weapon : MonoBehaviour
 
             ulfAnimator = ulfberhtObj.GetComponent<Animator>();
 
-            AnimationClip[] clips = ulfAnimator.runtimeAnimatorController.animationClips;
-            foreach (AnimationClip c in clips)
-            {
-                if (c.name == "Ulfberht Slash")
-                {
-                    ulfClip = c;
-                }
-            }
+            SetUlfberhtAnimator();
         }
     }
 
@@ -219,14 +305,7 @@ public class Weapon : MonoBehaviour
 
             pugAnimator = pugioObj.GetComponent<Animator>();
 
-            AnimationClip[] clips = pugAnimator.runtimeAnimatorController.animationClips;
-            foreach (AnimationClip c in clips)
-            {
-                if (c.name == "Pugio Pierce")
-                {
-                    pugClip = c;
-                }
-            }
+            SetPugioAnimator();
         }
     }
 

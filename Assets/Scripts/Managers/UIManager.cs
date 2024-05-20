@@ -560,14 +560,7 @@ public class UIManager : MonoBehaviour
             }
 
             var mousePos = hit.point;
-            if (saveLoadManager.hub)
-            {
-                mousePos.y += 0.1f;
-            }
-            else
-            {
-                mousePos.y += 13.6f;
-            }
+            mousePos.y += 0.1f;
             cursorObj.transform.position = mousePos;
         }
     }

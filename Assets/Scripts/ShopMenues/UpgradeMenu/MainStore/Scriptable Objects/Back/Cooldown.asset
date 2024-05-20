@@ -15,4 +15,5 @@ MonoBehaviour:
   title: Cooldown
   description: This will descrease the cooldown period, for the abilities of the
     given back equipment.
-  price: 35
+  price: 25
+  max: 15

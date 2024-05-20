@@ -13,6 +13,7 @@ public class Pugio : MonoBehaviour
     [Header("Bools")]
     public bool piercing;
     public bool canDamageEnemies;
+    public bool specialAttacking;
 
     [Header("Components")]
     EnemyAction enemyAction;
@@ -46,6 +47,30 @@ public class Pugio : MonoBehaviour
     void OnTriggerEnter(Collider coll)
     {
         if (piercing)
+        {
+            if (canDamageEnemies)
+            {
+                if (coll.TryGetComponent<Ricky>(out Ricky ricky))
+                {
+                    ricky.TakeDamage((int)damage);
+                }
+                
+                if (coll.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
+                {
+                    eComp.TakeDamage((int)damage);
+                }
+            }
+
+            if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent<PlayerHealth>(out PlayerHealth pComp) && enemyAction.attacking)
+            {
+                pComp.TakeDamage((int)damage);
+            }
+        }
+    }
+
+    void OnTriggerStay(Collider coll)
+    {
+        if (specialAttacking)
         {
             if (canDamageEnemies)
             {

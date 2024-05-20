@@ -46,4 +46,28 @@ public class BladeCollision : MonoBehaviour
             }
         }
     }
+
+    void OnTriggerStay(Collider coll)
+    {
+        if (ulfberht.specialAttacking)
+        {
+            if (ulfberht.canDamageEnemies)
+            {
+                if (coll.TryGetComponent<Ricky>(out Ricky ricky))
+                {
+                    ricky.TakeDamage((int)damage);
+                }
+
+                if (coll.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
+                {
+                    eComp.TakeDamage((int)damage);
+                }
+            }
+
+            if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent<PlayerHealth>(out PlayerHealth pComp) && enemyAction.attacking)
+            {
+                pComp.TakeDamage((int)damage);
+            }
+        }
+    }
 }

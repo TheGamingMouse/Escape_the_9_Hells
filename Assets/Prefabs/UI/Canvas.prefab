@@ -16256,7 +16256,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Select Your Loadout
+  m_text: Purchase Equipment
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -21379,6 +21379,8 @@ MonoBehaviour:
   headerText: {fileID: 7548179904152040385}
   weaponsMenu: {fileID: 4212040824045457286}
   companionMenu: {fileID: 1971919496969452234}
+  armorMenu: {fileID: 4006925797715915574}
+  backMenu: {fileID: 5639552042628507144}
 --- !u!1 &7304794847635028581
 GameObject:
   m_ObjectHideFlags: 0

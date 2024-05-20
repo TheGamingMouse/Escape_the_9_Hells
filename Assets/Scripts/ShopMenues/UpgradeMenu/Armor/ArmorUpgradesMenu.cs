@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -147,6 +148,13 @@ public class ArmorUpgradesMenu : MonoBehaviour
             PannelsLeather[i].titleText.text = itemsSO[i].title;
             PannelsLeather[i].descriptionText.text = itemsSO[i].description;
             PannelsLeather[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsLeather[i].counter.fillAmount = playerUpgrades.upgradesLeather.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesLeather.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsLeather[i].lights.SetActive(true);
+            }
         }
 
         // Hide
@@ -155,6 +163,13 @@ public class ArmorUpgradesMenu : MonoBehaviour
             PannelsHide[i].titleText.text = itemsSO[i].title;
             PannelsHide[i].descriptionText.text = itemsSO[i].description;
             PannelsHide[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsHide[i].counter.fillAmount = playerUpgrades.upgradesHide.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesHide.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsHide[i].lights.SetActive(true);
+            }
         }
 
         // RingMail
@@ -163,6 +178,13 @@ public class ArmorUpgradesMenu : MonoBehaviour
             PannelsRingMail[i].titleText.text = itemsSO[i].title;
             PannelsRingMail[i].descriptionText.text = itemsSO[i].description;
             PannelsRingMail[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsRingMail[i].counter.fillAmount = playerUpgrades.upgradesRingMail.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesRingMail.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsRingMail[i].lights.SetActive(true);
+            }
         }
 
         // Plate
@@ -171,6 +193,13 @@ public class ArmorUpgradesMenu : MonoBehaviour
             PannelsPlate[i].titleText.text = itemsSO[i].title;
             PannelsPlate[i].descriptionText.text = itemsSO[i].description;
             PannelsPlate[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsPlate[i].counter.fillAmount = playerUpgrades.upgradesPlate.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesPlate.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsPlate[i].lights.SetActive(true);
+            }
         }
 
         // Armor1
@@ -179,6 +208,13 @@ public class ArmorUpgradesMenu : MonoBehaviour
             PannelsArmors1[i].titleText.text = itemsSO[i].title;
             PannelsArmors1[i].descriptionText.text = itemsSO[i].description;
             PannelsArmors1[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsArmors1[i].counter.fillAmount = playerUpgrades.upgradesArmor1.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesArmor1.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsArmors1[i].lights.SetActive(true);
+            }
         }
 
         // Armor2
@@ -187,6 +223,13 @@ public class ArmorUpgradesMenu : MonoBehaviour
             PannelsArmors2[i].titleText.text = itemsSO[i].title;
             PannelsArmors2[i].descriptionText.text = itemsSO[i].description;
             PannelsArmors2[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+
+            PannelsArmors2[i].counter.fillAmount = playerUpgrades.upgradesArmor2.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+
+            if (playerUpgrades.upgradesArmor2.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            {
+                PannelsArmors2[i].lights.SetActive(true);
+            }
         }
 
         pannelsLoaded = true;
@@ -197,37 +240,79 @@ public class ArmorUpgradesMenu : MonoBehaviour
         // Leather
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsLeather[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesLeather.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsLeather[i].interactable = true;
+            }
+            else
+            {
+                ButtonsLeather[i].interactable = false;
+            }
         }
 
         // Hide
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsHide[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesHide.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsHide[i].interactable = true;
+            }
+            else
+            {
+                ButtonsHide[i].interactable = false;
+            }
         }
 
         // RingMail
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsRingMail[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesRingMail.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsRingMail[i].interactable = true;
+            }
+            else
+            {
+                ButtonsRingMail[i].interactable = false;
+            }
         }
 
         // Plate
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsPlate[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesPlate.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsPlate[i].interactable = true;
+            }
+            else
+            {
+                ButtonsPlate[i].interactable = false;
+            }
         }
 
         // Armor1
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsArmors1[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesArmor1.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsArmors1[i].interactable = true;
+            }
+            else
+            {
+                ButtonsArmors1[i].interactable = false;
+            }
         }
 
         // Armor2
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            ButtonsArmors2[i].interactable = upgradeMenu.souls >= itemsSO[i].price;
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesArmor2.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            {
+                ButtonsArmors2[i].interactable = true;
+            }
+            else
+            {
+                ButtonsArmors2[i].interactable = false;
+            }
         }
     }
 
@@ -239,6 +324,7 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddLeatherUpgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 
@@ -250,6 +336,7 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddHideUpgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 
@@ -261,6 +348,7 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddRingMailUpgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -272,6 +360,7 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddPlateUpgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -283,6 +372,7 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddArmor1Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
     
@@ -294,6 +384,7 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
             //Unlock purchased item.
             playerUpgrades.AddArmor2Upgrade(itemsSO[btnNo]);
+            pannelsLoaded = false;
         }
     }
 

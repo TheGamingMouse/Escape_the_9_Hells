@@ -25,9 +25,17 @@ public class RoomBehavior : MonoBehaviour
     public GameObject[] walls;
     public GameObject[] doors;
 
+    [Header("Components")]
+    LayerManager layerManager;
+
     #endregion
 
     #region StartUpdate Methods
+
+    void Start()
+    {
+        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+    }
 
     void Update()
     {
@@ -85,7 +93,7 @@ public class RoomBehavior : MonoBehaviour
 
         string errorMsg = "Not all rooms were complete at: " + x + "-" + y;
 
-        if (door)
+        if (door && layerManager.showroom)
         {
             if (!door.GetComponentInChildren<FrontEntranceChecker>().active || 
             !door.GetComponentInChildren<BackEntranceChecker>().active)

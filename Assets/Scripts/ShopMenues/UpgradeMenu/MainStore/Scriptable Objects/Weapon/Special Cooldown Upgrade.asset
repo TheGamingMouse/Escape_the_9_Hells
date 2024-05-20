@@ -15,4 +15,5 @@ MonoBehaviour:
   title: Special Cooldown
   description: This will reduce the cooldown for your special attack, for the given
     weapon.
-  price: 0
+  price: 40
+  max: 15

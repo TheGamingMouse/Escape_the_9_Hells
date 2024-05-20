@@ -32,6 +32,9 @@ public class Companion : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        loyalSphere.companion = this;
+        attackSquare.companion = this;
+
         loyalSphereObj = loyalSphere.gameObject;
         attackSquareObj = attackSquare.gameObject;
 

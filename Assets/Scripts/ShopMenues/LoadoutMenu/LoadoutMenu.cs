@@ -115,7 +115,7 @@ public class LoadoutMenu : MonoBehaviour
             barbara = GameObject.FindWithTag("NPC").GetComponentInChildren<Barbara>();
         }
         
-        if (!pannelsLoaded)
+        if (!pannelsLoaded && playerLoadout.start)
         {
             LoadLoadoutPannels();
         }

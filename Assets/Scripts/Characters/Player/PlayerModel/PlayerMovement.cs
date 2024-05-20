@@ -9,7 +9,8 @@ public class PlayerMovement : MonoBehaviour
     public readonly float baseSpeed = 10f;
     float dashSpeed;
     readonly float dashDuration = 0.2f;
-    readonly float dashCooldownTime = 1f;
+    readonly float baseDashCooldownTime = 1f;
+    float dashCooldownTime;
     public float currentSpeed;
     public float speedMultiplier = 1;
 
@@ -30,7 +31,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Components")]
     public Rigidbody rb;
-    Camera mainCam;
     public Weapon weapon;
     public BossGenerator bossGenerator;
     public RoomSpawner roomSpawner;
@@ -45,7 +45,6 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        mainCam = Camera.main;
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
         backs = GetComponentInChildren<Backs>();
 
@@ -81,6 +80,11 @@ public class PlayerMovement : MonoBehaviour
                 {
                     weapon.Slash();
                 }
+                
+                if (Input.GetMouseButton(1) && weapon.canAttack && weapon.canSpecial && weapon.specialAttack)
+                {
+                    weapon.UlfberhtSpecial();
+                }
             }
             else if (weapon.rState == Weapon.RangeState.Melee && weapon.aType == Weapon.AttackType.Pierce)
             {
@@ -88,7 +92,17 @@ public class PlayerMovement : MonoBehaviour
                 {
                     weapon.Pierce();
                 }
+
+                if (Input.GetMouseButton(1) && weapon.canAttack && weapon.canSpecial && weapon.specialAttack)
+                {
+                    weapon.PugioSpecial();
+                }
             }
+        }
+
+        if (backs != null)
+        {
+            dashCooldownTime = baseDashCooldownTime / backs.abilityCooldownMultiplier;
         }
     }
 

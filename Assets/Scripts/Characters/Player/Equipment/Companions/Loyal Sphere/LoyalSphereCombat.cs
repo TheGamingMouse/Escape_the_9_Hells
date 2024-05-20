@@ -8,10 +8,12 @@ public class LoyalSphereCombat : MonoBehaviour
     #region Variables
 
     [Header("Ints")]
-    readonly int damage = 12;
+    readonly int baseDamage = 12;
+    [SerializeField] int damage;
 
     [Header("Floats")]
-    readonly float cooldown = 2.5f;
+    readonly float baseCooldown = 2.5f;
+    [SerializeField] float cooldown;
     readonly float force = 10f;
 
     [Header("Bools")]
@@ -22,6 +24,7 @@ public class LoyalSphereCombat : MonoBehaviour
 
     [Header("Components")]
     LoyalSphereSight sight;
+    public Companion companion;
 
     #endregion
 
@@ -34,6 +37,12 @@ public class LoyalSphereCombat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (companion != null)
+        {
+            damage = (int)(baseDamage * companion.abilityStrengthMultiplier);
+            cooldown = baseCooldown * companion.abilityRateMultiplier;
+        }
+
         if (sight.target && !shooting)
         {
             StartCoroutine(ShootRoutine());

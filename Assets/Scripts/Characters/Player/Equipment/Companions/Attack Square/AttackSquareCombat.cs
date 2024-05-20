@@ -7,13 +7,31 @@ public class AttackSquareCombat : MonoBehaviour
     #region Variables
 
     [Header("Ints")]
-    readonly int damage = 5;
+    readonly int baseDamage = 5;
+    int damage;
 
     [Header("Floats")]
-    readonly float cooldown = 1.5f;
+    readonly float baseCooldown = 1.5f;
+    float cooldown;
 
     [Header("Bools")]
     bool canAttack = true;
+
+    [Header("Components")]
+    public Companion companion;
+
+    #endregion
+
+    #region StartUpdate Methods
+
+    void Update()
+    {
+        if (companion != null)
+        {
+            damage = (int)(baseDamage * companion.abilityStrengthMultiplier);
+            cooldown = baseCooldown / companion.abilityRateMultiplier;
+        }
+    }
 
     #endregion
 

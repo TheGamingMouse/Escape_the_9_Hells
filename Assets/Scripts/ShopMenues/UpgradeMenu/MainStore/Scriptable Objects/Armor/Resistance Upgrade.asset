@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Resistance Upgrade
   description: Increases the resistance of the armor.
-  price: 0
+  price: 20
+  max: 15

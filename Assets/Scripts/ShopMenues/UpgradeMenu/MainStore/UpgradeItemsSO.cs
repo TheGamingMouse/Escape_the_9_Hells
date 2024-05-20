@@ -6,5 +6,8 @@ public class UpgradeItemsSO : ScriptableObject
     [Header("Strings")]
     public string title;
     public string description;
+
+    [Header("Ints")]
     public int price;
+    public int max;
 }

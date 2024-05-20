@@ -182,10 +182,6 @@ public class PlayerLoadout : MonoBehaviour
         {
             playerBack.SwitchToSteelWings();
         }
-        else if (selectedBack.title == "Backpack")
-        {
-            playerBack.SwitchToBackPack();
-        }
         playerUpgrades.backUpdated = false;
     }
 

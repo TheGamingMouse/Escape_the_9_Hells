@@ -9,33 +9,35 @@ public class PlayerUpgrades : MonoBehaviour
 
     [Header("Floats")]
     // Weapons
-    readonly float atSpeed = 0.5f;
+    readonly float atSpeed = 0.25f;
     float activeAtSpeed;
-    readonly float damage = 0.5f;
+    readonly float damage = 0.05f;
     float acitveDamage;
-    readonly float spCool = 0.5f;
+    readonly float spCool = 0.35f;
     float activeSpCool;
 
     // Companions
-    readonly float abRate = 0.5f;
+    readonly float abRate = 0.25f;
     float activeAbRate;
-    readonly float abStrength = 0.5f;
+    readonly float abStrength = 0.2f;
     float activeAbStrength;
 
     // // Armors
-    readonly float resist = 0.05f;
+    readonly float resist = 0.04f;
     float activeResist;
-    readonly float speedPen = 0.05f;
+    readonly float speedPen = 0.025f;
     float activeSpeedPen;
 
     // // Backs
-    readonly float cool = 0.5f;
+    readonly float cool = 0.15f;
     float activeCool;
 
     [Header("Bools")]
     public bool weaponUpdated;
     public bool companionUpdated;
     public bool backUpdated;
+    public bool armorUpdated;
+    bool loaded;
 
     [Header("Lists")]
     // Weapons
@@ -76,6 +78,7 @@ public class PlayerUpgrades : MonoBehaviour
     Armor armor;
     Backs backs;
     PlayerLoadout loadout;
+    SaveLoadManager slManager;
 
     #endregion
 
@@ -89,12 +92,38 @@ public class PlayerUpgrades : MonoBehaviour
         companion = GameObject.FindWithTag("Companions").GetComponent<Companion>();
 
         loadout = GetComponent<PlayerLoadout>();
+        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
     }
 
     void Update()
     {
         if (loadout.start)
         {
+            if (!loaded)
+            {
+                // Weapons
+                upgradesPugio = slManager.pugioUpgrades;
+                upgradesUlfberht = slManager.ulfberhtUpgrades;
+
+                // Companions
+                upgradesLoyalSphere = slManager.loyalSphereUpgrades;
+                upgradesAttackSquare = slManager.attackSquareUpgrades;
+
+                // Armors
+                upgradesLeather = slManager.leatherUpgrades;
+                upgradesHide = slManager.hideUpgrades;
+                upgradesRingMail = slManager.ringMailUpgrades;
+                upgradesPlate = slManager.plateUpgrades;
+
+                // Backs
+                upgradesAngelWings = slManager.angelWingsUpgrades;
+                upgradesSteelWings = slManager.steelWingsUpgrades;
+                upgradesBackpacks = slManager.backpackUpgrades;
+                upgradesCapeOWinds = slManager.capeOWindUpgrades;
+
+                loaded = true;
+            }
+
             // Weapons
             if (!weaponUpdated)
             {
@@ -402,6 +431,79 @@ public class PlayerUpgrades : MonoBehaviour
                 companionUpdated = true;
             }
 
+            // Armors
+            if (!armorUpdated)
+            {
+                if (loadout.selectedArmor.title.ToLower() == "leather armor")
+                {
+                    // Resistance
+                    armor.leather.resistanceMod -= activeResist;
+
+                    activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
+                    armor.leather.resistanceMod += activeResist;
+
+                    // Speed
+                    armor.leather.speedMod -= activeSpeedPen;
+
+                    activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
+                    armor.leather.speedMod += activeSpeedPen;
+                }
+                else if (loadout.selectedArmor.title.ToLower() == "hide armor")
+                {
+                    // Resistance
+                    armor.leather.resistanceMod -= activeResist;
+
+                    activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
+                    armor.leather.resistanceMod += activeResist;
+
+                    // Speed
+                    armor.leather.speedMod -= activeSpeedPen;
+
+                    activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
+                    armor.leather.speedMod += activeSpeedPen;
+                }
+                else if (loadout.selectedArmor.title.ToLower() == "ring mail armor")
+                {
+                    // Resistance
+                    armor.leather.resistanceMod -= activeResist;
+
+                    activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
+                    armor.leather.resistanceMod += activeResist;
+
+                    // Speed
+                    armor.leather.speedMod -= activeSpeedPen;
+
+                    activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
+                    armor.leather.speedMod += activeSpeedPen;
+                }
+                else if (loadout.selectedArmor.title.ToLower() == "plate armor")
+                {
+                    // Resistance
+                    armor.leather.resistanceMod -= activeResist;
+
+                    activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
+                    armor.leather.resistanceMod += activeResist;
+
+                    // Speed
+                    armor.leather.speedMod -= activeSpeedPen;
+
+                    activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
+                    armor.leather.speedMod += activeSpeedPen;
+                }
+                else
+                {
+                    // Resistance
+                    armor.leather.resistanceMod -= activeResist;
+                    armor.leather.resistanceMod = 0f;
+
+                    // Speed
+                    armor.leather.speedMod -= activeSpeedPen;
+                    armor.leather.speedMod = 0f;
+                }
+
+                armorUpdated = true;
+            }
+
             // Backs
             if (!backUpdated)
             {
@@ -549,62 +651,42 @@ public class PlayerUpgrades : MonoBehaviour
     {
         upgradesLeather.Add(upgrade);
 
-        // Resistance
-        activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
-        armor.leather.resistanceMod += activeResist;
-
-        // Speed
-        activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
-        armor.leather.speedMod += activeSpeedPen;
+        armorUpdated = false;
     }
 
     public void AddHideUpgrade(UpgradeItemsSO upgrade)
     {
         upgradesHide.Add(upgrade);
 
-        // Resistance
-        activeResist = upgradesHide.Where(x => x.name == "Resistance Upgrade").Count() * resist;
-        armor.hide.resistanceMod += activeResist;
-
-        // Speed
-        activeSpeedPen = upgradesHide.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
-        armor.hide.speedMod += activeSpeedPen;
+        armorUpdated = false;
     }
 
     public void AddRingMailUpgrade(UpgradeItemsSO upgrade)
     {
         upgradesRingMail.Add(upgrade);
 
-        // Resistance
-        activeResist = upgradesRingMail.Where(x => x.name == "Resistance Upgrade").Count() * resist;
-        armor.ringMail.resistanceMod += activeResist;
-
-        // Speed
-        activeSpeedPen = upgradesRingMail.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
-        armor.ringMail.speedMod += activeSpeedPen;
+        armorUpdated = false;
     }
 
     public void AddPlateUpgrade(UpgradeItemsSO upgrade)
     {
         upgradesPlate.Add(upgrade);
 
-        // Resistance
-        activeResist = upgradesPlate.Where(x => x.name == "Resistance Upgrade").Count() * resist;
-        armor.plate.resistanceMod += activeResist;
-
-        // Speed
-        activeSpeedPen = upgradesPlate.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
-        armor.plate.speedMod += activeSpeedPen;
+        armorUpdated = false;
     }
 
     public void AddArmor1Upgrade(UpgradeItemsSO upgrade)
     {
         upgradesArmor1.Add(upgrade);
+
+        armorUpdated = false;
     }
 
     public void AddArmor2Upgrade(UpgradeItemsSO upgrade)
     {
         upgradesArmor2.Add(upgrade);
+
+        armorUpdated = false;
     }
 
     #endregion
