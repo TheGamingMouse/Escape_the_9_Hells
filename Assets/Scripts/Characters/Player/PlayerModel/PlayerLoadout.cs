@@ -108,10 +108,22 @@ public class PlayerLoadout : MonoBehaviour
         selectedArmor = armor;
         selectedBack = back;
 
-        UpdateWeapon();
-        UpdateCompanion();
-        UpdateArmor();
-        UpdateBack();
+        if (playerWeapon)
+        {
+            UpdateWeapon();
+        }
+        if (playerCompanion)
+        {
+            UpdateCompanion();
+        }
+        if (playerArmor)
+        {
+            UpdateArmor();
+        }
+        if (playerBack)
+        {
+            UpdateBack();
+        }
     }
 
     void UpdateWeapon()

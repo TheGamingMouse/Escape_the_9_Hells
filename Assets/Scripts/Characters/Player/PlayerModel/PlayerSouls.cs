@@ -61,7 +61,7 @@ public class PlayerSouls : MonoBehaviour
             movement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
         }
 
-        if (!soulsUpdated)
+        if (!soulsUpdated && weapon)
         {
             weapon.attackSpeedMultiplier += attackSpeedSouls.Count * attackSpeedMod;
             weapon.damageMultiplier += damageSouls.Count * damageMod;

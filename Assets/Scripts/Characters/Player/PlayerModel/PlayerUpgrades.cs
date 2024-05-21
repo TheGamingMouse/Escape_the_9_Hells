@@ -89,7 +89,10 @@ public class PlayerUpgrades : MonoBehaviour
         weapon = GetComponentInChildren<Weapon>();
         armor = GetComponentInChildren<Armor>();
         backs = GetComponentInChildren<Backs>();
-        companion = GameObject.FindWithTag("Companions").GetComponent<Companion>();
+        if (GameObject.FindWithTag("Companions"))
+        {
+            companion = GameObject.FindWithTag("Companions").GetComponent<Companion>();
+        }
 
         loadout = GetComponent<PlayerLoadout>();
         slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();

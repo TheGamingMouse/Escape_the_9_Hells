@@ -59,7 +59,8 @@ public class InternalMaze : MonoBehaviour
                 Cell currentCell = board[Mathf.FloorToInt(i + j * size.x)];
                 if (currentCell.visited)
                 {
-                    var newCell = Instantiate(internalCell, new Vector3(i * offset.x + roomBehavior.x * roomOffset.x - size.x + 1, 0, -j * offset.y - roomBehavior.y * roomOffset.y + size.y - 1), 
+                    var newCell = Instantiate(internalCell, new Vector3(i * offset.x + roomBehavior.x * roomOffset.x - size.x + 1, 0, 
+                        -j * offset.y - roomBehavior.y * roomOffset.y + size.y - 1), 
                         Quaternion.identity, transform.Find("InternalMaze")).GetComponent<InternalCellBehaiviour>();
                     
                     newCell.UpdateCell(board[Mathf.FloorToInt(i + j * size.x)].status);
@@ -68,7 +69,8 @@ public class InternalMaze : MonoBehaviour
                 }
                 else if (!currentCell.visited)
                 {
-                    var newRemover = Instantiate(floorRemover, new Vector3(i * offset.x + roomBehavior.x * roomOffset.x - size.x + 1, 0, -j * offset.y - roomBehavior.y * roomOffset.y + size.y - 1),
+                    var newRemover = Instantiate(floorRemover, new Vector3(i * offset.x + roomBehavior.x * roomOffset.x - size.x + 1, 0, 
+                        -j * offset.y - roomBehavior.y * roomOffset.y + size.y - 1),
                         Quaternion.identity, transform.Find("InternalMaze"));
                     
                     Destroy(newRemover, 2f);
@@ -186,22 +188,30 @@ public class InternalMaze : MonoBehaviour
     {
         List<int> neighbors = new();
 
-        if (cell - size.x >= 0 && !board[Mathf.FloorToInt(cell - size.x)].visited && !board[Mathf.FloorToInt(cell - size.x)].unVisitable)
+        // Upward
+        if (cell - size.x >= 0 && !board[Mathf.FloorToInt(cell - size.x)].visited && 
+            !board[Mathf.FloorToInt(cell - size.x)].unVisitable)
         {
             neighbors.Add(Mathf.FloorToInt(cell - size.x));
         }
 
-        if (cell + size.x < board.Count && !board[Mathf.FloorToInt(cell + size.x)].visited && !board[Mathf.FloorToInt(cell + size.x)].unVisitable)
+        // Downward
+        if (cell + size.x < board.Count && !board[Mathf.FloorToInt(cell + size.x)].visited && 
+            !board[Mathf.FloorToInt(cell + size.x)].unVisitable)
         {
             neighbors.Add(Mathf.FloorToInt(cell + size.x));
         }
 
-        if ((cell + 1) % size.x != 0 && !board[Mathf.FloorToInt(cell + 1)].visited && !board[Mathf.FloorToInt(cell + 1)].unVisitable)
+        // Right
+        if ((cell + 1) % size.x != 0 && !board[Mathf.FloorToInt(cell + 1)].visited && 
+            !board[Mathf.FloorToInt(cell + 1)].unVisitable)
         {
             neighbors.Add(Mathf.FloorToInt(cell + 1));
         }
 
-        if (cell % size.x != 0 && !board[Mathf.FloorToInt(cell - 1)].visited && !board[Mathf.FloorToInt(cell - 1)].unVisitable)
+        // Left
+        if (cell % size.x != 0 && !board[Mathf.FloorToInt(cell - 1)].visited && 
+            !board[Mathf.FloorToInt(cell - 1)].unVisitable)
         {
             neighbors.Add(Mathf.FloorToInt(cell - 1));
         }

@@ -467,10 +467,38 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             }
 
             // Selected Equipment
-            data.weapon = playerLoadout.selectedWeapon.title;
-            data.companion = playerLoadout.selectedCompanion.title;
-            data.armor = playerLoadout.selectedArmor.title;
-            data.back = playerLoadout.selectedBack.title;
+            if (playerLoadout.selectedWeapon != null)
+            {
+                data.weapon = playerLoadout.selectedWeapon.title;
+            }
+            else
+            {
+                data.weapon = null;
+            }
+            if (playerLoadout.selectedCompanion != null)
+            {
+                data.companion = playerLoadout.selectedCompanion.title;
+            }
+            else
+            {
+                data.companion = null;
+            }
+            if (playerLoadout.selectedArmor != null)
+            {
+                data.armor = playerLoadout.selectedArmor.title;
+            }
+            else
+            {
+                data.armor = null;
+            }
+            if (playerLoadout.selectedBack)
+            {
+                data.back = playerLoadout.selectedBack.title;
+            }
+            else
+            {
+                data.back = null;
+            }
 
             // Bought Equipment
             data.boughtWeapons.Clear();
