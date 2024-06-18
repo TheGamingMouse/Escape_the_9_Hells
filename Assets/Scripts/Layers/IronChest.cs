@@ -20,6 +20,7 @@ public class IronChest : MonoBehaviour
     ExpSoulsManager expSoulsManager;
     Animator animator;
     LayerManager layerManager;
+    PlayerLevel playerLevel;
     
 
     #endregion
@@ -36,9 +37,18 @@ public class IronChest : MonoBehaviour
             expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
             animator = GetComponentInChildren<Animator>();
             player = GameObject.FindWithTag("Player").transform;
-        }
+            playerLevel = player.GetComponent<PlayerLevel>();
 
-        souls = Random.Range(10, 26);
+            int luckCheck = Random.Range(1, 101);
+            if (luckCheck <= playerLevel.luck)
+            {
+                souls = Random.Range(10, 26) * 2;
+            }
+            else
+            {
+                souls = Random.Range(10, 26);
+            }
+        }
     }
 
     // Update is called once per frame

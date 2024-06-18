@@ -6,6 +6,10 @@ public class PlayerSouls : MonoBehaviour
 {
     #region Variables
 
+    [Header("Ints")]
+    readonly int luckMod = 1;
+    int reRolls;
+
     [Header("Floats")]
     readonly float attackSpeedMod = 0.1f;
     readonly float damageMod = 0.1f;
@@ -21,6 +25,9 @@ public class PlayerSouls : MonoBehaviour
     public List<SoulsItemsSO> damageSouls = new();
     public List<SoulsItemsSO> defenceSouls = new();
     public List<SoulsItemsSO> movementSpeedSouls = new();
+    public List<SoulsItemsSO> luckSouls = new();
+    public List<SoulsItemsSO> startLevelSouls = new();
+    public List<SoulsItemsSO> reRollSouls = new();
 
     [Header("Components")]
     SaveLoadManager slManager;
@@ -28,6 +35,8 @@ public class PlayerSouls : MonoBehaviour
     Weapon weapon;
     PlayerMovement movement;
     Ricky ricky;
+    PlayerLevel level;
+    PerkMenu perkMenu;
 
     #endregion
 
@@ -36,11 +45,16 @@ public class PlayerSouls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var player = GameObject.FindWithTag("Player");
+
         slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
-        health = GameObject.FindWithTag("Player").GetComponent<PlayerHealth>();
-        weapon = GameObject.FindWithTag("Player").GetComponentInChildren<Weapon>();
-        movement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
-        if (GameObject.FindWithTag("NPC") != null && GameObject.FindWithTag("NPC").transform.Find("Ricky").TryGetComponent<Ricky>(out Ricky rickyCmop))
+        health = player.GetComponent<PlayerHealth>();
+        weapon = player.GetComponentInChildren<Weapon>();
+        movement = player.GetComponent<PlayerMovement>();
+        level = player.GetComponent<PlayerLevel>();
+        perkMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/PerkMenu").GetComponent<PerkMenu>();
+
+        if (GameObject.FindWithTag("NPC") != null && GameObject.FindWithTag("NPC").transform.Find("Ricky").TryGetComponent(out Ricky rickyCmop))
         {
             ricky = rickyCmop;
         }
@@ -49,6 +63,10 @@ public class PlayerSouls : MonoBehaviour
         damageSouls = slManager.damageSoulsBought;
         defenceSouls = slManager.defenceSoulsBought;
         movementSpeedSouls = slManager.movementSpeedSoulsBought;
+        luckSouls = slManager.luckSoulsBought;
+        startLevelSouls = slManager.startLevelSoulsBought;
+        reRollSouls = slManager.reRollSoulsBought;
+        reRolls = slManager.reRolls;
     }
 
     // Update is called once per frame
@@ -67,6 +85,9 @@ public class PlayerSouls : MonoBehaviour
             weapon.damageMultiplier += damageSouls.Count * damageMod;
             health.resistanceMultiplier += defenceSouls.Count * defenceMod;
             movement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
+            level.luck += luckSouls.Count * luckMod;
+            level.startLevel = startLevelSouls.Count + 1;
+            perkMenu.reRolls = reRolls;
 
             soulsUpdated = true;
         }
@@ -110,6 +131,23 @@ public class PlayerSouls : MonoBehaviour
 
             movementSpeedSouls.Add(soul);
             movement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
+        }
+        else if (soul.title == "Luck Soul")
+        {
+            level.luck -= luckSouls.Count * luckMod;
+
+            luckSouls.Add(soul);
+            level.luck += luckSouls.Count * luckMod;
+        }
+        else if (soul.title == "Start Level Soul")
+        {
+            startLevelSouls.Add(soul);
+            level.startLevel = startLevelSouls.Count + 1;
+        }
+        else if (soul.title == "Re Roll Soul")
+        {
+            reRollSouls.Add(soul);
+            perkMenu.reRolls = reRolls;
         }
     }
 

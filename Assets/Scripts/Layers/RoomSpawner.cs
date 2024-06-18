@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,19 +14,25 @@ public class RoomSpawner : MonoBehaviour
 
     #region Variables
 
+    [Header("Ints")]
+    public int basicDemonChance;
+    public int impChance;
+
     [Header("Bools")]
     bool layerGenerated;
+    [HideInInspector]
     public bool enemiesDefeated;
     bool nextRoomLoaded;
     bool enemiesSpawned;
+    [HideInInspector]
     public bool inArea;
+    bool doorCanOpen;
 
     [Header("GameObjects")]
     GameObject door;
     GameObject secondDoor;
     GameObject doorHinge;
     GameObject secondDoorHinge;
-    public GameObject enemy;
     public GameObject chest;
 
     [Header("Transforms")]
@@ -36,6 +43,7 @@ public class RoomSpawner : MonoBehaviour
     readonly List<Transform> spawnPoints = new();
     public List<GameObject> enemies = new();
     readonly List<Transform> chestSpawns = new();
+    public List<GameObject> enemyTypes = new();
     
     [Header("Arrays")]
     bool[] spawned;
@@ -58,23 +66,34 @@ public class RoomSpawner : MonoBehaviour
         layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
         roomBehavior = GetComponent<RoomBehavior>();
 
-        for (int i = 0; i <= 7; i++)
+        basicDemonChance = generator.basicDemonChance;
+        impChance = generator.impChance;
+
+        if (basicDemonChance + impChance != 100)
         {
-            if (roomBehavior.interior != null)
+            Debug.LogError("Enemy spawn-chances do not match up to 100% basicDemonChance has been changed to match.");
+            if (basicDemonChance + impChance < 100)
             {
-                spawnPoints.Add(transform.Find("InteriorWalls/SpawnPositions").GetChild(i));
+                basicDemonChance += 100 - (basicDemonChance - impChance);
             }
             else
             {
-                spawnPoints.Add(transform.Find("SpawnPositions").GetChild(i));
+                basicDemonChance -= 100 - (basicDemonChance - impChance);
             }
+        }
+
+        for (int i = 0; i < 8; i++)
+        {
+            spawnPoints.Add(transform.Find("SpawnPositions").GetChild(i));
         }
         spawned = new bool[spawnPoints.Count];
 
-        for (int i = 0; i <= 3; i++)
+        for (int i = 0; i < 4; i++)
         {
             chestSpawns.Add(transform.Find("ChestSpawns").GetChild(i));
         }
+
+        doorCanOpen = true;
     }
 
     // Update is called once per frame
@@ -97,12 +116,13 @@ public class RoomSpawner : MonoBehaviour
             }
         }
 
-        if (enemiesDefeated)
+        if (enemiesDefeated && doorCanOpen)
         {
             OpenDoor();
             if (!nextRoomLoaded)
             {
                 LoadNextRoom();
+                StartCoroutine(OpenDoorTimer());
             }
         }
         
@@ -124,12 +144,12 @@ public class RoomSpawner : MonoBehaviour
     {
         if (door != null)
         {
-            door.GetComponentInChildren<BoxCollider>().enabled = false;
+            door.transform.Find("DoorHinge").GetComponent<BoxCollider>().enabled = false;
             doorHinge.transform.localRotation = Quaternion.Slerp(doorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
 
             if (secondDoor != null)
             {
-                secondDoor.GetComponentInChildren<BoxCollider>().enabled = false;
+                secondDoor.transform.Find("DoorHinge").GetComponent<BoxCollider>().enabled = false;
                 secondDoorHinge.transform.localRotation = Quaternion.Slerp(secondDoorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
             }
         }
@@ -139,9 +159,10 @@ public class RoomSpawner : MonoBehaviour
     {
         if (door != null)
         {
-            if (roomBehavior.x == 4 && roomBehavior.y == 4 && !layerManager.showroom)
+            if (roomBehavior.x == roomBehavior.boardSize.x && roomBehavior.y == roomBehavior.boardSize.y && !layerManager.showroom)
             {
                 layerManager.bossRoom.SetActive(true);
+                layerManager.bossRoom.GetComponent<RoomBehavior>().active = true;
                 OnBossSpawn?.Invoke();
                 return;
             }
@@ -158,6 +179,7 @@ public class RoomSpawner : MonoBehaviour
                         if (!layerManager.showroom)
                         {
                             r.SetActive(true);
+                            r.GetComponent<RoomBehavior>().active = true;
                         }
                         
                         nextRoomLoaded = true;
@@ -171,6 +193,7 @@ public class RoomSpawner : MonoBehaviour
                         if (!layerManager.showroom)
                         {
                             r.SetActive(true);
+                            r.GetComponent<RoomBehavior>().active = true;
                         }
                         
                         nextRoomLoaded = true;
@@ -184,6 +207,7 @@ public class RoomSpawner : MonoBehaviour
                         if (!layerManager.showroom)
                         {
                             r.SetActive(true);
+                            r.GetComponent<RoomBehavior>().active = true;
                         }
                         
                         nextRoomLoaded = true;
@@ -197,6 +221,7 @@ public class RoomSpawner : MonoBehaviour
                         if (!layerManager.showroom)
                         {
                             r.SetActive(true);
+                            r.GetComponent<RoomBehavior>().active = true;
                         }
                         
                         nextRoomLoaded = true;
@@ -213,6 +238,7 @@ public class RoomSpawner : MonoBehaviour
                             if (!layerManager.showroom)
                             {
                                 r.SetActive(true);
+                                r.GetComponent<RoomBehavior>().active = true;
                             }
 
                             nextRoomLoaded = true;
@@ -226,6 +252,7 @@ public class RoomSpawner : MonoBehaviour
                             if (!layerManager.showroom)
                             {
                                 r.SetActive(true);
+                                r.GetComponent<RoomBehavior>().active = true;
                             }
 
                             nextRoomLoaded = true;
@@ -238,6 +265,7 @@ public class RoomSpawner : MonoBehaviour
                             r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
                             {
                                 r.SetActive(true);
+                                r.GetComponent<RoomBehavior>().active = true;
                             }
                             
                             nextRoomLoaded = true;
@@ -250,6 +278,7 @@ public class RoomSpawner : MonoBehaviour
                             r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
                             {
                                 r.SetActive(true);
+                                r.GetComponent<RoomBehavior>().active = true;
                             }
                             
                             nextRoomLoaded = true;
@@ -307,6 +336,13 @@ public class RoomSpawner : MonoBehaviour
         }
     }
 
+    IEnumerator OpenDoorTimer()
+    {
+        yield return new WaitForSeconds(15f);
+
+        doorCanOpen = false;
+    }
+
     #endregion
 
     #region Spawn Methods
@@ -320,9 +356,40 @@ public class RoomSpawner : MonoBehaviour
             int spawnIndex = Random.Range(0, spawnPoints.Count);
             if (spawned[spawnIndex] == false)
             {
-                var newEnemy = Instantiate(enemy, spawnPoints[spawnIndex].position, Quaternion.identity, enemyList);
-                newEnemy.GetComponent<EnemyHealth>().roomSpawner = this;
+                int j = Random.Range(1, 101);
+
+                int k = -1;
+                if (j <= impChance)
+                {
+                    k = 1;
+                }
+                else if (j <= basicDemonChance)
+                {
+                    k = 0;
+                }
+                else
+                {
+                    i--;
+                    continue;
+                }
+
+                if (k == -1)
+                {
+                    i--;
+                    continue;
+                }
+
+                var newEnemy = Instantiate(enemyTypes[k], spawnPoints[spawnIndex].position, Quaternion.identity, enemyList);
                 newEnemy.GetComponent<EnemySight>().roomSpawner = this;
+                if (newEnemy.TryGetComponent(out BasicEnemyHealth basicHealth))
+                {
+                    basicHealth.roomSpawner = this;
+                }
+                else if (newEnemy.TryGetComponent(out ImpHealth impHealth))
+                {
+                    impHealth.roomSpawner = this;
+                    newEnemy.transform.position -= new Vector3(0f, 0.5f, 0f);
+                }
                 enemies.Add(newEnemy);
 
                 spawned[spawnIndex] = true;

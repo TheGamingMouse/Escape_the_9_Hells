@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Damage Soul
   description: This will increase you damage by 10% for each of these you have.
-  price: 15
+  price: 30

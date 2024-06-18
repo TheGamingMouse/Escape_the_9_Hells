@@ -9,11 +9,16 @@ public class LoadoutMenu : MonoBehaviour
 {
     #region Variables
 
+    [Header("Ints")]
+    int primaryIndex = -1;
+    int secondaryIndex = -1;
+
     [Header("Bools")]
     public bool menuOpen;
     bool pannelsLoaded;
     bool playerStoped;
     public bool pannelsActivated;
+    bool isBackpackActive;
 
     [Header("GameObjects")]
     public GameObject contents;
@@ -38,12 +43,15 @@ public class LoadoutMenu : MonoBehaviour
     public GameObject[] loadoutPannelsSOArmor;
     public GameObject[] loadoutPannelsSOBack;
     public Button[] selectLoadoutButtonsWeapons;
+    public Button[] selectLoadoutButtonsPrimaryWeapons;
+    public Button[] selectLoadoutButtonsSecondaryWeapons;
     public Button[] selectLoadoutButtonsCompanion;
     public Button[] selectLoadoutButtonsArmor;
     public Button[] selectLoadoutButtonsBack;
 
     [Header("LoadoutItemsSO")]
-    LoadoutItemsSO selectedWeapon;
+    LoadoutItemsSO selectedPrimaryWeapon;
+    LoadoutItemsSO selectedSecondaryWeapon;
     LoadoutItemsSO selectedCompanion;
     LoadoutItemsSO selectedArmor;
     LoadoutItemsSO selectedBack;
@@ -147,70 +155,14 @@ public class LoadoutMenu : MonoBehaviour
 
     void LoadLoadoutPannels()
     {
-        for (int i = 0; i < loadoutItemsSOWeapons.Length; i++)
-        {
-            loadoutPannelsWeapons[i].titleText.text = loadoutItemsSOWeapons[i].title;
-            loadoutPannelsWeapons[i].descriptionText.text = loadoutItemsSOWeapons[i].description;
+        LoadWeapons();
+        LoadCompanions();
+        LoadArmors();
+        LoadBacks();
 
-            if (playerLoadout.selectedWeapon && loadoutItemsSOWeapons[i].title == playerLoadout.selectedWeapon.title)
-            {
-                selectedWeapon = loadoutItemsSOWeapons[i];
-                selectLoadoutButtonsWeapons[i].interactable = false;
-            }
-            else
-            {
-                selectLoadoutButtonsWeapons[i].interactable = true;
-            }
-        }
-        for (int i = 0; i < loadoutItemsSOCompanion.Length; i++)
+        if (!selectedPrimaryWeapon)
         {
-            loadoutPannelsCompanion[i].titleText.text = loadoutItemsSOCompanion[i].title;
-            loadoutPannelsCompanion[i].descriptionText.text = loadoutItemsSOCompanion[i].description;
-
-            if (playerLoadout.selectedCompanion && loadoutItemsSOCompanion[i].title == playerLoadout.selectedCompanion.title)
-            {
-                selectedCompanion = loadoutItemsSOCompanion[i];
-                selectLoadoutButtonsCompanion[i].interactable = false;
-            }
-            else
-            {
-                selectLoadoutButtonsCompanion[i].interactable = true;
-            }
-        }
-        for (int i = 0; i < loadoutItemsSOArmor.Length; i++)
-        {
-            loadoutPannelsArmor[i].titleText.text = loadoutItemsSOArmor[i].title;
-            loadoutPannelsArmor[i].descriptionText.text = loadoutItemsSOArmor[i].description;
-
-            if (playerLoadout.selectedArmor && loadoutItemsSOArmor[i].title == playerLoadout.selectedArmor.title)
-            {
-                selectedArmor = loadoutItemsSOArmor[i];
-                selectLoadoutButtonsArmor[i].interactable = false;
-            }
-            else
-            {
-                selectLoadoutButtonsArmor[i].interactable = true;
-            }
-        }
-        for (int i = 0; i < loadoutItemsSOBack.Length; i++)
-        {
-            loadoutPannelsBack[i].titleText.text = loadoutItemsSOBack[i].title;
-            loadoutPannelsBack[i].descriptionText.text = loadoutItemsSOBack[i].description;
-
-            if (playerLoadout.selectedBack && loadoutItemsSOBack[i].title == playerLoadout.selectedBack.title)
-            {
-                selectedBack = loadoutItemsSOBack[i];
-                selectLoadoutButtonsBack[i].interactable = false;
-            }
-            else
-            {
-                selectLoadoutButtonsBack[i].interactable = true;
-            }
-        }
-
-        if (!selectedWeapon)
-        {
-            selectedWeapon = loadoutItemsSOWeapons[0];
+            selectedPrimaryWeapon = loadoutItemsSOWeapons[0];
             selectLoadoutButtonsWeapons[0].interactable = false;
         }
         if (!selectedCompanion)
@@ -232,9 +184,156 @@ public class LoadoutMenu : MonoBehaviour
         pannelsLoaded = true;
     }
 
+    void LoadWeapons()
+    {
+        if (!selectedBack)
+        {
+            if (playerLoadout.backpackActive)
+            {
+                isBackpackActive = true;
+            }
+            else
+            {
+                isBackpackActive = false;
+            }
+        }
+        else
+        {
+            if (selectedBack.title == "Backpack")
+            {
+                isBackpackActive = true;
+            }
+            else
+            {
+                isBackpackActive = false;
+            }
+        }
+        if (isBackpackActive)
+        {
+            for (int i = 0; i < loadoutItemsSOWeapons.Length; i++)
+            {
+                loadoutPannelsWeapons[i].titleText.text = loadoutItemsSOWeapons[i].title;
+                loadoutPannelsWeapons[i].descriptionText.text = loadoutItemsSOWeapons[i].description;
+                
+                selectLoadoutButtonsWeapons[i].gameObject.SetActive(false);
+                selectLoadoutButtonsPrimaryWeapons[i].gameObject.SetActive(true);
+                selectLoadoutButtonsSecondaryWeapons[i].gameObject.SetActive(true);
+
+                if (playerLoadout.selectedPrimaryWeapon && (loadoutItemsSOWeapons[i].title == playerLoadout.selectedPrimaryWeapon.title || 
+                    loadoutItemsSOWeapons[i].title == playerLoadout.selectedSecondaryWeapon.title))
+                {
+                    if (loadoutItemsSOWeapons[i].title == playerLoadout.selectedPrimaryWeapon.title)
+                    {
+                        selectedPrimaryWeapon = loadoutItemsSOWeapons[i];
+                    }
+                    primaryIndex = i;
+                    selectLoadoutButtonsPrimaryWeapons[i].interactable = false;
+                }
+                else
+                {
+                    selectLoadoutButtonsPrimaryWeapons[i].interactable = true;
+                }
+
+                if (playerLoadout.selectedSecondaryWeapon && (loadoutItemsSOWeapons[i].title == playerLoadout.selectedSecondaryWeapon.title ||
+                    loadoutItemsSOWeapons[i].title == playerLoadout.selectedPrimaryWeapon.title))
+                {
+                    if (loadoutItemsSOWeapons[i].title == playerLoadout.selectedSecondaryWeapon.title)
+                    {
+                        selectedSecondaryWeapon = loadoutItemsSOWeapons[i];
+                    }
+                    secondaryIndex = i;
+                    selectLoadoutButtonsSecondaryWeapons[i].interactable = false;
+                }
+                else
+                {
+                    selectLoadoutButtonsSecondaryWeapons[i].interactable = true;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < loadoutItemsSOWeapons.Length; i++)
+            {
+                loadoutPannelsWeapons[i].titleText.text = loadoutItemsSOWeapons[i].title;
+                loadoutPannelsWeapons[i].descriptionText.text = loadoutItemsSOWeapons[i].description;
+                
+                selectLoadoutButtonsWeapons[i].gameObject.SetActive(true);
+                selectLoadoutButtonsPrimaryWeapons[i].gameObject.SetActive(false);
+                selectLoadoutButtonsSecondaryWeapons[i].gameObject.SetActive(false);
+
+                if (playerLoadout.selectedPrimaryWeapon && loadoutItemsSOWeapons[i].title == playerLoadout.selectedPrimaryWeapon.title)
+                {
+                    selectedPrimaryWeapon = loadoutItemsSOWeapons[i];
+                    selectLoadoutButtonsWeapons[i].interactable = false;
+                }
+                else
+                {
+                    selectLoadoutButtonsWeapons[i].interactable = true;
+                }
+            }
+        }
+    }
+
+    void LoadCompanions()
+    {
+        for (int i = 0; i < loadoutItemsSOCompanion.Length; i++)
+        {
+            loadoutPannelsCompanion[i].titleText.text = loadoutItemsSOCompanion[i].title;
+            loadoutPannelsCompanion[i].descriptionText.text = loadoutItemsSOCompanion[i].description;
+
+            if (playerLoadout.selectedCompanion && loadoutItemsSOCompanion[i].title == playerLoadout.selectedCompanion.title)
+            {
+                selectedCompanion = loadoutItemsSOCompanion[i];
+                selectLoadoutButtonsCompanion[i].interactable = false;
+            }
+            else
+            {
+                selectLoadoutButtonsCompanion[i].interactable = true;
+            }
+        }
+    }
+
+    void LoadArmors()
+    {
+        for (int i = 0; i < loadoutItemsSOArmor.Length; i++)
+        {
+            loadoutPannelsArmor[i].titleText.text = loadoutItemsSOArmor[i].title;
+            loadoutPannelsArmor[i].descriptionText.text = loadoutItemsSOArmor[i].description;
+
+            if (playerLoadout.selectedArmor && loadoutItemsSOArmor[i].title == playerLoadout.selectedArmor.title)
+            {
+                selectedArmor = loadoutItemsSOArmor[i];
+                selectLoadoutButtonsArmor[i].interactable = false;
+            }
+            else
+            {
+                selectLoadoutButtonsArmor[i].interactable = true;
+            }
+        }
+    }
+
+    void LoadBacks()
+    {
+        for (int i = 0; i < loadoutItemsSOBack.Length; i++)
+        {
+            loadoutPannelsBack[i].titleText.text = loadoutItemsSOBack[i].title;
+            loadoutPannelsBack[i].descriptionText.text = loadoutItemsSOBack[i].description;
+
+            if (playerLoadout.selectedBack && loadoutItemsSOBack[i].title == playerLoadout.selectedBack.title)
+            {
+                selectedBack = loadoutItemsSOBack[i];
+                selectLoadoutButtonsBack[i].interactable = false;
+            }
+            else
+            {
+                selectLoadoutButtonsBack[i].interactable = true;
+            }
+        }
+    }
+
     public void SelectedLoadoutWeapon(int btnNo)
     {
-        selectedWeapon = loadoutItemsSOWeapons[btnNo];
+        selectedPrimaryWeapon = loadoutItemsSOWeapons[btnNo];
         for (int i = 0; i < selectLoadoutButtonsWeapons.Length; i++)
         {
             if (selectLoadoutButtonsWeapons[i] == selectLoadoutButtonsWeapons[btnNo])
@@ -244,6 +343,44 @@ public class LoadoutMenu : MonoBehaviour
             else
             {
                 selectLoadoutButtonsWeapons[i].interactable = true;
+            }
+        }
+    }
+    public void SelectedLoadoutPrimaryWeapon(int btnNo)
+    {
+        selectedPrimaryWeapon = loadoutItemsSOWeapons[btnNo];
+        primaryIndex = btnNo;
+        for (int i = 0; i < selectLoadoutButtonsPrimaryWeapons.Length; i++)
+        {
+            if (selectLoadoutButtonsPrimaryWeapons[i] == selectLoadoutButtonsPrimaryWeapons[btnNo])
+            {
+                selectLoadoutButtonsPrimaryWeapons[i].interactable = false;
+                selectLoadoutButtonsSecondaryWeapons[i].interactable = false;
+            }
+            else if (selectLoadoutButtonsPrimaryWeapons[i] != selectLoadoutButtonsPrimaryWeapons[secondaryIndex] && 
+                        selectLoadoutButtonsSecondaryWeapons[i] != selectLoadoutButtonsSecondaryWeapons[secondaryIndex])
+            {
+                selectLoadoutButtonsPrimaryWeapons[i].interactable = true;
+                selectLoadoutButtonsSecondaryWeapons[i].interactable = true;
+            }
+        }
+    }
+    public void SelectedLoadoutSecondaryWeapon(int btnNo)
+    {
+        selectedSecondaryWeapon = loadoutItemsSOWeapons[btnNo];
+        secondaryIndex = btnNo;
+        for (int i = 0; i < selectLoadoutButtonsSecondaryWeapons.Length; i++)
+        {
+            if (selectLoadoutButtonsSecondaryWeapons[i] == selectLoadoutButtonsSecondaryWeapons[btnNo])
+            {
+                selectLoadoutButtonsPrimaryWeapons[i].interactable = false;
+                selectLoadoutButtonsSecondaryWeapons[i].interactable = false;
+            }
+            else if (selectLoadoutButtonsPrimaryWeapons[i] != selectLoadoutButtonsPrimaryWeapons[primaryIndex] && 
+                        selectLoadoutButtonsSecondaryWeapons[i] != selectLoadoutButtonsSecondaryWeapons[primaryIndex])
+            {
+                selectLoadoutButtonsPrimaryWeapons[i].interactable = true;
+                selectLoadoutButtonsSecondaryWeapons[i].interactable = true;
             }
         }
     }
@@ -291,18 +428,20 @@ public class LoadoutMenu : MonoBehaviour
                 selectLoadoutButtonsBack[i].interactable = true;
             }
         }
+
+        LoadWeapons();
     }
 
     public void ConfirmSelected()
     {
-        playerLoadout.SetLoadout(selectedWeapon, selectedCompanion, selectedArmor, selectedBack);
+        playerLoadout.SetLoadout(selectedPrimaryWeapon, selectedSecondaryWeapon, selectedCompanion, selectedArmor, selectedBack);
 
         ExitStore();
     }
 
     public void ExitStore()
     {
-        selectedWeapon = null;
+        selectedPrimaryWeapon = null;
         selectedCompanion = null;
         selectedArmor = null;
         selectedBack = null;
@@ -317,9 +456,12 @@ public class LoadoutMenu : MonoBehaviour
 
     public void CloseStore()
     {
-        menuOpen = false;
-        uiManager.barbaraTalking = false;
-        barbara.talking = false;
+        if (barbara)
+        {
+            menuOpen = false;
+            uiManager.barbaraTalking = false;
+            barbara.talking = false;
+        }
     }
 
     #endregion

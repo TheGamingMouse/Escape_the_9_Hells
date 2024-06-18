@@ -9,7 +9,9 @@ public class EnemySight : MonoBehaviour
     [Header("Bools")]
     public bool isObstructed;
     public bool isInArea;
-    [SerializeField] bool boss;
+    bool boss;
+    [HideInInspector]
+    public bool minion;
 
     [Header("Transforms")]
     public Transform target;
@@ -20,9 +22,10 @@ public class EnemySight : MonoBehaviour
     public LayerMask obstructionMask;
 
     [Header("Components")]
+    [HideInInspector]
     public RoomSpawner roomSpawner;
+    [HideInInspector]
     public BossGenerator bossGenerator;
-    EnemyHealth enemyHealth;
 
     #endregion
 
@@ -32,9 +35,15 @@ public class EnemySight : MonoBehaviour
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;
-        enemyHealth = GetComponent<EnemyHealth>();
-
-        boss = enemyHealth.boss;
+        
+        if (TryGetComponent(out BasicEnemyHealth basicHealth))
+        {
+            boss = basicHealth.boss;
+        }
+        else if (TryGetComponent(out ImpHealth impHealth))
+        {
+            boss = impHealth.boss;
+        }
     }
 
     // Update is called once per frame
@@ -60,7 +69,7 @@ public class EnemySight : MonoBehaviour
 
     bool TargetInArea()
     {
-        if (boss)
+        if (boss || minion)
         {
             return bossGenerator.inArea;
         }

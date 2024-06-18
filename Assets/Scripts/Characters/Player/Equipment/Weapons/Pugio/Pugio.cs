@@ -16,7 +16,7 @@ public class Pugio : MonoBehaviour
     public bool specialAttacking;
 
     [Header("Components")]
-    EnemyAction enemyAction;
+    BasicEnemyAction enemyAction;
     public Weapon weapon;
 
     #endregion
@@ -25,7 +25,7 @@ public class Pugio : MonoBehaviour
 
     void Start()
     {
-        enemyAction = GetComponentInParent<EnemyAction>();
+        enemyAction = GetComponentInParent<BasicEnemyAction>();
     }
 
     void Update()
@@ -50,18 +50,22 @@ public class Pugio : MonoBehaviour
         {
             if (canDamageEnemies)
             {
-                if (coll.TryGetComponent<Ricky>(out Ricky ricky))
+                if (coll.TryGetComponent(out Ricky ricky))
                 {
                     ricky.TakeDamage((int)damage);
                 }
                 
-                if (coll.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
+                if (coll.TryGetComponent(out BasicEnemyHealth eComp))
                 {
-                    eComp.TakeDamage((int)damage);
+                    eComp.TakeDamage((int)damage, false);
+                }
+                else if (coll.TryGetComponent(out ImpHealth iComp))
+                {
+                    iComp.TakeDamage((int)damage, false);
                 }
             }
 
-            if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent<PlayerHealth>(out PlayerHealth pComp) && enemyAction.attacking)
+            if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent(out PlayerHealth pComp) && enemyAction.attacking)
             {
                 pComp.TakeDamage((int)damage);
             }
@@ -74,18 +78,22 @@ public class Pugio : MonoBehaviour
         {
             if (canDamageEnemies)
             {
-                if (coll.TryGetComponent<Ricky>(out Ricky ricky))
+                if (coll.TryGetComponent(out Ricky ricky))
                 {
                     ricky.TakeDamage((int)damage);
                 }
                 
-                if (coll.TryGetComponent<EnemyHealth>(out EnemyHealth eComp))
+                if (coll.TryGetComponent(out BasicEnemyHealth eComp))
                 {
-                    eComp.TakeDamage((int)damage);
+                    eComp.TakeDamage((int)damage, false);
+                }
+                else if (coll.TryGetComponent(out ImpHealth iComp))
+                {
+                    iComp.TakeDamage((int)damage, false);
                 }
             }
 
-            if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent<PlayerHealth>(out PlayerHealth pComp) && enemyAction.attacking)
+            if (coll.transform.CompareTag("Player") && coll.transform.TryGetComponent(out PlayerHealth pComp) && enemyAction.attacking)
             {
                 pComp.TakeDamage((int)damage);
             }

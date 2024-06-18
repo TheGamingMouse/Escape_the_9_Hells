@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public bool startBool = true;
     bool isDashing;
     bool dashCooldown;
+    bool canTriggerMusic = true;
 
     [Header("Vector3s")]
     Vector3 move;
@@ -36,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
     public RoomSpawner roomSpawner;
     UIManager uiManager;
     Backs backs;
+    MusicAudioManager musicManager;
 
     #endregion
 
@@ -44,9 +46,12 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var managers = GameObject.FindWithTag("Managers");
+
         rb = GetComponent<Rigidbody>();
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        uiManager = managers.GetComponent<UIManager>();
         backs = GetComponentInChildren<Backs>();
+        musicManager = managers.GetComponent<MusicAudioManager>();
 
         dashSpeed = baseSpeed * 1.5f;
         currentSpeed = baseSpeed;
@@ -100,9 +105,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        if (backs != null)
+        if (backs != null && (backs.angelWings.active || backs.steelWings.active))
         {
             dashCooldownTime = baseDashCooldownTime / backs.abilityCooldownMultiplier;
+        }
+        else
+        {
+            dashCooldownTime = baseDashCooldownTime;
         }
     }
 
@@ -151,12 +160,12 @@ public class PlayerMovement : MonoBehaviour
         currentSpeed = baseSpeed;
         isDashing = false;
 
-        if (backs.angelWings.active && backs.angelWings.bonusDash)
+        if (backs.angelWings.active && backs.angelWings.bonusDash && backs.bActive == Backs.BackActive.AngelWings)
         {
             StartCoroutine(backs.angelWings.BonusDash(dashCooldownTime));
             GetComponent<MeshRenderer>().material.SetColor("_Color", normalColor);
         }
-        else if (backs.steelWings.active)
+        else if (backs.steelWings.active && backs.bActive == Backs.BackActive.SteelWings)
         {
             StartCoroutine(backs.steelWings.SteelDash(dashCooldownTime));
             StartCoroutine(DashCooldown());
@@ -177,16 +186,41 @@ public class PlayerMovement : MonoBehaviour
         dashCooldown = false;
     }
 
+    IEnumerator TriggerCooldown()
+    {
+        float triggerCooldown = 0.5f;
+        canTriggerMusic = false;
+
+        yield return new WaitForSeconds(triggerCooldown);
+        
+        canTriggerMusic = true;
+    }
+
     void OnTriggerStay(Collider coll)
     {
         if (coll.transform.CompareTag("LayerRoom"))
         {
             roomSpawner = coll.GetComponent<RoomSpawner>();
-        }
 
-        if (coll.transform.CompareTag("BossRoom"))
+            if (musicManager.inBossRoom && canTriggerMusic)
+            {
+                musicManager.inBossRoom = false;
+                musicManager.CheckMusicTrack();
+
+                StartCoroutine(TriggerCooldown());
+            }
+        }
+        else if (coll.transform.CompareTag("BossRoom"))
         {
             bossGenerator = coll.GetComponent<BossGenerator>();
+
+            if (!musicManager.inBossRoom && canTriggerMusic)
+            {
+                musicManager.inBossRoom = true;
+                musicManager.CheckMusicTrack();
+
+                StartCoroutine(TriggerCooldown());
+            }
         }
     }
 

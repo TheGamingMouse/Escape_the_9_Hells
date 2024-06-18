@@ -153,6 +153,7 @@ MonoBehaviour:
   secondPosition: 0
   talking: 0
   canTalk: 0
+  daggerGiven: 0
   postCombatPlayerPos: {x: 0, y: 0.55, z: 0}
   stPos: {x: 0, y: 1.05, z: 2}
   ndPos: {x: -8, y: 1.05, z: 2}
@@ -191,11 +192,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2207660214897938033, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1175
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 2207660214897938033, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 552
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2207660214897938033, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -231,7 +232,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2207660214897938033, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1.5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2207660214897938033, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

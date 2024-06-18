@@ -12,7 +12,6 @@ public class Ulfberht : MonoBehaviour
 
     [Header("Bools")]
     public bool slashing;
-    public bool canDamageEnemies;
     public bool specialAttacking;
 
     [Header("Components")]

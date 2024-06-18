@@ -12,6 +12,7 @@ public class WeaponUpgradesMenu : MonoBehaviour
     [Header("Bools")]
     bool pannelsLoaded;
     public bool pannelsActivated;
+    [SerializeField] bool atTop;
 
     [Header("Strings")]
     readonly string header = "Weapon Upgrades";
@@ -59,13 +60,15 @@ public class WeaponUpgradesMenu : MonoBehaviour
 
     #region StartUpdate Methods
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
         playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
         playerUpgrades = GameObject.FindWithTag("Player").GetComponent<PlayerUpgrades>();
         upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
-        
+    }
+
+    void Update()
+    {
         if (!pannelsActivated)
         {
             for (int i = 0; i < weapons.Length; i++)
@@ -115,8 +118,6 @@ public class WeaponUpgradesMenu : MonoBehaviour
                 PannelsSOWeapons4[i].SetActive(true);
             }
 
-            contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
-            
             pugioContents.position = new Vector3(1000f, pugioContents.position.y);
             ulfberhtContents.position = new Vector3(1000f, ulfberhtContents.position.y);
             weapons1Contents.position = new Vector3(1000f, weapons1Contents.position.y);
@@ -134,6 +135,13 @@ public class WeaponUpgradesMenu : MonoBehaviour
             LoadUpgradePannels();
         }
         CheckUpgradesPurchaseable();
+
+        if (!atTop)
+        {
+            contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
+
+            atTop = true;
+        }
     }
 
     #endregion
@@ -613,6 +621,8 @@ public class WeaponUpgradesMenu : MonoBehaviour
     public void ChangeHeader()
     {
         headerText.text = header;
+
+        contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
     }
 
     #endregion

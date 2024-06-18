@@ -12,6 +12,7 @@ public class CompanionUpgradesMenu : MonoBehaviour
     [Header("Bools")]
     bool pannelsLoaded;
     public bool pannelsActivated;
+    bool atTop;
 
     [Header("Strings")]
     readonly string header = "Companion Upgrades";
@@ -59,13 +60,15 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
     #region StartUpdate Methods
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
         playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
         playerUpgrades = GameObject.FindWithTag("Player").GetComponent<PlayerUpgrades>();
         upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
-        
+    }
+
+    void Update()
+    {
         if (!pannelsActivated)
         {
             for (int i = 0; i < companions.Length; i++)
@@ -115,8 +118,6 @@ public class CompanionUpgradesMenu : MonoBehaviour
                 PannelsSOCompanions4[i].SetActive(true);
             }
 
-            contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
-            
             loyalSphereContents.position = new Vector3(1000f, loyalSphereContents.position.y);
             attackSquareContents.position = new Vector3(1000f, attackSquareContents.position.y);
             companions1Contents.position = new Vector3(1000f, companions1Contents.position.y);
@@ -134,6 +135,13 @@ public class CompanionUpgradesMenu : MonoBehaviour
             LoadUpgradePannels();
         }
         CheckUpgradesPurchaseable();
+
+        if (!atTop)
+        {
+            contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
+
+            atTop = true;
+        }
     }
 
     #endregion
@@ -391,6 +399,8 @@ public class CompanionUpgradesMenu : MonoBehaviour
     public void ChangeHeader()
     {
         headerText.text = header;
+
+        contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
     }
 
     #endregion

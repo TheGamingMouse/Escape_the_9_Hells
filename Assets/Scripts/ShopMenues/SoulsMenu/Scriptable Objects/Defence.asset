@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Defence Soul
   description: This will increase you resistance by 15% for each of these you have.
-  price: 10
+  price: 25

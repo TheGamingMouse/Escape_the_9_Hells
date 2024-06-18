@@ -19,6 +19,7 @@ public class AttackSquareMovement : MonoBehaviour
     [Header("Componensts")]
     Rigidbody rb;
     AttackSquareSight sight;
+    public ParticleSystem teleportEffect;
 
     #endregion
 
@@ -30,6 +31,9 @@ public class AttackSquareMovement : MonoBehaviour
         player = GameObject.FindWithTag("Player").transform;
         rb = GetComponent<Rigidbody>();
         sight = GetComponent<AttackSquareSight>();
+
+        teleportEffect.Stop();
+        teleportEffect.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -77,6 +81,28 @@ public class AttackSquareMovement : MonoBehaviour
                 rb.velocity = new Vector3(0f, 0f, 0f);
             }
         }
+
+        if (Vector3.Distance(player.position, transform.position) > 30f)
+        {
+            transform.position = player.position;
+
+            StartCoroutine(Teleport());
+        }
+    }
+
+    #endregion
+
+    #region General Methods
+
+    IEnumerator Teleport()
+    {
+        teleportEffect.gameObject.SetActive(true);
+        teleportEffect.Play();
+
+        yield return new WaitForSeconds(2f);
+
+        teleportEffect.Stop();
+        teleportEffect.gameObject.SetActive(false);
     }
 
     #endregion

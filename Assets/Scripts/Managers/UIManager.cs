@@ -46,12 +46,17 @@ public class UIManager : MonoBehaviour
     public bool openPerkMenu;
     bool isPaused;
     public bool npcsActive;
-    bool componentsFound;
+    public bool componentsFound;
     public bool rickyTalking;
     public bool barbaraTalking;
     public bool alexanderTalking;
     bool cursorObjSpawned;
     public bool jensTalking;
+    bool bossSpawned;
+    bool bossDead;
+
+    [Header("Strings")]
+    public string bossNameString;
 
     [Header("GameObjects")]
     public GameObject dialogueBox;
@@ -61,9 +66,10 @@ public class UIManager : MonoBehaviour
     GameObject godModeObj;
     GameObject deathMenu;
     GameObject pauseMenu;
-    GameObject bossHealthbar;
     GameObject promt;
+    GameObject npcConvos;
     public GameObject cursorObj;
+    GameObject bossObj;
 
     [Header("Transforms")]
     Transform canvas;
@@ -80,6 +86,8 @@ public class UIManager : MonoBehaviour
     TMP_Text dmSoulsGained;
     TMP_Text promtText;
     TMP_Text npcName;
+    TMP_Text bossName;
+    TMP_Text reRollText;
 
     [Header("Images")]
     Image bossHealthImage;
@@ -134,12 +142,6 @@ public class UIManager : MonoBehaviour
 
     #region StartUpdate Methods
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     void FixedUpdate()
     {
         UpdateCursorPosition();
@@ -182,6 +184,12 @@ public class UIManager : MonoBehaviour
             {
                 jens = npcs.GetComponentInChildren<Jens>();
             }
+
+            npcConvos.SetActive(true);
+        }
+        else
+        {
+            npcConvos.SetActive(false);
         }
 
         if (!gameStart && player.transform.position.y <= 0.55f)
@@ -211,6 +219,8 @@ public class UIManager : MonoBehaviour
         UpdateLevel();
         UpdatePromt();
         UpdateNPCPannels();
+        UpdateBossName(bossNameString);
+        UpdateReRollText();
 
         if (fadeTime > 0)
         {
@@ -261,6 +271,15 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
+
+        if (bossSpawned && !bossDead)
+        {
+            bossObj.SetActive(true);
+        }
+        else
+        {
+            bossObj.SetActive(false);
+        }
     }
 
     #endregion
@@ -291,10 +310,12 @@ public class UIManager : MonoBehaviour
         deathMenu = menus.Find("DeathMenu").gameObject;
         pauseMenu = menus.Find("PauseMenu").gameObject;
 
-        bossHealthImage = canvas.Find("BossHealthBar/Health Bar Fill").GetComponent<Image>();
-        bossHealthbar = canvas.Find("BossHealthBar").gameObject;
+        bossObj = canvas.Find("Boss").gameObject;
+        bossHealthImage = bossObj.transform.Find("BossHealthBar/Health Bar Fill").GetComponent<Image>();
 
         promt = canvas.Find("Promt").gameObject;
+
+        npcConvos = menus.Find("npcConversations").gameObject;
 
         if (npcsActive)
         {
@@ -324,6 +345,10 @@ public class UIManager : MonoBehaviour
 
         promtText = promt.transform.Find("PromtText (TMP)").GetComponent<TextMeshProUGUI>();
         npcName = promt.transform.Find("Name/NameText (TMP)").GetComponent<TextMeshProUGUI>();
+
+        bossName = bossObj.transform.Find("BossName").GetComponent<TextMeshProUGUI>();
+
+        reRollText = perkMenu.transform.Find("Contents/ReRollPerks/Text (TMP)").GetComponent<TextMeshProUGUI>();
     }
 
     void DisableObjects()
@@ -333,7 +358,7 @@ public class UIManager : MonoBehaviour
         godModeObj.SetActive(false);
         deathMenu.SetActive(false);
         pauseMenu.SetActive(false);
-        bossHealthbar.SetActive(false);
+        bossObj.SetActive(false);
 
         playerMovement.startBool = false;
         if (npcsActive)
@@ -370,22 +395,22 @@ public class UIManager : MonoBehaviour
 
     bool NPCIsTalking()
     {
-        if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Ricky>(out Ricky rickyComp))
+        if (player.GetComponent<Interactor>().colliders[0].TryGetComponent(out Ricky rickyComp))
         {
             if (rickyComp.canTalk)
             {
                 return rickyComp.talking;
             }
         }
-        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Barbara>(out Barbara barbaraComp))
+        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent(out Barbara barbaraComp))
         {
             return barbaraComp.talking;
         }
-        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Alexander>(out Alexander alexanderComp))
+        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent(out Alexander alexanderComp))
         {
             return alexanderComp.talking;
         }
-        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent<Jens>(out Jens jensComp))
+        else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent(out Jens jensComp))
         {
             return jensComp.talking;
         }
@@ -565,6 +590,16 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    void UpdateBossName(string name)
+    {
+        bossName.text = name;
+    }
+
+    void UpdateReRollText()
+    {
+        reRollText.text = $"Re-Rolls ({perkMenu.GetComponent<PerkMenu>().reRolls})";
+    }
+
     #endregion
 
     #region Button Methods
@@ -639,12 +674,12 @@ public class UIManager : MonoBehaviour
 
     void HandleBossSpawn()
     {
-        bossHealthbar.SetActive(true);
+        bossSpawned = true;
     }
 
     void HandleBossDeath()
     {
-        bossHealthbar.SetActive(false);
+        bossDead = true;
     }
 
     #endregion

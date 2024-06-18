@@ -7,8 +7,12 @@ public class DevTools : MonoBehaviour
     #region Variables
 
     [Header("Bools")]
+    [HideInInspector]
     public bool godMode;
     public bool isDev = false;
+
+    [Header("Transforms")]
+    public Transform toBossRoom;
 
     [Header("Components")]
     PlayerHealth playerHealth;
@@ -30,15 +34,18 @@ public class DevTools : MonoBehaviour
 
     void Update()
     {
-        if (isDev && Input.GetKeyDown(KeyCode.P))
+        if (isDev)
         {
-            if (!godMode)
+            if (Input.GetKeyDown(KeyCode.P))
             {
-                EnableGodMode();
-            }
-            else
-            {
-                DisableGodMode();
+                if (!godMode)
+                {
+                    EnableGodMode();
+                }
+                else
+                {
+                    DisableGodMode();
+                }
             }
         }
     }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Palmmedia.ReportGenerator.Core;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,14 +10,64 @@ using UnityEngine.SceneManagement;
 public class SaveLoadManager : MonoBehaviour, IDataPersistence
 {
     #region Variables
+
+    [Header("Enums")]
+    public LayerState lState;
     
     [Header("Ints")]
+    [HideInInspector]
     public int layerReached;
+    [HideInInspector]
+    public int screenMode;
+    [HideInInspector]
+    public int higestLayerReached;
+    [HideInInspector]
+    public int currentSouls;
+    [HideInInspector]
+    public int totalSouls;
+    [HideInInspector]
+    public int totalLevels;
+    [HideInInspector]
+    public int demonsKilled;
+    [HideInInspector]
+    public int devilsKilled;
+    [HideInInspector]
+    public int reRolls;
+
+    // In-layer
+    [HideInInspector]
+    public int soulsCollectedInLayer;
+    [HideInInspector]
+    public int levelsGainedInLayer;
+    [HideInInspector]
+    public int demonsKilledInLayer;
+    [HideInInspector]
+    public int devilsKilledInLayer;
+
+    [Header("Floats")]
+    [HideInInspector]
+    public float capeOWindCooldown;
+    [HideInInspector]
+    public float masterVolume;
+    [HideInInspector]
+    public float musicVolume;
+    [HideInInspector]
+    public float sfxVolume;
+    [HideInInspector]
+    public float hubMenuMusicTime;
+
+    // In-layer
+    [HideInInspector]
+    public float expGainedInLayer;
+    [HideInInspector]
+    public float expMultiplierInLayer;
+    [HideInInspector]
+    public float healthInLayer;
 
     [Header("Bools")]
+    [HideInInspector]
     public bool rickyStartComp;
-    public bool hub;
-    public bool mainMenu;
+    [HideInInspector]
     public bool ready;
 
     [Header("Lists")]
@@ -31,42 +83,100 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     public List<UpgradeItemsSO> setArmorUpgrades;
     public List<UpgradeItemsSO> setBackUpgrades;
 
+    public List<PerkItemsSO> setPerks;
+
+    [HideInInspector]
     public List<LoadoutItemsSO> boughtWeapons = new();
+    [HideInInspector]
     public List<LoadoutItemsSO> boughtCompanions = new();
+    [HideInInspector]
     public List<LoadoutItemsSO> boughtArmors = new();
+    [HideInInspector]
     public List<LoadoutItemsSO> boughtBacks = new();
 
+    [HideInInspector]
     public List<SoulsItemsSO> attackSpeedSoulsBought = new();
+    [HideInInspector]
     public List<SoulsItemsSO> damageSoulsBought = new();
+    [HideInInspector]
     public List<SoulsItemsSO> defenceSoulsBought = new();
+    [HideInInspector]
     public List<SoulsItemsSO> movementSpeedSoulsBought = new();
+    [HideInInspector]
+    public List<SoulsItemsSO> luckSoulsBought = new();
+    [HideInInspector]
+    public List<SoulsItemsSO> startLevelSoulsBought = new();
+    [HideInInspector]
+    public List<SoulsItemsSO> reRollSoulsBought = new();
     
+    [HideInInspector]
     public List<UpgradeItemsSO> pugioUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> ulfberhtUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> loyalSphereUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> attackSquareUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> leatherUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> hideUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> ringMailUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> plateUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> angelWingsUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> steelWingsUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> backpackUpgrades = new();
+    [HideInInspector]
     public List<UpgradeItemsSO> capeOWindUpgrades = new();
 
+    // In-layer
+    [HideInInspector]
+    public List<PerkItemsSO> defencePerks = new();
+    [HideInInspector]
+    public List<PerkItemsSO> attackSpeedPerks = new();
+    [HideInInspector]
+    public List<PerkItemsSO> damagePerks = new();
+    [HideInInspector]
+    public List<PerkItemsSO> moveSpeedPerks = new();
+    [HideInInspector]
+    public List<PerkItemsSO> luckPerks = new();
+    [HideInInspector]
+    public List<PerkItemsSO> fireAuraPerks = new();
+    [HideInInspector]
+    public List<PerkItemsSO> shieldPerks = new();
+    [HideInInspector]
+    public List<PerkItemsSO> iceAuraPerks = new();
+
     [Header("LoadoutItemsSOs")]
-    public LoadoutItemsSO weapon;
+    [HideInInspector]
+    public LoadoutItemsSO primaryWeapon;
+    [HideInInspector]
+    public LoadoutItemsSO secondaryWeapon;
+    [HideInInspector]
     public LoadoutItemsSO companion;
+    [HideInInspector]
     public LoadoutItemsSO armor;
+    [HideInInspector]
     public LoadoutItemsSO back;
 
     [Header("Components")]
     PlayerLevel playerLevel;
-    ExpSoulsManager expSoulsManager;
     PlayerLoadout playerLoadout;
     PlayerEquipment playerEquipment;
     PlayerSouls playerSouls;
     PlayerUpgrades playerUpgrades;
+    CapeOWind capeOWind;
+    public MainMenuManager mainMenu;
+    SettingsManager settingsManager;
+    PlayerPerks playerPerks;
+    PlayerHealth playerHealth;
+    PerkMenu perkMenu;
+    MusicAudioManager musicManager;
     
     #endregion
 
@@ -81,8 +191,22 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
         playerEquipment = player.GetComponent<PlayerEquipment>();
         playerSouls = player.GetComponent<PlayerSouls>();
         playerUpgrades = player.GetComponent<PlayerUpgrades>();
+        playerPerks = player.GetComponent<PlayerPerks>();
+        playerHealth = player.GetComponent<PlayerHealth>();
+        
+        if (lState != LayerState.MainMenu)
+        {
+            capeOWind = player.GetComponentInChildren<Backs>().capeOWind;
+            settingsManager = GameObject.FindWithTag("Managers").GetComponent<SettingsManager>();
+            perkMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/PerkMenu").GetComponent<PerkMenu>();
+        }
 
-        if (CheckLayer() == -2 && SceneManager.GetActiveScene().buildIndex < 1)
+        if (lState == LayerState.MainMenu || lState == LayerState.Hub)
+        {
+            musicManager = GetComponent<MusicAudioManager>();
+        }
+
+        if (CheckLayer() == -2)
         {
             Debug.LogWarning("Error occured when checking layer");
         }
@@ -96,7 +220,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
     #region General Methods
 
-    int CheckLayer()
+    public int CheckLayer()
     {
         string layer = SceneManager.GetActiveScene().name.ToLower();
         if (layer == "main menu")
@@ -160,24 +284,30 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
     public void LoadData(GameData data)
     {
-        if (!mainMenu)
+        if (lState != LayerState.MainMenu)
         {
+            if (lState == LayerState.Hub)
+            {
+                // Souls
+                GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>().AddSouls(data.souls, true);
+            }
+
             // NPC variables
             rickyStartComp = data.rickyStartComp;
 
-            // Souls
-            if (hub)
-            {
-                expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
-                expSoulsManager.AddSouls(data.souls, true);
-            }
-
             // Selected Equipment
-            foreach (var weaponSelect in setWeapons)
+            foreach (var primarySelect in setWeapons)
             {
-                if (weaponSelect.title == data.weapon)
+                if (primarySelect.title == data.primaryWeapon)
                 {
-                    weapon = weaponSelect;
+                    primaryWeapon = primarySelect;
+                }
+            }
+            foreach (var secondarySelect in setWeapons)
+            {
+                if (secondarySelect.title == data.secondaryWeapon)
+                {
+                    secondaryWeapon = secondarySelect;
                 }
             }
             foreach (var companionSelect in setCompanions)
@@ -253,6 +383,9 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             SoulsItemsSO damageSoul = null;
             SoulsItemsSO defenceSoul = null;
             SoulsItemsSO movementSpeedSoul = null;
+            SoulsItemsSO luckSoul = null;
+            SoulsItemsSO startLevelSoul = null;
+            SoulsItemsSO reRollSoul = null;
 
             foreach (var soul in setSoulItems)
             {
@@ -272,28 +405,126 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                 {
                     movementSpeedSoul = soul;
                 }
+                else if (soul.title == "Luck Soul")
+                {
+                    luckSoul = soul;
+                }
+                else if (soul.title == "Start Level Soul")
+                {
+                    startLevelSoul = soul;
+                }
+                else if (soul.title == "Re Roll Soul")
+                {
+                    reRollSoul = soul;
+                }
+            }
+            if (!attackSpeedSoul)
+            {
+                Debug.LogError("Attack Speed Soul was not found");
+            }
+            if (!damageSoul)
+            {
+                Debug.LogError("Damage Soul was not found");
+            }
+            if (!defenceSoul)
+            {
+                Debug.LogError("Defence Soul was not found");
+            }
+            if (!movementSpeedSoul)
+            {
+                Debug.LogError("Movement Speed Soul was not found");
+            }
+            if (!luckSoul)
+            {
+                Debug.LogError("Luck Soul was not found");
+            }
+            if (!startLevelSoul)
+            {
+                Debug.LogError("Start Soul was not found");
+            }
+            if (!reRollSoul)
+            {
+                Debug.LogError("Re Roll Soul was not found");
             }
 
             attackSpeedSoulsBought.Clear();
+            if (data.attackSpeedSoulsBought > 6)
+            {
+                data.attackSpeedSoulsBought = 0;
+                Debug.LogWarning("More than 6 Souls found in attackSpeedSouls");
+            }
             for (int i = 0; i < data.attackSpeedSoulsBought; i++)
             {
                 attackSpeedSoulsBought.Add(attackSpeedSoul);
             }
+
             damageSoulsBought.Clear();
+            if (data.damageSoulsBought > 6)
+            {
+                data.damageSoulsBought = 0;
+                Debug.LogWarning("More than 6 Souls found in damageSouls");
+            }
             for (int i = 0; i < data.damageSoulsBought; i++)
             {
                 damageSoulsBought.Add(damageSoul);
             }
+
             defenceSoulsBought.Clear();
+            if (data.defenceSoulsBought > 6)
+            {
+                data.defenceSoulsBought = 0;
+                Debug.LogWarning("More than 6 Souls found in defenceSouls");
+            }
             for (int i = 0; i < data.defenceSoulsBought; i++)
             {
                 defenceSoulsBought.Add(defenceSoul);
             }
+
             movementSpeedSoulsBought.Clear();
+            if (data.movementSpeedSoulsBought > 6)
+            {
+                data.movementSpeedSoulsBought = 0;
+                Debug.LogWarning("More than 6 Souls found in movementSpeedSouls");
+            }
             for (int i = 0; i < data.movementSpeedSoulsBought; i++)
             {
                 movementSpeedSoulsBought.Add(movementSpeedSoul);
             }
+            
+            luckSoulsBought.Clear();
+            if (data.luckSoulsBought > 6)
+            {
+                data.luckSoulsBought = 0;
+                Debug.LogWarning("More than 6 Souls found in luckSouls");
+            }
+            for (int i = 0; i < data.luckSoulsBought; i++)
+            {
+                luckSoulsBought.Add(luckSoul);
+            }
+
+            startLevelSoulsBought.Clear();
+            if (data.startLevelSoulsBought > 6)
+            {
+                data.startLevelSoulsBought = 0;
+                Debug.LogWarning("More than 6 Souls found in startLevelSouls");
+            }
+            for (int i = 0; i < data.startLevelSoulsBought; i++)
+            {
+                startLevelSoulsBought.Add(startLevelSoul);
+            }
+
+            reRollSoulsBought.Clear();
+            if (data.reRollSoulsBought > 6)
+            {
+                data.reRollSoulsBought = 0;
+                Debug.LogWarning("More than 6 Souls found in reRollSouls");
+            }
+            for (int i = 0; i < data.reRollSoulsBought; i++)
+            {
+                reRollSoulsBought.Add(reRollSoul);
+                reRolls++;
+            }
+            reRolls -= data.reRollsSpent;
 
             // Bought Upgrades
             // Weapons
@@ -434,14 +665,101 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                     }
                 }
             }
+
+            // Equipment
+            capeOWindCooldown = data.capeOWindCooldown;
+
+            if (lState == LayerState.InLayers)
+            {
+                // In-layer
+                levelsGainedInLayer = data.levelsGainedInLayer;
+                expGainedInLayer = data.expGainedInLayer;
+                expMultiplierInLayer = data.expMultiplierInLayer;
+                soulsCollectedInLayer = data.soulsCollectedInLayer;
+                demonsKilledInLayer = data.demonsKilledInLayer;
+                devilsKilledInLayer = data.devilsKilledInLayer;
+                healthInLayer = data.healthInLayer;
+                
+                foreach (var perk in data.perks)
+                {
+                    if (perk == "Defence Perk")
+                    {
+                        defencePerks.Add(setPerks.Where(t => t.title == perk).First());
+                    }
+                    else if (perk == "Attack Speed Perk")
+                    {
+                        attackSpeedPerks.Add(setPerks.Where(t => t.title == perk).First());
+                    }
+                    else if (perk == "Damage Perk")
+                    {
+                        damagePerks.Add(setPerks.Where(t => t.title == perk).First());
+                    }
+                    else if (perk == "Movement Speed Perk")
+                    {
+                        moveSpeedPerks.Add(setPerks.Where(t => t.title == perk).First());
+                    }
+                    else if (perk == "Luck Perk")
+                    {
+                        luckPerks.Add(setPerks.Where(t => t.title == perk).First());
+                    }
+                    else if (perk == "Fire Aura Perk")
+                    {
+                        fireAuraPerks.Add(setPerks.Where(t => t.title == perk).First());
+                    }
+                    else if (perk == "Shield Perk")
+                    {
+                        shieldPerks.Add(setPerks.Where(t => t.title == perk).First());
+                    }
+                    else if (perk == "Ice Aura Perk")
+                    {
+                        iceAuraPerks.Add(setPerks.Where(t => t.title == perk).First());
+                    }
+                }
+            }
         }
+        else
+        {
+            demonsKilled = data.demonsKilled;
+            devilsKilled = data.devilsKilled;
+            higestLayerReached = data.highestLayerReached;
+            totalLevels = data.totalLevelUps;
+            totalSouls = data.totalSoulsCollected;
+            currentSouls = data.souls;
+        }
+
+        if (lState == LayerState.MainMenu || lState == LayerState.Hub)
+        {
+            hubMenuMusicTime = data.hubMenuMusicTime;
+        }
+        else
+        {
+            hubMenuMusicTime = 0f;
+        }
+
+        // Settings
+        masterVolume = data.masterVolume;
+        musicVolume = data.musicVolume;
+        sfxVolume = data.sfxVolume;
+        screenMode = data.screenMode;
+
         ready = true;
     }
 
     public void SaveData(ref GameData data)
     {
-        if (!mainMenu)
+        if (lState != LayerState.MainMenu)
         {
+            if (lState == LayerState.Hub)
+            {
+                // Souls
+                data.souls = playerLevel.souls;
+            }
+            else
+            {
+                data.souls += playerLevel.souls;
+                data.totalSoulsCollected += playerLevel.souls;
+            }
+
             // NPC Variables
             data.rickyStartComp = rickyStartComp;
 
@@ -453,27 +771,32 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                 data.highestLayerReached = layerReached;
             }
             data.totalLevelUps += playerLevel.level - 1;
-            
-            // Souls
-            if (hub)
-            {
-                data.souls = playerLevel.souls;
-                data.totalSoulsCollected = playerLevel.souls;
-            }
-            else
-            {
-                data.souls += playerLevel.souls;
-                data.totalSoulsCollected += playerLevel.souls;
-            }
 
             // Selected Equipment
             if (playerLoadout.selectedWeapon != null)
             {
-                data.weapon = playerLoadout.selectedWeapon.title;
+                if (playerLoadout.selectedPrimaryWeapon)
+                {
+                    data.primaryWeapon = playerLoadout.selectedPrimaryWeapon.title;
+                }
+                else
+                {
+                    data.primaryWeapon = playerLoadout.selectedWeapon.title;
+                }
+                
+                if (playerLoadout.selectedSecondaryWeapon)
+                {
+                    data.secondaryWeapon = playerLoadout.selectedSecondaryWeapon.title;
+                }
+                else
+                {
+                    data.secondaryWeapon = data.primaryWeapon;
+                }
             }
             else
             {
-                data.weapon = null;
+                data.primaryWeapon = null;
+                data.secondaryWeapon = null;
             }
             if (playerLoadout.selectedCompanion != null)
             {
@@ -543,6 +866,22 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             {
                 data.movementSpeedSoulsBought++;
             }
+            data.luckSoulsBought = 0;
+            foreach (var _ in playerSouls.luckSouls)
+            {
+                data.luckSoulsBought++;
+            }
+            data.startLevelSoulsBought = 0;
+            foreach (var _ in playerSouls.startLevelSouls)
+            {
+                data.startLevelSoulsBought++;
+            }
+            data.reRollSoulsBought = 0;
+            foreach (var _ in playerSouls.reRollSouls)
+            {
+                data.reRollSoulsBought++;
+            }
+            data.reRollsSpent = perkMenu.reRollsSpent;
 
             // Bought Upgrades
             // Weapons
@@ -612,9 +951,118 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             {
                 data.capeOWindUpgrades.Add(capeOWind.title);
             }
+
+            // Equipment
+            if (!capeOWind)
+            {
+                data.capeOWindCooldown = capeOWind.cooldown;
+            }
+            else
+            {
+                data.capeOWindCooldown = 0f;
+            }
+
+            // In-layer
+            if (lState == LayerState.InLayers)
+            {
+                data.soulsCollectedInLayer = playerLevel.souls;
+                data.levelsGainedInLayer = playerLevel.level;
+                data.expGainedInLayer = playerLevel.exp;
+                data.expMultiplierInLayer = playerLevel.expMultiplier;
+                data.demonsKilledInLayer = playerLevel.demonsKilled;
+                data.devilsKilledInLayer = playerLevel.devilsKilled;
+                data.healthInLayer = playerHealth.health;
+            
+                data.perks.Clear();
+                foreach (var defence in playerPerks.defencePerks)
+                {
+                    data.perks.Add(defence.title);
+                }
+
+                foreach (var attack in playerPerks.attackSpeedPerks)
+                {
+                    data.perks.Add(attack.title);
+                }
+
+                foreach (var damage in playerPerks.damagePerks)
+                {
+                    data.perks.Add(damage.title);
+                }
+
+                foreach (var moveSpeed in playerPerks.moveSpeedPerks)
+                {
+                    data.perks.Add(moveSpeed.title);
+                }
+
+                foreach (var luck in playerPerks.luckPerks)
+                {
+                    data.perks.Add(luck.title);
+                }
+
+                foreach (var fireAura in playerPerks.fireAuraPerks)
+                {
+                    data.perks.Add(fireAura.title);
+                }
+
+                foreach (var shield in playerPerks.shieldPerks)
+                {
+                    data.perks.Add(shield.title);
+                }
+
+                foreach (var iceAura in playerPerks.iceAuraPerks)
+                {
+                    data.perks.Add(iceAura.title);
+                }
+            }
+            else
+            {
+                data.soulsCollectedInLayer = 0;
+                data.levelsGainedInLayer = 0;
+                data.expGainedInLayer = 0f;
+                data.expMultiplierInLayer = 0f;
+                data.demonsKilledInLayer = 0;
+                data.devilsKilledInLayer = 0;
+                data.healthInLayer = playerHealth.maxHealth;
+            
+                data.perks = new();
+            }
         }
 
-        // Settings to save
+        // Settings
+        if (lState == LayerState.MainMenu)
+        {
+            data.masterVolume = mainMenu.masterVolume;
+            data.musicVolume = mainMenu.musicVolume;
+            data.sfxVolume = mainMenu.sfxVolume;
+            data.screenMode = mainMenu.screenMode;
+        }
+        else
+        {
+            data.masterVolume = settingsManager.masterVolume;
+            data.musicVolume = settingsManager.musicVolume;
+            data.sfxVolume = settingsManager.sfxVolume;
+            data.screenMode = settingsManager.screenMode;
+        }
+
+        if (lState == LayerState.MainMenu || lState == LayerState.Hub)
+        {
+            data.hubMenuMusicTime = musicManager.hubMenuMusicTime;
+        }
+        else
+        {
+            data.hubMenuMusicTime = 0f;
+        }
+    }
+
+    #endregion
+
+    #region Enums
+
+    public enum LayerState
+    {
+        InLayers,
+        Hub,
+        MainMenu
     }
 
     #endregion

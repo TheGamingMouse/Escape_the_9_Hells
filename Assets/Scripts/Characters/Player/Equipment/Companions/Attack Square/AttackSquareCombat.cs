@@ -39,10 +39,14 @@ public class AttackSquareCombat : MonoBehaviour
 
     void OnCollisionStay(Collision coll)
     {
-        if (coll.transform.TryGetComponent<EnemyHealth>(out EnemyHealth eComp) && canAttack)
+        if (coll.transform.TryGetComponent(out BasicEnemyHealth eComp) && canAttack)
         {
-            eComp.TakeDamage(damage);
+            eComp.TakeDamage(damage, false);
             StartCoroutine(DamageRoutine());
+        }
+        else if (coll.transform.TryGetComponent(out ImpHealth iComp))
+        {
+            iComp.TakeDamage(damage, false);
         }
     }
 

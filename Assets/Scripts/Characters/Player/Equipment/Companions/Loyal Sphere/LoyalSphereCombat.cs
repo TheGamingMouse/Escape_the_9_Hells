@@ -64,7 +64,10 @@ public class LoyalSphereCombat : MonoBehaviour
     {
         GameObject newProjectile = Instantiate(projectile, transform.position, Quaternion.identity, GameObject.FindWithTag("PrefabStorage").transform);
         newProjectile.GetComponent<Rigidbody>().AddForce(transform.forward * force, ForceMode.Impulse);
-        newProjectile.GetComponent<LoyalSphereProjectile>().damage = damage;
+        newProjectile.GetComponent<Firebolt>().damage = damage;
+        newProjectile.GetComponent<Firebolt>().explostionScale = 0.5f;
+        newProjectile.GetComponent<Firebolt>().canDamagePlayer = false;
+        newProjectile.GetComponent<Firebolt>().canDamageEnemies = true;
 
         Destroy(newProjectile, 3f);
     }

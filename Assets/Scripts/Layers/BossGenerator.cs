@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossGenerator : MonoBehaviour
 {
@@ -12,21 +14,32 @@ public class BossGenerator : MonoBehaviour
 
     #region Variables
 
+    [Header("Ints")]
+    [Range(1, 25)]
+    public int obstacleAmount;
+    public int obstaclesSpawned;
+
     [Header("Bools")]
     public bool isBossDead;
     bool treasureSpawned;
+    [HideInInspector]
     public bool ready;
+    [HideInInspector]
     public bool inArea;
     bool bossSpawned;
+    public bool doRandomObstacles;
 
     [Header("GameObjects")]
     public GameObject boss;
+    public GameObject wall;
+
+    [Header("Transforms")]
+    public Transform bossSpawn;
 
     [Header("Arrays")]
     public GameObject[] treasureRooms;
-
-    [Header("Vector3s")]
-    public Vector3 bossPos;
+    public GameObject[] floorTiles;
+    bool[] floorActive;
 
     [Header("Quaternions")]
     public Quaternion openRot;
@@ -50,16 +63,36 @@ public class BossGenerator : MonoBehaviour
 
         if (room.door.name == "Down Door")
         {
-            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Levels").GetComponent<TreasureRoom>();
+            foreach (GameObject t in treasureRooms)
+            {
+                if (t.GetComponent<TreasureRoom>().tType == TreasureRoom.TreasureType.Level)
+                {
+                    treasure = t.GetComponent<TreasureRoom>();
+                }
+            }
         }
         else if (room.door.name == "Right Door")
         {
-            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Souls").GetComponent<TreasureRoom>();
+            foreach (GameObject t in treasureRooms)
+            {
+                if (t.GetComponent<TreasureRoom>().tType == TreasureRoom.TreasureType.Souls)
+                {
+                    treasure = t.GetComponent<TreasureRoom>();
+                }
+            }
         }
         else if (room.door.name == "Left Door")
         {
-            treasure = transform.Find("TreasureRooms/BossTreasureRoom1.1 Exp").GetComponent<TreasureRoom>();
+            foreach (GameObject t in treasureRooms)
+            {
+                if (t.GetComponent<TreasureRoom>().tType == TreasureRoom.TreasureType.Exp)
+                {
+                    treasure = t.GetComponent<TreasureRoom>();
+                }
+            }
         }
+
+        GenerateObstacles();
 
         if (layerManager.showroom)
         {
@@ -71,6 +104,8 @@ public class BossGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        GenerateObstacles();
+
         if (treasure.ready && !ready)
         {
             for (int i = 0; i < treasureRooms.Length; i++)
@@ -83,9 +118,16 @@ public class BossGenerator : MonoBehaviour
 
         if (!bossSpawned)
         {
-            var newBoss = Instantiate(boss, bossPos, Quaternion.identity, transform).GetComponent<EnemySight>();
+            var newBoss = Instantiate(boss, bossSpawn.position, Quaternion.identity, transform).GetComponent<EnemySight>();
             newBoss.bossGenerator = this;
-            newBoss.GetComponent<EnemyHealth>().bossGenerator = this;
+            if (newBoss.TryGetComponent(out BasicEnemyHealth basicHealth))
+            {
+                basicHealth.bossGenerator = this;
+            }
+            else if (newBoss.TryGetComponent(out ImpHealth impHealth))
+            {
+                impHealth.bossGenerator = this;
+            }
             
             uiManager.bossGenerator = this;
             
@@ -130,15 +172,33 @@ public class BossGenerator : MonoBehaviour
     {
         if (room.door.name == "Down Door")
         {
-            treasureRooms[0].SetActive(true);
+            foreach (GameObject t in treasureRooms)
+            {
+                if (t.GetComponent<TreasureRoom>().tType == TreasureRoom.TreasureType.Level)
+                {
+                    t.SetActive(true);
+                }
+            }
         }
         else if (room.door.name == "Right Door")
         {
-            treasureRooms[1].SetActive(true);
+            foreach (GameObject t in treasureRooms)
+            {
+                if (t.GetComponent<TreasureRoom>().tType == TreasureRoom.TreasureType.Souls)
+                {
+                    t.SetActive(true);
+                }
+            }
         }
         else if (room.door.name == "Left Door")
         {
-            treasureRooms[2].SetActive(true);
+            foreach (GameObject t in treasureRooms)
+            {
+                if (t.GetComponent<TreasureRoom>().tType == TreasureRoom.TreasureType.Exp)
+                {
+                    t.SetActive(true);
+                }
+            }
         }
 
         treasure.LoadTreasure();
@@ -149,8 +209,48 @@ public class BossGenerator : MonoBehaviour
     {
         var doorHinge = room.door.transform.Find("DoorHinge");
 
-        room.door.GetComponentInChildren<BoxCollider>().enabled = false;
+        room.door.GetComponentInChildren<MeshCollider>().enabled = false;
         doorHinge.localRotation = Quaternion.Slerp(doorHinge.localRotation, openRot, Time.deltaTime);
+    }
+
+    void GenerateObstacles()
+    {
+        if (doRandomObstacles)
+        {
+            floorActive = new bool[floorTiles.Length];
+            while (obstaclesSpawned < obstacleAmount)
+            {
+                obstaclesSpawned++;
+                
+                int k = Random.Range(0, floorTiles.Length);
+                if (floorActive[k] || Vector3.Distance(floorTiles[k].transform.position, bossSpawn.position) < 5f)
+                {
+                    obstaclesSpawned--;
+                    continue;
+                }
+
+                floorActive[k] = true;
+                int j = Random.Range(0, 4);
+                switch (j)
+                {
+                    case 0:
+                        Instantiate(wall, floorTiles[k].transform.position + new Vector3(0f, 0f, 1f), new Quaternion(0f, 0f, 0f, 1f), transform.Find("Walls"));
+                        break;
+                    
+                    case 1:
+                        Instantiate(wall, floorTiles[k].transform.position + new Vector3(1f, 0f, 0f), new Quaternion(0f, 0.707106829f, 0f, 0.707106829f), transform.Find("Walls"));
+                        break;
+                    
+                    case 2:
+                        Instantiate(wall, floorTiles[k].transform.position + new Vector3(0f, 0f, -1f), new Quaternion(0f, 0f, 0f, 1f), transform.Find("Walls"));
+                        break;
+                    
+                    case 3:
+                        Instantiate(wall, floorTiles[k].transform.position + new Vector3(-1f, 0f, 0f), new Quaternion(0f, 0.707106829f, 0f, 0.707106829f), transform.Find("Walls"));
+                        break;
+                }
+            }
+        }
     }
 
     void OnTriggerEnter(Collider coll)

@@ -23,6 +23,12 @@ public class UpgradeMenu : MonoBehaviour
     [Header("GameObjects")]
     public GameObject contentsObj;
 
+    [Header("Transforms")]
+    public Transform contentsWeapons;
+    public Transform contentsCompanions;
+    public Transform contentsArmors;
+    public Transform contentsBacks;
+
     [Header("TMP_Pros")]
     public TMP_Text soulsText;
     public TMP_Text headerText;
@@ -58,6 +64,7 @@ public class UpgradeMenu : MonoBehaviour
         if (!headerUpdated)
         {
             headerText.text = header;
+            
             headerUpdated = true;
         }
 
@@ -96,9 +103,12 @@ public class UpgradeMenu : MonoBehaviour
 
     public void CloseStore()
     {
-        menuOpen = false;
-        uiManager.jensTalking = false;
-        jens.talking = false;
+        if (jens)
+        {
+            menuOpen = false;
+            uiManager.jensTalking = false;
+            jens.talking = false;
+        }
     }
 
     public void ReloadPannels()
@@ -112,6 +122,14 @@ public class UpgradeMenu : MonoBehaviour
     public void ChangeHeader()
     {
         headerText.text = header;
+    }
+
+    public void ToTheTop()
+    {
+        contentsWeapons.position = new Vector3(contentsWeapons.position.x, contentsWeapons.position.y - 5000f);
+        contentsCompanions.position = new Vector3(contentsCompanions.position.x, contentsCompanions.position.y - 5000f);
+        contentsArmors	.position = new Vector3(contentsArmors.position.x, contentsArmors.position.y - 5000f);
+        contentsBacks.position = new Vector3(contentsBacks.position.x, contentsBacks.position.y - 5000f);
     }
 
     #endregion

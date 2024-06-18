@@ -19,7 +19,19 @@ public class LevelManager : MonoBehaviour
 
     #endregion
 
-    #region Methods
+    #region StartUpdate Methods
+
+    void Update()
+    {
+        if (SceneManager.GetActiveScene().name == "NotImplimented")
+        {
+            Cursor.visible = true;
+        }
+    }
+
+    #endregion
+
+    #region General Methods
 
     public void ReturnToHub()
     {

@@ -21,6 +21,8 @@ TagManager:
   - WallChecks
   - FloorChecks
   - FloorTile
+  - ObstacleWall
+  - Door
   layers:
   - Default
   - TransparentFX

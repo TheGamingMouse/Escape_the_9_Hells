@@ -47,6 +47,8 @@ public class EquipmentMenu : MonoBehaviour
     public Button[] equipmentButtonsCompanion;
     public Button[] equipmentButtonsArmor;
     public Button[] equipmentButtonsBack;
+    public Button[] equipmentButtonsDisable1;
+    public Button[] equipmentButtonsDisable2;
 
     [Header("Components")]
     Alexander alexander;
@@ -180,6 +182,9 @@ public class EquipmentMenu : MonoBehaviour
             equipmentPannelsWeapons[i].descriptionText.text = equipmentItemsSOWeapons[i].description;
             equipmentPannelsWeapons[i].priceText.text = "Price: " + equipmentItemsSOWeapons[i].price.ToString();
             equipmentPannelsWeapons[i].buttonText.text = "Purchase";
+
+            equipmentButtonsDisable1[i].gameObject.SetActive(false);
+            equipmentButtonsDisable2[i].gameObject.SetActive(false);
         }
         for (int i = 0; i < equipmentItemsSOCompanion.Length; i++)
         {
@@ -299,9 +304,12 @@ public class EquipmentMenu : MonoBehaviour
 
     public void CloseStore()
     {
-        menuOpen = false;
-        uiManager.alexanderTalking = false;
-        alexander.talking = false;
+        if (alexander)
+        {
+            menuOpen = false;
+            uiManager.alexanderTalking = false;
+            alexander.talking = false;
+        }
     }
 
     #endregion

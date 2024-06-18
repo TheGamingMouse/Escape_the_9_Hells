@@ -14,6 +14,7 @@ public class RoomBehavior : MonoBehaviour
     public bool doInterior;
     bool activating;
     public bool completed;
+    public bool active;
 
     [Header("GameObjects")]
     public GameObject door;
@@ -24,6 +25,10 @@ public class RoomBehavior : MonoBehaviour
     [Header("Arrays")]
     public GameObject[] walls;
     public GameObject[] doors;
+    public GameObject[] lights;
+
+    [Header("Vector2")]
+    public Vector2 boardSize;
 
     [Header("Components")]
     LayerManager layerManager;
@@ -44,6 +49,22 @@ public class RoomBehavior : MonoBehaviour
             StartCoroutine(ActivatingRoutine());
             activating = true;
         }
+
+        if (active)
+        {
+            if (door)
+            {
+                door.GetComponentInChildren<MeshCollider>().enabled = false;
+                if (secondDoor)
+                {
+                    secondDoor.GetComponentInChildren<MeshCollider>().enabled = false;
+                }
+            }
+            if (backDoor)
+            {
+                backDoor.GetComponentInChildren<MeshCollider>().enabled = false;
+            }
+        }
     }
 
     #endregion
@@ -55,6 +76,7 @@ public class RoomBehavior : MonoBehaviour
         for (int i = 0; i < status.Length; i++)
         {
             doors[i].SetActive(status[i]);
+            lights[i].SetActive(status[i]);
             walls[i].SetActive(!status[i]);
         }
     }

@@ -8,6 +8,8 @@ public class GameData
     [Header("Ints")]
     // Souls
     public int souls;
+    public int screenMode;
+    public int reRollsSpent;
     
     // In-game Statistics
     public int demonsKilled;
@@ -21,6 +23,32 @@ public class GameData
     public int damageSoulsBought;
     public int defenceSoulsBought;
     public int movementSpeedSoulsBought;
+    public int luckSoulsBought;
+    public int startLevelSoulsBought;
+    public int reRollSoulsBought;
+
+    // In-layer
+    public int levelsGainedInLayer;
+    public int soulsCollectedInLayer;
+    public int demonsKilledInLayer;
+    public int devilsKilledInLayer;
+
+    [Header("Floats")]
+    //Equipment
+    public float capeOWindCooldown;
+
+    // Settings
+    public float masterVolume;
+    public float musicVolume;
+    public float sfxVolume;
+
+    // In-layer
+    public float expGainedInLayer;
+    public float expMultiplierInLayer;
+    public float healthInLayer;
+
+    // Music Length
+    public float hubMenuMusicTime;
 
     [Header("Bools")]
     // NPC Variables
@@ -28,7 +56,8 @@ public class GameData
 
     [Header("Strings")]
     // Selected Equipment
-    public string weapon;
+    public string primaryWeapon;
+    public string secondaryWeapon;
     public string companion;
     public string armor;
     public string back;
@@ -60,6 +89,9 @@ public class GameData
     public List<string> steelWingsUpgrades;
     public List<string> backpackUpgrades;
     public List<string> capeOWindUpgrades;
+
+    // In-layer
+    public List<string> perks;
     
     public GameData()
     {
@@ -77,7 +109,8 @@ public class GameData
         totalSoulsCollected = 0;
 
         // Selected Equipment
-        weapon = null;
+        primaryWeapon = null;
+        secondaryWeapon = null;
         companion = null;
         armor = null;
         back = null;
@@ -89,10 +122,14 @@ public class GameData
         boughtArmors = new();
 
         // Bought Souls
-        attackSpeedSoulsBought = new();
-        damageSoulsBought = new();
-        defenceSoulsBought = new();
-        movementSpeedSoulsBought = new();
+        attackSpeedSoulsBought = 0;
+        damageSoulsBought = 0;
+        defenceSoulsBought = 0;
+        movementSpeedSoulsBought = 0;
+        luckSoulsBought = 0;
+        startLevelSoulsBought = 0;
+        reRollSoulsBought = 0;
+        reRollsSpent = 0;
 
         // Bought Upgrades
         // Weapons
@@ -114,5 +151,28 @@ public class GameData
         steelWingsUpgrades = new();
         backpackUpgrades = new();
         capeOWindUpgrades = new();
+
+        // Equipment
+        capeOWindCooldown = 0f;
+
+        // Settings
+        masterVolume = 0f;
+        musicVolume = 0f;
+        sfxVolume = 0f;
+        screenMode = 0;
+
+        // In-layer
+        levelsGainedInLayer = 0;
+        expGainedInLayer = 0f;
+        expMultiplierInLayer = 0f;
+        soulsCollectedInLayer = 0;
+        demonsKilledInLayer = 0;
+        devilsKilledInLayer = 0;
+        healthInLayer = 100f;
+
+        perks = new();
+
+        // Music Length
+        hubMenuMusicTime = 0f;
     }
 }

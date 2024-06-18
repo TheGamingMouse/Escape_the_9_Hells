@@ -26,6 +26,11 @@ public class PlayerHealth : MonoBehaviour
     public bool playerDead;
     public bool isInvinsible;
 
+    [Header("Components")]
+    CapeOWind capeOWind;
+    SaveLoadManager slManager;
+    public Shield shield;
+
     #endregion
 
     #region StartUpdate Methods
@@ -33,7 +38,15 @@ public class PlayerHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        capeOWind = transform.GetComponentInChildren<Backs>().capeOWind;
+        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+
         health = maxHealth;
+
+        if (slManager.lState == SaveLoadManager.LayerState.InLayers)
+        {
+            health = slManager.healthInLayer;
+        }
     }
 
     // Update is called once per frame
@@ -41,7 +54,15 @@ public class PlayerHealth : MonoBehaviour
     {
         if (health <= 0 && !playerDead)
         {
+            if (capeOWind.active && capeOWind.canSave)
+            {
+                health = maxHealth;
+                StartCoroutine(capeOWind.Save());
+                return;
+            }
+            
             playerDead = true;
+            capeOWind.cooldown = 0;
             OnPlayerDeath?.Invoke();
         }
     }
@@ -61,6 +82,11 @@ public class PlayerHealth : MonoBehaviour
             else if ((health - damage) < 0)
             {
                 health = 0;
+            }
+            
+            if (!shield.onCooldown)
+            {
+                shield.damageTaken = true;
             }
         }
     }

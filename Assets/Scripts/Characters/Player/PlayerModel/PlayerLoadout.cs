@@ -8,9 +8,13 @@ public class PlayerLoadout : MonoBehaviour
 
     [Header("Bools")]
     public bool start;
+    public bool backpackActive;
+    bool ready;
 
     [Header("LoadoutItemsSO")]
     public LoadoutItemsSO selectedWeapon;
+    public LoadoutItemsSO selectedPrimaryWeapon;
+    public LoadoutItemsSO selectedSecondaryWeapon;
     public LoadoutItemsSO selectedCompanion;
     public LoadoutItemsSO selectedArmor;
     public LoadoutItemsSO selectedBack;
@@ -27,15 +31,34 @@ public class PlayerLoadout : MonoBehaviour
     Armor playerArmor;
     Backs playerBack;
     PlayerUpgrades playerUpgrades;
+    NPCSpawner spawner;
 
     #endregion
 
     #region StartUpdate Methods
 
-    // Start is called before the first frame update
+    void Start()
+    {
+        if (GameObject.FindWithTag("NPC") && GameObject.FindWithTag("NPC").TryGetComponent(out NPCSpawner npcSpawner))
+        {
+            spawner = npcSpawner;
+        }
+    }
+
     void Update()
     {
-        if (!start)
+        if (spawner)
+        {
+            if (spawner.rickyStart)
+            {
+                ready = true;
+            }
+        }
+        else
+        {
+            ready = true;
+        }
+        if (!start && ready)
         {
             playerWeapon = GetComponentInChildren<Weapon>();
             slManager = GameObject.Find("Managers").GetComponent<SaveLoadManager>();
@@ -44,7 +67,10 @@ public class PlayerLoadout : MonoBehaviour
             playerBack = GetComponentInChildren<Backs>();
             playerUpgrades = GetComponent<PlayerUpgrades>();
 
-            selectedWeapon = slManager.weapon;
+            selectedPrimaryWeapon = slManager.primaryWeapon;
+            selectedWeapon = selectedPrimaryWeapon;
+            selectedSecondaryWeapon = slManager.secondaryWeapon;
+
             selectedCompanion = slManager.companion;
             selectedArmor = slManager.armor;
             selectedBack = slManager.back;
@@ -101,9 +127,19 @@ public class PlayerLoadout : MonoBehaviour
 
     #region General Methods
 
-    public void SetLoadout(LoadoutItemsSO weapon, LoadoutItemsSO companion, LoadoutItemsSO armor, LoadoutItemsSO back)
+    #nullable enable
+    public void SetLoadout(LoadoutItemsSO primaryWeapon, LoadoutItemsSO? secondaryWeapon, LoadoutItemsSO companion, LoadoutItemsSO armor, LoadoutItemsSO back)
     {
-        selectedWeapon = weapon;
+        selectedPrimaryWeapon = primaryWeapon;
+        if (secondaryWeapon)
+        {
+            selectedSecondaryWeapon = secondaryWeapon;
+        }
+        else
+        {
+            selectedSecondaryWeapon = primaryWeapon;
+        }
+        selectedWeapon = selectedPrimaryWeapon;
         selectedCompanion = companion;
         selectedArmor = armor;
         selectedBack = back;
@@ -125,10 +161,20 @@ public class PlayerLoadout : MonoBehaviour
             UpdateBack();
         }
     }
+    #nullable disable
 
     void UpdateWeapon()
     {
-        if (selectedWeapon == null || selectedWeapon.title == "Pugio")
+        if (selectedBack && selectedBack.title == "Backpack")
+        {
+            backpackActive = true;
+        }
+        else
+        {
+            backpackActive = false;
+        }
+
+        if (!selectedWeapon || selectedWeapon.title == "Pugio")
         {
             playerWeapon.SwitchToPugio();
         }
@@ -141,7 +187,7 @@ public class PlayerLoadout : MonoBehaviour
 
     void UpdateCompanion()
     {
-        if (selectedCompanion == null || selectedCompanion.title == "Unequiped")
+        if (!selectedCompanion || selectedCompanion.title == "Unequiped")
         {
             playerCompanion.SwitchToNone();
         }
@@ -158,7 +204,7 @@ public class PlayerLoadout : MonoBehaviour
 
     void UpdateArmor()
     {
-        if (selectedArmor == null || selectedArmor.title == "Unequiped")
+        if (!selectedArmor || selectedArmor.title == "Unequiped")
         {
             playerArmor.SwitchToNone();
         }
@@ -178,11 +224,12 @@ public class PlayerLoadout : MonoBehaviour
         {
             playerArmor.SwitchToPlate();
         }
+        playerUpgrades.armorUpdated = false;
     }
 
     void UpdateBack()
     {
-        if (selectedBack == null || selectedBack.title == "Unequiped")
+        if (!selectedBack || selectedBack.title == "Unequiped")
         {
             playerBack.SwitchToNone();
         }
@@ -193,6 +240,14 @@ public class PlayerLoadout : MonoBehaviour
         else if (selectedBack.title == "Steel Wings")
         {
             playerBack.SwitchToSteelWings();
+        }
+        else if (selectedBack.title == "Backpack")
+        {
+            playerBack.SwitchToBackpack();
+        }
+        else if (selectedBack.title == "Cape O' Wind")
+        {
+            playerBack.SwitchToCapeOWind();
         }
         playerUpgrades.backUpdated = false;
     }

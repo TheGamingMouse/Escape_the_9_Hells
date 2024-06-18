@@ -26,29 +26,41 @@ public class LayerGenerator : MonoBehaviour
 
     #region Variables
 
-    [Header("Ints")]
-    public int startPos = 0;
+    [Header("Generation Options")]
+    public InteriorChoice iChoice;
     [Range(0, 20)]
     public int internalMaxHoles = 7;
+    [Range(1, 99)]
+    public int mazeChance;
+    [Range(0, 100)]
+    public int basicDemonChance;
+    [Range(0, 100)]
+    public int impChance;
+    public bool fillOut;
+    public Vector2 size;
+
+    [Header("Ints")]
+    public int startPos = 0;
 
     [Header("Bools")]
+    [HideInInspector]
     public bool layerGenerated;
     public bool printPops;
-    public bool doInterior;
+    bool doInterior;
 
     [Header("GameObjects")]
     public GameObject internalCell;
     public GameObject internalFloorRemover;
+    public GameObject enemySpawnPoint;
 
     [Header("Array")]
     public GameObject[] rooms;
 
-    [Header("Vector2s")]
-    public Vector2 size;
-    public Vector2 offset;
-
     [Header("Lists")]
     List<Cell> board;
+
+    [Header("Vector2s")]
+    public Vector2 offset;
 
     [Header("Components")]
     LayerManager layerManager;
@@ -84,22 +96,38 @@ public class LayerGenerator : MonoBehaviour
                 Cell currentCell = board[Mathf.FloorToInt(i + j * size.x)];
                 if (currentCell.visited)
                 {
-                    int randomRoom = Random.Range(0, rooms.Length);
+                    int randomRoom = Random.Range(1 , rooms.Length);
+                    if (iChoice == InteriorChoice.NoMaze)
+                    {
+                        doInterior = false;
+                    }
+                    else if (iChoice == InteriorChoice.SomeMaze)
+                    {
+                        int interior = Random.Range(1, 101);
+                        doInterior = interior <= mazeChance;
+                    }
+                    else if (iChoice == InteriorChoice.FullMaze)
+                    {
+                        doInterior = true;
+                    }
+
                     if (doInterior)
                     {
                         randomRoom = 0;
                     }
 
                     var newRoom = Instantiate(rooms[randomRoom], new Vector3(i * offset.x, 0, -j * offset.y), 
-                        Quaternion.identity, transform).GetComponent<RoomBehavior>();
+                        Quaternion.identity, transform).GetComponentInChildren<RoomBehavior>();
                     newRoom.UpdateRoom(board[Mathf.FloorToInt(i + j * size.x)].status);
                     newRoom.UpdateDoors(board[Mathf.FloorToInt(i + j * size.x)].doors);
                     newRoom.UpdateBackDoors(board[Mathf.FloorToInt(i + j * size.x)].backDoors);
 
                     newRoom.name += " " + i + " - " + j;
+                    newRoom.boardSize = new Vector2(size.x - 1, size.y - 1);
                     newRoom.x = i;
                     newRoom.y = j;
                     newRoom.doInterior = doInterior;
+
                     if (!doInterior && newRoom.interior != null)
                     {
                         int randRot = Random.Range(0, 2);
@@ -112,6 +140,7 @@ public class LayerGenerator : MonoBehaviour
 
                         maze.internalCell = internalCell;
                         maze.floorRemover = internalFloorRemover;
+                        maze.enemySpawnPoint = enemySpawnPoint;
                         maze.roomBehavior = newRoom;
                         maze.size = new Vector2(7f, 7f);
                         maze.offset = new Vector2(2f, 2f);
@@ -149,7 +178,7 @@ public class LayerGenerator : MonoBehaviour
 
             board[currentCell].visited = true;
 
-            if (currentCell == board.Count - 1)
+            if (currentCell == board.Count - 1  && !fillOut)
             {
                 if (!layerManager.showroom)
                 {
@@ -230,6 +259,7 @@ public class LayerGenerator : MonoBehaviour
             }
         }
         GenerateLayer();
+        layerGenerated = true;
     }
 
     List<int> CheckNeighbors(int cell)
@@ -257,6 +287,17 @@ public class LayerGenerator : MonoBehaviour
         }
 
         return neighbors;
+    }
+
+    #endregion
+
+    #region Enums
+
+    public enum InteriorChoice
+    {
+        NoMaze,
+        SomeMaze,
+        FullMaze
     }
 
     #endregion

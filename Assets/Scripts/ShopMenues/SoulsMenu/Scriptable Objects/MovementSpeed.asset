@@ -15,4 +15,4 @@ MonoBehaviour:
   title: Movement Speed Soul
   description: This will increase you movement speed by 5% for each of these you
     have.
-  price: 10
+  price: 25

@@ -287,6 +287,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614260f3e9bc8834c8375e7683e9228a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bonusDash: 0
+  active: 0
   leftWing: {fileID: 4508987635692110}
   rightWing: {fileID: 4510921518689814}
 --- !u!1 &1312554152486338

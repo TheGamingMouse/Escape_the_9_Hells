@@ -12,6 +12,7 @@ public class ArmorUpgradesMenu : MonoBehaviour
     [Header("Bools")]
     bool pannelsLoaded;
     public bool pannelsActivated;
+    bool atTop;
 
     [Header("Strings")]
     readonly string header = "Armor Upgrades";
@@ -59,13 +60,15 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
     #region StartUpdate Methods
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
         playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
         playerUpgrades = GameObject.FindWithTag("Player").GetComponent<PlayerUpgrades>();
         upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
-        
+    }
+
+    void Update()
+    {
         if (!pannelsActivated)
         {
             for (int i = 0; i < armors.Length; i++)
@@ -115,8 +118,6 @@ public class ArmorUpgradesMenu : MonoBehaviour
                 PannelsSOArmors2[i].SetActive(true);
             }
 
-            contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
-            
             leatherContents.position = new Vector3(1000f, leatherContents.position.y);
             hideContents.position = new Vector3(1000f, hideContents.position.y);
             ringMailContents.position = new Vector3(1000f, ringMailContents.position.y);
@@ -134,6 +135,13 @@ public class ArmorUpgradesMenu : MonoBehaviour
             LoadUpgradePannels();
         }
         CheckUpgradesPurchaseable();
+
+        if (!atTop)
+        {
+            contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
+
+            atTop = true;
+        }
     }
 
     #endregion
@@ -391,6 +399,8 @@ public class ArmorUpgradesMenu : MonoBehaviour
     public void ChangeHeader()
     {
         headerText.text = header;
+
+        contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
     }
 
     #endregion

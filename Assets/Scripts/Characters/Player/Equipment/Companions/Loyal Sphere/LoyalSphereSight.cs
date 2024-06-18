@@ -74,9 +74,16 @@ public class LoyalSphereSight : MonoBehaviour
 
     bool PlayerInArea()
     {
-        if (bossGenerator && bossGenerator.boss.GetComponent<EnemyHealth>().boss)
+        if (bossGenerator)
         {
-            return bossGenerator.inArea && !bossGenerator.isBossDead;
+            if (bossGenerator.TryGetComponent(out BasicEnemyHealth beComp) && beComp.boss)
+            {
+                return bossGenerator.inArea && !bossGenerator.isBossDead;
+            }
+            else if (bossGenerator.TryGetComponent(out ImpHealth iComp) && iComp.boss)
+            {
+                return bossGenerator.inArea && !bossGenerator.isBossDead;
+            }
         }
         else if (roomSpawner)
         {

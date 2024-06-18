@@ -58,15 +58,15 @@ public class Interactor : MonoBehaviour
 
     void FindNPC()
     {
-        if (colliders[0].TryGetComponent<Ricky>(out Ricky rickyComp))
+        if (colliders[0].TryGetComponent(out Ricky rickyComp))
         {
             npc = rickyComp.talking;
         }
-        else if (colliders[0].TryGetComponent<Barbara>(out Barbara barbaraComp))
+        else if (colliders[0].TryGetComponent(out Barbara barbaraComp))
         {
             npc = barbaraComp.talking;
         }
-        else if (colliders[0].TryGetComponent<Alexander>(out Alexander alexanderComp))
+        else if (colliders[0].TryGetComponent(out Alexander alexanderComp))
         {
             npc = alexanderComp.talking;
         }

@@ -63,6 +63,7 @@ public class Ricky : MonoBehaviour, IInteractable
     [Header("GameObjects")]
     GameObject healthbar;
     GameObject mainDoor;
+    GameObject entrance;
     GameObject weapon;
 
     [Header("Vector3s")]
@@ -106,6 +107,7 @@ public class Ricky : MonoBehaviour, IInteractable
         healthbar = transform.Find("HealthBarCanvas").gameObject;
         cam = Camera.main;
         mainDoor = GameObject.FindWithTag("Terrain").transform.Find("ExitDoor/DoorHinge").gameObject;
+        entrance = GameObject.FindWithTag("Terrain").transform.Find("ExitDoor/Wall_Entrance").gameObject;
         playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
         saveLoadManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
         spawner = GetComponentInParent<NPCSpawner>();
@@ -213,7 +215,7 @@ public class Ricky : MonoBehaviour, IInteractable
                 {
                     if (!openedDoor)
                     {
-                        mainDoor.GetComponentInChildren<BoxCollider>().enabled = false;
+                        entrance.GetComponent<MeshCollider>().enabled = false;
                         mainDoor.transform.localRotation = Quaternion.Slerp(mainDoor.transform.localRotation, new Quaternion(0f, 0.707106829f, 0f, 0.707106829f), Time.deltaTime);
                         if (mainDoor.transform.rotation == new Quaternion(0f, 0.707106829f, 0f, 0.707106829f))
                         {
@@ -230,7 +232,7 @@ public class Ricky : MonoBehaviour, IInteractable
         {
             if (!openedDoor)
             {
-                mainDoor.GetComponentInChildren<BoxCollider>().enabled = false;
+                entrance.GetComponent<MeshCollider>().enabled = false;
                 mainDoor.transform.localRotation = Quaternion.Slerp(mainDoor.transform.localRotation, new Quaternion(0f, 0.707106829f, 0f, 0.707106829f), Time.deltaTime);
                 if (mainDoor.transform.rotation == new Quaternion(0f, 0.707106829f, 0f, 0.707106829f))
                 {

@@ -48,6 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cType: 0
   cActive: 0
+  abilityRateMultiplier: 1
+  abilityStrengthMultiplier: 1
   loyalSphere: {fileID: 2573421683482033336}
   attackSquare: {fileID: 3337207452392888853}
 --- !u!1001 &1724206480061118045

@@ -14,6 +14,7 @@ public class InternalMaze : MonoBehaviour
         [Header("Bools")]
         public bool visited = false;
         public bool unVisitable = false;
+        public bool spawnPoint = false;
 
         [Header("Arrays")]
         public bool[] status = new bool[4];
@@ -30,10 +31,12 @@ public class InternalMaze : MonoBehaviour
     [Header("Ints")]
     public int startPos = 0;
     public int maxHoles;
+    [SerializeField] int spawnPoint = 0;
 
     [Header("GameObjects")]
     public GameObject internalCell;
     public GameObject floorRemover;
+    public GameObject enemySpawnPoint;
 
     [Header("Vector2s")]
     public Vector2 size;
@@ -52,6 +55,24 @@ public class InternalMaze : MonoBehaviour
 
     void GenerateMazeCell()
     {
+        while (spawnPoint < 8)
+        {
+            spawnPoint++;
+
+            int randomInt = Random.Range(0, board.Count);
+            Cell randomCell = board[randomInt];
+
+            if (randomCell.visited && !randomCell.spawnPoint)
+            {
+                randomCell.spawnPoint = true;
+            }
+            else
+            {
+                spawnPoint--;
+                continue;
+            }
+        }
+
         for (int i = 0; i < size.x; i++)
         {
             for (int j = 0; j < size.y; j++)
@@ -74,6 +95,15 @@ public class InternalMaze : MonoBehaviour
                         Quaternion.identity, transform.Find("InternalMaze"));
                     
                     Destroy(newRemover, 2f);
+                }
+
+                if (currentCell.spawnPoint)
+                {
+                    var spawnPointVar = Instantiate(enemySpawnPoint, new Vector3(i * offset.x + roomBehavior.x * roomOffset.x - size.x + 1, 0, 
+                        -j * offset.y - roomBehavior.y * roomOffset.y + size.y - 1), Quaternion.identity, transform.Find("SpawnPositions"));
+                    
+                    spawnPointVar.transform.position = new Vector3(spawnPointVar.transform.position.x, 1f, spawnPointVar.transform.position.z);
+                    spawnPointVar.name += " " + i + " - " + j + $"( Room: {GetComponent<RoomBehavior>().x} - {GetComponent<RoomBehavior>().y})";
                 }
             }
         }

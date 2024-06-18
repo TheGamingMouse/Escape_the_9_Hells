@@ -38,58 +38,66 @@ public class SoulsMenu : MonoBehaviour
     UIManager uiManager;
     Ricky ricky;
     PlayerSouls playerSouls;
+    SaveLoadManager slManager;
 
-    // Update is called once per frame
+    void Start()
+    {
+        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+    }
+
     void Update()
     {
-        if (!pannelsActivated)
+        if (slManager.lState == SaveLoadManager.LayerState.Hub)
         {
-            for (int i = 0; i < soulsItemsSO.Length; i++)
+            if (!pannelsActivated)
             {
-                soulsPannelsSO[i].SetActive(true);
+                for (int i = 0; i < soulsItemsSO.Length; i++)
+                {
+                    soulsPannelsSO[i].SetActive(true);
+                }
+
+                soulContents.transform.position = new Vector3(10000f, soulContents.transform.position.y, soulContents.transform.position.z);
+
+                uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+                playerSouls = GameObject.FindWithTag("Player").GetComponent<PlayerSouls>();
+
+                if (uiManager.npcsActive)
+                {
+                    ricky = GameObject.FindWithTag("NPC").GetComponentInChildren<Ricky>();
+                }
+
+                CheckSoulsPurchaseable();
+
+                pannelsActivated = true;
             }
-
-            soulContents.transform.position = new Vector3(10000f, soulContents.transform.position.y, soulContents.transform.position.z);
-
-            uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
-            playerSouls = GameObject.FindWithTag("Player").GetComponent<PlayerSouls>();
-
-            if (uiManager.npcsActive)
+            
+            souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
+            
+            if (!pannelsLoaded)
             {
-                ricky = GameObject.FindWithTag("NPC").GetComponentInChildren<Ricky>();
+                LoadSoulsPannels();
             }
 
             CheckSoulsPurchaseable();
 
-            pannelsActivated = true;
-        }
-        
-        souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
-        
-        if (!pannelsLoaded)
-        {
-            LoadSoulsPannels();
-        }
-
-        CheckSoulsPurchaseable();
-
-        if (menuOpen)
-        {
-            contents.SetActive(true);
-            Time.timeScale = 0f;
-            GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().startBool = false;
-            playerStoped = true;
-            Cursor.visible = true;
-        }
-        else
-        {
-            contents.SetActive(false);
-            if (playerStoped)
+            if (menuOpen)
             {
-                Time.timeScale = 1f;
-                GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().startBool = true;
-                playerStoped = false;
-                Cursor.visible = false;
+                contents.SetActive(true);
+                Time.timeScale = 0f;
+                GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().startBool = false;
+                playerStoped = true;
+                Cursor.visible = true;
+            }
+            else
+            {
+                contents.SetActive(false);
+                if (playerStoped)
+                {
+                    Time.timeScale = 1f;
+                    GameObject.FindWithTag("Player").GetComponent<PlayerMovement>().startBool = true;
+                    playerStoped = false;
+                    Cursor.visible = false;
+                }
             }
         }
     }
@@ -118,6 +126,19 @@ public class SoulsMenu : MonoBehaviour
             {
                 soulsCount = playerSouls.movementSpeedSouls.Count;
             }
+            else if (soulsItemsSO[i].title == "Luck Soul")
+            {
+                soulsCount = playerSouls.luckSouls.Count;
+            }
+            else if (soulsItemsSO[i].title == "Start Level Soul")
+            {
+                soulsCount = playerSouls.startLevelSouls.Count;
+            }
+            else if (soulsItemsSO[i].title == "Re Roll Soul")
+            {
+                soulsCount = playerSouls.reRollSouls.Count;
+            }
+
             switch (soulsCount)
                 {
                     case 0:
@@ -184,6 +205,18 @@ public class SoulsMenu : MonoBehaviour
             {
                 purchaseSoulsButtons[i].interactable = false;
             }
+            else if (soulsItemsSO[i].title == "Luck Soul" && playerSouls.luckSouls.Count == soulsMax)
+            {
+                purchaseSoulsButtons[i].interactable = false;
+            }
+            else if (soulsItemsSO[i].title == "Start Level Soul" && playerSouls.startLevelSouls.Count == soulsMax)
+            {
+                purchaseSoulsButtons[i].interactable = false;
+            }
+            else if (soulsItemsSO[i].title == "Re Roll Soul" && playerSouls.reRollSouls.Count == soulsMax)
+            {
+                purchaseSoulsButtons[i].interactable = false;
+            }
         }
     }
 
@@ -208,8 +241,11 @@ public class SoulsMenu : MonoBehaviour
 
     public void CloseStore()
     {
-        menuOpen = false;
-        uiManager.rickyTalking = false;
-        ricky.talking = false;
+        if (ricky)
+        {
+            menuOpen = false;
+            uiManager.rickyTalking = false;
+            ricky.talking = false;
+        }
     }
 }

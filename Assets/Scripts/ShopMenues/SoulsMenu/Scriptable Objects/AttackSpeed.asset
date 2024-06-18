@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   title: Attack Speed Soul
   description: This will increase you attack speed by 10% for each of these you have.
-  price: 5
+  price: 15

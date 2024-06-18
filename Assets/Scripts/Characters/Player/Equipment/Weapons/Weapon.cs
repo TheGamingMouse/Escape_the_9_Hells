@@ -278,7 +278,6 @@ public class Weapon : MonoBehaviour
                 weaponObj.SetActive(false);
             }
             ulfberhtObj.SetActive(true);
-            ulfberht.canDamageEnemies = true;
             
             pugio.canDamageEnemies = false;
 
@@ -300,8 +299,6 @@ public class Weapon : MonoBehaviour
             }
             pugioObj.SetActive(true);
             pugio.canDamageEnemies = true;
-            
-            ulfberht.canDamageEnemies = false;
 
             pugAnimator = pugioObj.GetComponent<Animator>();
 

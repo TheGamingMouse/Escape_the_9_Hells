@@ -43,12 +43,18 @@ public class StartLevel : MonoBehaviour
             if (!firstRoomLoaded)
             {
                 rooms = layerManager.rooms;
+                
+                if (rooms.Length == 0)
+                {
+                    return;
+                }
 
                 foreach (GameObject r in rooms)
                 {
                     if (r.GetComponent<RoomBehavior>().x == 0 && r.GetComponent<RoomBehavior>().y == 0)
                     {
                         r.SetActive(true);
+                        r.GetComponent<RoomBehavior>().active = true;
                         r.GetComponent<RoomBehavior>().backDoor.transform.Find("DoorHinge").gameObject.SetActive(false);
                     }
                 }
@@ -74,7 +80,7 @@ public class StartLevel : MonoBehaviour
 
     void OpenDoor()
     {
-        door.GetComponentInChildren<BoxCollider>().enabled = false;
+        door.GetComponent<BoxCollider>().enabled = false;
         startWallCollider.enabled = false;
         
         door.transform.localRotation = Quaternion.Slerp(door.transform.localRotation, openRot, Time.deltaTime);

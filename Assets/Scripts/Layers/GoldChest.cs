@@ -47,13 +47,30 @@ public class GoldChest : MonoBehaviour
         {
             animator.SetTrigger("OpenChest");
 
+            int luckCheck = Random.Range(1, 101);
+
             if (rType == RewardType.Exp)
             {
-                playerLevel.AddExperience(exp);
+                if (luckCheck <= playerLevel.luck)
+                {
+                    playerLevel.AddExperience(exp * 2, false, "none");
+                }
+                else
+                {
+                    playerLevel.AddExperience(exp, false, "none");
+                }
             }
             else if (rType == RewardType.Level)
             {
-                playerLevel.LevelUp(false);
+                if (luckCheck <= playerLevel.luck)
+                {
+                    playerLevel.LevelUp(false, true);
+                    playerLevel.LevelUp(false, true);
+                }
+                else
+                {
+                    playerLevel.LevelUp(false, true);
+                }
             }
 
             chestOpened = true;

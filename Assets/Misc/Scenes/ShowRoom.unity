@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 1155665132}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -163,6 +163,10 @@ PrefabInstance:
       propertyPath: hideRooms
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3130922709829439386, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4187138565020753540, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -211,6 +215,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5752805852752578624, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7329601029268765206, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -253,6 +261,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7671186955645619629, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7761149050079136329, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8343283422948362885, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8442628481075259146, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
@@ -481,9 +497,61 @@ PrefabInstance:
       value: Generator
       objectReference: {fileID: 0}
     - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: iChoice
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
       propertyPath: doInterior
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: internalMaxHoles
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[0]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: 34431d7f31c127d42b73c54d3970ab6c, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[1]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: 43be9869a3480d1439182129030774c5, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[2]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: fc7702518464acb45969d2320199915b, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[3]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: 23e01e863e091c348a166d1a5a1972d6, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[4]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: 4dbc3a1de6321fe48852563a67650402, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[5]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: f7d7c228f608c9e4283bdf029d4f6122, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[6]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: ed49e40301da2df479db52dcbfcfc428, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[7]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: e471cacfe8a9725468893735e0c891c9, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[8]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: cde709225f8ca5741a07221ff082510e, type: 3}
+    - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
+      propertyPath: rooms.Array.data[9]
+      value: 
+      objectReference: {fileID: 5001487914795478421, guid: cde709225f8ca5741a07221ff082510e, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

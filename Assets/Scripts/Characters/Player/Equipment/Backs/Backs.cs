@@ -16,6 +16,8 @@ public class Backs : MonoBehaviour
     [Header("GameObjects")]
     GameObject angelWingsObj;
     GameObject steelWingsObj;
+    GameObject backpackObj;
+    GameObject capeOWindObj;
 
     [Header("Lists")]
     readonly List<GameObject> backObjs = new();
@@ -23,6 +25,9 @@ public class Backs : MonoBehaviour
     [Header("Components")]
     public AngelWings angelWings;
     public SteelWings steelWings;
+    public Backpack backpack;
+    PlayerLoadout playerLoadout;
+    public CapeOWind capeOWind;
 
     #endregion
 
@@ -31,11 +36,17 @@ public class Backs : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerLoadout = GameObject.FindWithTag("Player").GetComponent<PlayerLoadout>();
+
         angelWingsObj = angelWings.gameObject;
         steelWingsObj = steelWings.gameObject;
+        backpackObj = backpack.gameObject;
+        capeOWindObj = capeOWind.gameObject;
 
         backObjs.Add(angelWingsObj);
         backObjs.Add(steelWingsObj);
+        backObjs.Add(backpackObj);
+        backObjs.Add(capeOWindObj);
 
         SwitchToNone();
     }
@@ -50,6 +61,14 @@ public class Backs : MonoBehaviour
         else if (steelWingsObj.activeInHierarchy)
         {
             bType = BackType.Wings;
+        }
+        else if (backpackObj.activeInHierarchy)
+        {
+            bType = BackType.Packs;
+        }
+        else if (capeOWindObj.activeInHierarchy)
+        {
+            bType = BackType.Capes;
         }
         else
         {
@@ -78,6 +97,8 @@ public class Backs : MonoBehaviour
         {
             angelWingsObj.SetActive(true);
         }
+
+        playerLoadout.backpackActive = false;
     }
 
     public void SwitchToSteelWings()
@@ -90,6 +111,36 @@ public class Backs : MonoBehaviour
         {
             steelWingsObj.SetActive(true);
         }
+
+        playerLoadout.backpackActive = false;
+    }
+
+    public void SwitchToBackpack()
+    {
+        bActive = BackActive.BackPack;
+
+        DisableElements();
+
+        if (backpackObj)
+        {
+            backpackObj.SetActive(true);
+        }
+
+        playerLoadout.backpackActive = true;
+    }
+
+    public void SwitchToCapeOWind()
+    {
+        bActive = BackActive.CapeOWind;
+
+        DisableElements();
+
+        if (capeOWindObj)
+        {
+            capeOWindObj.SetActive(true);
+        }
+
+        playerLoadout.backpackActive = false;
     }
 
     void DisableElements()
@@ -99,6 +150,8 @@ public class Backs : MonoBehaviour
             backObj.SetActive(false);
         }
         angelWings.active = false;
+        steelWings.active = false;
+        playerLoadout.backpackActive = false;
     }
 
     #endregion
@@ -109,7 +162,8 @@ public class Backs : MonoBehaviour
     {
         None,
         Wings,
-        Packs
+        Packs,
+        Capes
     }
 
     public enum BackActive
@@ -117,7 +171,8 @@ public class Backs : MonoBehaviour
         None,
         AngelWings,
         SteelWings,
-        BackPack
+        BackPack,
+        CapeOWind
     }
 
     #endregion

@@ -14,7 +14,9 @@ public class TreasureRoom : MonoBehaviour
 
     [Header("Arrays")]
     public GameObject[] chests;
-    public Transform[] spawns;
+    public Transform[] spawns1;
+    public Transform[] spawns2;
+    Transform[] spawns;
     bool[] spawnable;
 
     #endregion
@@ -27,13 +29,14 @@ public class TreasureRoom : MonoBehaviour
         {
             if (tType == TreasureType.Souls || tType == TreasureType.Exp)
             {
-                spawnable = new bool[4];
+                spawns = spawns1;
             }
             else if (tType == TreasureType.Level)
             {
-                spawnable = new bool[2];
+                spawns = spawns2;
             }
 
+            spawnable = new bool[spawns.Length];
             ready = true;
         }
     }
