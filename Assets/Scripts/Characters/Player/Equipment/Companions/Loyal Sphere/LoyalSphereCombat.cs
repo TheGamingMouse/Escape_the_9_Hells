@@ -25,6 +25,7 @@ public class LoyalSphereCombat : MonoBehaviour
     [Header("Components")]
     LoyalSphereSight sight;
     public Companion companion;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -32,6 +33,7 @@ public class LoyalSphereCombat : MonoBehaviour
     void Start()
     {
         sight = GetComponent<LoyalSphereSight>();
+        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
     }
 
     // Update is called once per frame
@@ -68,7 +70,21 @@ public class LoyalSphereCombat : MonoBehaviour
         newProjectile.GetComponent<Firebolt>().explostionScale = 0.5f;
         newProjectile.GetComponent<Firebolt>().canDamagePlayer = false;
         newProjectile.GetComponent<Firebolt>().canDamageEnemies = true;
+        newProjectile.GetComponent<Firebolt>().sfxManager = sfxManager;
+
+        sfxManager.PlayClip(sfxManager.firebolt, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject);
 
         Destroy(newProjectile, 3f);
+    }
+
+    void OnDestroy()
+    {
+        foreach (var source in gameObject.GetComponents<AudioSource>())
+        {
+            if (sfxManager.audioSourcePool.Contains(source))
+            {
+                sfxManager.audioSourcePool.Remove(source);
+            }
+        }
     }
 }

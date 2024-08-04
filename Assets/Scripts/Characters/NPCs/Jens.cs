@@ -15,10 +15,13 @@ public class Jens : MonoBehaviour, IInteractable
     bool talkingOver;
 
     [Header("Strings")]
-    readonly static string dLine1 = "test";
+    readonly static string dLine1 = "Look at that fresh face!" + "\n" + "Ahhh, I love the look of newfound sadness.";
+    readonly static string dLine2 = "Anyhow, if you ever want to make you equipment stronger, just come to me! I'll teach you get the best out of it.";
+    readonly static string dLine3 = "Just remember that I can only help you with the equipment you already own, if you want something new you have to go talk to Alexander.";
+    readonly static string dLine4 = "Do also remember to talk to Barbara, she's the one holding on to all your stuff.";
 
     [Header("Arrays")]
-    readonly string[] defaultLines = {dLine1};
+    readonly string[] defaultLines = {dLine1, dLine2, dLine3, dLine4};
 
     [Header("Lists")]
     readonly List<string[]> linesList = new();
@@ -38,7 +41,7 @@ public class Jens : MonoBehaviour, IInteractable
     // Start is called before the first frame update
     void Start()
     {
-        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox").GetComponent<Dialogue>();
+        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
         playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
     }

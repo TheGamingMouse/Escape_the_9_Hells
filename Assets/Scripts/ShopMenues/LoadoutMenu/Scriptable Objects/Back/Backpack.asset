@@ -15,6 +15,6 @@ MonoBehaviour:
   title: Backpack
   description: The backpack will allow you to carry two weapons at the same time.
     You will be able to switch between them, but you will have to wait for the cooldown
-    to reset, before you can switch again.
+    to reset, before you can switch again. Use 1 and 2 to switch.
   price: 55
   equipmentType: Back

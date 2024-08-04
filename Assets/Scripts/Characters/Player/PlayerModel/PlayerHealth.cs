@@ -30,6 +30,8 @@ public class PlayerHealth : MonoBehaviour
     CapeOWind capeOWind;
     SaveLoadManager slManager;
     public Shield shield;
+    SFXAudioManager sfxManager;
+    public ParticleSystem capeOWindPS;
 
     #endregion
 
@@ -38,8 +40,11 @@ public class PlayerHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var managers = GameObject.FindWithTag("Managers");
+
         capeOWind = transform.GetComponentInChildren<Backs>().capeOWind;
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+        slManager = managers.GetComponent<SaveLoadManager>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         health = maxHealth;
 
@@ -58,12 +63,14 @@ public class PlayerHealth : MonoBehaviour
             {
                 health = maxHealth;
                 StartCoroutine(capeOWind.Save());
+                StartCoroutine(CapeSave());
+
+                sfxManager.PlayClip(sfxManager.capeOWindActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod / 2, false, "high");
+
                 return;
             }
             
-            playerDead = true;
-            capeOWind.cooldown = 0;
-            OnPlayerDeath?.Invoke();
+            Die();
         }
     }
 
@@ -78,6 +85,9 @@ public class PlayerHealth : MonoBehaviour
             if ((health - damage) >= 0)
             {
                 health -= damage / resistanceMultiplier;
+
+                int i = UnityEngine.Random.Range(0, sfxManager.playerDamage.Count);
+                sfxManager.PlayClip(sfxManager.playerDamage[i], sfxManager.masterManager.sBlend2D, sfxManager.playerVolumeMod);
             }
             else if ((health - damage) < 0)
             {
@@ -89,6 +99,25 @@ public class PlayerHealth : MonoBehaviour
                 shield.damageTaken = true;
             }
         }
+    }
+
+    public void Die()
+    {
+        health = 0;
+        playerDead = true;
+        capeOWind.cooldown = 0;
+        OnPlayerDeath?.Invoke();
+    }
+
+    IEnumerator CapeSave()
+    {
+        capeOWindPS.gameObject.SetActive(true);
+        capeOWindPS.Play();
+
+        yield return new WaitForSeconds(0.85f);
+
+        capeOWindPS.Stop();
+        capeOWindPS.gameObject.SetActive(false);
     }
 
     #endregion

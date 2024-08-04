@@ -15,18 +15,22 @@ public class RoomSpawner : MonoBehaviour
     #region Variables
 
     [Header("Ints")]
+    public int maxEnemies = 8;
     public int basicDemonChance;
     public int impChance;
 
     [Header("Bools")]
     bool layerGenerated;
-    [HideInInspector]
+    // [HideInInspector]
     public bool enemiesDefeated;
     bool nextRoomLoaded;
     bool enemiesSpawned;
     [HideInInspector]
     public bool inArea;
     bool doorCanOpen;
+    bool primaryDoorAudioPlayed;
+    bool secondaryDoorAudioPlayed;
+    bool playerPathfinder;
 
     [Header("GameObjects")]
     GameObject door;
@@ -48,11 +52,15 @@ public class RoomSpawner : MonoBehaviour
     [Header("Arrays")]
     bool[] spawned;
 
+    [Header("Colors")]
+    Color mainPathColor = new(0f, 0.5686275f, 1f);
+
     [Header("Components")]
     LayerGenerator generator;
     StartLevel startLevel;
     LayerManager layerManager;
     RoomBehavior roomBehavior;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -61,10 +69,15 @@ public class RoomSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var managers = GameObject.FindWithTag("Managers");
+
         generator = GameObject.FindWithTag("Generator").GetComponent<LayerGenerator>();
         startLevel = GameObject.FindWithTag("StartLevel").GetComponent<StartLevel>();
-        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+        layerManager = managers.GetComponent<LayerManager>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
         roomBehavior = GetComponent<RoomBehavior>();
+
+        playerPathfinder = roomBehavior.playerPathfinder;
 
         basicDemonChance = generator.basicDemonChance;
         impChance = generator.impChance;
@@ -82,9 +95,19 @@ public class RoomSpawner : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < 8; i++)
+        if (gameObject.name.Contains("MazeRoom"))
         {
-            spawnPoints.Add(transform.Find("SpawnPositions").GetChild(i));
+            for (int i = 0; i < maxEnemies; i++)
+            {
+                spawnPoints.Add(transform.Find("SpawnPositions").GetChild(i));
+            }
+        }
+        else
+        {
+            for (int i = 0; i < transform.Find("Floor").childCount; i++)
+            {
+                spawnPoints.Add(transform.Find("Floor").GetChild(i));
+            }
         }
         spawned = new bool[spawnPoints.Count];
 
@@ -113,6 +136,11 @@ public class RoomSpawner : MonoBehaviour
                     secondDoor = roomBehavior.secondDoor;
                     secondDoorHinge = roomBehavior.secondDoor.transform.Find("DoorHinge").gameObject;
                 }
+            }
+
+            if (playerPathfinder)
+            {
+                CheckLights();
             }
         }
 
@@ -144,13 +172,25 @@ public class RoomSpawner : MonoBehaviour
     {
         if (door != null)
         {
-            door.transform.Find("DoorHinge").GetComponent<BoxCollider>().enabled = false;
+            door.GetComponentInChildren<MeshCollider>().enabled = false;
             doorHinge.transform.localRotation = Quaternion.Slerp(doorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
+
+            if (!primaryDoorAudioPlayed)
+            {
+                sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+                primaryDoorAudioPlayed = true;
+            }
 
             if (secondDoor != null)
             {
-                secondDoor.transform.Find("DoorHinge").GetComponent<BoxCollider>().enabled = false;
+                secondDoor.GetComponentInChildren<MeshCollider>().enabled = false;
                 secondDoorHinge.transform.localRotation = Quaternion.Slerp(secondDoorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
+
+                if (!secondaryDoorAudioPlayed)
+                {
+                    sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+                    secondaryDoorAudioPlayed = true;
+                }
             }
         }
     }
@@ -338,7 +378,7 @@ public class RoomSpawner : MonoBehaviour
 
     IEnumerator OpenDoorTimer()
     {
-        yield return new WaitForSeconds(15f);
+        yield return new WaitForSeconds(5f);
 
         doorCanOpen = false;
     }
@@ -349,7 +389,7 @@ public class RoomSpawner : MonoBehaviour
 
     void SpawnEnemies()
     {
-        int enemyAmount = Random.Range(3, 9);
+        int enemyAmount = Random.Range(3, maxEnemies + 1);
 
         for (int i = 0; i < enemyAmount; i++)
         {
@@ -379,7 +419,7 @@ public class RoomSpawner : MonoBehaviour
                     continue;
                 }
 
-                var newEnemy = Instantiate(enemyTypes[k], spawnPoints[spawnIndex].position, Quaternion.identity, enemyList);
+                var newEnemy = Instantiate(enemyTypes[k], spawnPoints[spawnIndex].position + new Vector3(0f, 1f, 0f), Quaternion.identity, enemyList);
                 newEnemy.GetComponent<EnemySight>().roomSpawner = this;
                 if (newEnemy.TryGetComponent(out BasicEnemyHealth basicHealth))
                 {
@@ -402,6 +442,144 @@ public class RoomSpawner : MonoBehaviour
         }
 
         enemiesSpawned = true;
+    }
+
+    void CheckLights()
+    {
+        if (door != null)
+        {
+            if (roomBehavior.x == roomBehavior.boardSize.x && roomBehavior.y == roomBehavior.boardSize.y && !layerManager.showroom)
+            {
+                foreach(GameObject l in roomBehavior.lights)
+                {
+                    l.GetComponentInChildren<Light>().color = mainPathColor;
+                    l.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);;
+                }
+                return;
+            }
+
+            GameObject[] rooms = layerManager.rooms;
+
+            foreach (GameObject r in rooms)
+            {
+                if (door.name == "Up Door")
+                {
+                    if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
+                    {
+                        for (int i = 0; i < roomBehavior.lights.Length; i++)
+                        {
+                            if (r.GetComponent<RoomBehavior>().mainPath && roomBehavior.doors[i] == door)
+                            {
+                                roomBehavior.lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                                roomBehavior.lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+                            }
+                        }
+                    }
+                }
+                else if (door.name == "Down Door")
+                {
+                    if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
+                    {
+                        for (int i = 0; i < roomBehavior.lights.Length; i++)
+                        {
+                            if (r.GetComponent<RoomBehavior>().mainPath && roomBehavior.doors[i] == door)
+                            {
+                                roomBehavior.lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                                roomBehavior.lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+                            }
+                        }
+                    }
+                }
+                else if (door.name == "Right Door")
+                {
+                    if (r.GetComponent<RoomBehavior>().x - 1 == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                    {
+                        for (int i = 0; i < roomBehavior.lights.Length; i++)
+                        {
+                            if (r.GetComponent<RoomBehavior>().mainPath && roomBehavior.doors[i] == door)
+                            {
+                                roomBehavior.lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                                roomBehavior.lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+                            }
+                        }
+                    }
+                }
+                else if (door.name == "Left Door")
+                {
+                    if (r.GetComponent<RoomBehavior>().x + 1 == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                    {
+                        for (int i = 0; i < roomBehavior.lights.Length; i++)
+                        {
+                            if (r.GetComponent<RoomBehavior>().mainPath && roomBehavior.doors[i] == door)
+                            {
+                                roomBehavior.lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                                roomBehavior.lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+                            }
+                        }
+                    }
+                }
+
+                if (secondDoor != null)
+                {
+                    if (secondDoor.name == "Up Door")
+                    {
+                        if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
+                        {
+                            for (int i = 0; i < roomBehavior.lights.Length; i++)
+                            {
+                                if (r.GetComponent<RoomBehavior>().mainPath && roomBehavior.doors[i] == secondDoor)
+                                {
+                                    roomBehavior.lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                                    roomBehavior.lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+                                }
+                            }
+                        }
+                    }
+                    else if (secondDoor.name == "Down Door")
+                    {
+                        if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
+                        {
+                            for (int i = 0; i < roomBehavior.lights.Length; i++)
+                            {
+                                if (r.GetComponent<RoomBehavior>().mainPath && roomBehavior.doors[i] == secondDoor)
+                                {
+                                    roomBehavior.lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                                    roomBehavior.lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+                                }
+                            }
+                        }
+                    }
+                    else if (secondDoor.name == "Right Door")
+                    {
+                        if (r.GetComponent<RoomBehavior>().x - 1 == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                        {
+                            for (int i = 0; i < roomBehavior.lights.Length; i++)
+                            {
+                                if (r.GetComponent<RoomBehavior>().mainPath && roomBehavior.doors[i] == secondDoor)
+                                {
+                                    roomBehavior.lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                                    roomBehavior.lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+                                }
+                            }
+                        }
+                    }
+                    else if (secondDoor.name == "Left Door")
+                    {
+                        if (r.GetComponent<RoomBehavior>().x + 1 == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
+                        {
+                            for (int i = 0; i < roomBehavior.lights.Length; i++)
+                            {
+                                if (r.GetComponent<RoomBehavior>().mainPath && roomBehavior.doors[i] == secondDoor)
+                                {
+                                    roomBehavior.lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                                    roomBehavior.lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     #endregion

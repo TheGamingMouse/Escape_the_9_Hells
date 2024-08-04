@@ -18,6 +18,7 @@ public class Backs : MonoBehaviour
     GameObject steelWingsObj;
     GameObject backpackObj;
     GameObject capeOWindObj;
+    GameObject seedBagObj;
 
     [Header("Lists")]
     readonly List<GameObject> backObjs = new();
@@ -28,6 +29,7 @@ public class Backs : MonoBehaviour
     public Backpack backpack;
     PlayerLoadout playerLoadout;
     public CapeOWind capeOWind;
+    public SeedBag seedBag;
 
     #endregion
 
@@ -42,11 +44,13 @@ public class Backs : MonoBehaviour
         steelWingsObj = steelWings.gameObject;
         backpackObj = backpack.gameObject;
         capeOWindObj = capeOWind.gameObject;
+        seedBagObj = seedBag.gameObject;
 
         backObjs.Add(angelWingsObj);
         backObjs.Add(steelWingsObj);
         backObjs.Add(backpackObj);
         backObjs.Add(capeOWindObj);
+        backObjs.Add(seedBagObj);
 
         SwitchToNone();
     }
@@ -69,6 +73,10 @@ public class Backs : MonoBehaviour
         else if (capeOWindObj.activeInHierarchy)
         {
             bType = BackType.Capes;
+        }
+        else if (seedBagObj.activeInHierarchy)
+        {
+            bType = BackType.Packs;
         }
         else
         {
@@ -97,8 +105,6 @@ public class Backs : MonoBehaviour
         {
             angelWingsObj.SetActive(true);
         }
-
-        playerLoadout.backpackActive = false;
     }
 
     public void SwitchToSteelWings()
@@ -111,8 +117,6 @@ public class Backs : MonoBehaviour
         {
             steelWingsObj.SetActive(true);
         }
-
-        playerLoadout.backpackActive = false;
     }
 
     public void SwitchToBackpack()
@@ -139,8 +143,20 @@ public class Backs : MonoBehaviour
         {
             capeOWindObj.SetActive(true);
         }
+    }
 
-        playerLoadout.backpackActive = false;
+    public void SwitchToSeedBag()
+    {
+        bActive = BackActive.SeedBag;
+
+        DisableElements();
+
+        if (seedBagObj)
+        {
+            seedBagObj.SetActive(true);
+        }
+
+        playerLoadout.seedBagActive = true;
     }
 
     void DisableElements()
@@ -152,6 +168,7 @@ public class Backs : MonoBehaviour
         angelWings.active = false;
         steelWings.active = false;
         playerLoadout.backpackActive = false;
+        playerLoadout.seedBagActive = false;
     }
 
     #endregion
@@ -172,7 +189,8 @@ public class Backs : MonoBehaviour
         AngelWings,
         SteelWings,
         BackPack,
-        CapeOWind
+        CapeOWind,
+        SeedBag
     }
 
     #endregion

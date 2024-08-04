@@ -19,6 +19,7 @@ public class LoadoutMenu : MonoBehaviour
     bool playerStoped;
     public bool pannelsActivated;
     bool isBackpackActive;
+    bool isSeedBagActive;
 
     [Header("GameObjects")]
     public GameObject contents;
@@ -46,13 +47,16 @@ public class LoadoutMenu : MonoBehaviour
     public Button[] selectLoadoutButtonsPrimaryWeapons;
     public Button[] selectLoadoutButtonsSecondaryWeapons;
     public Button[] selectLoadoutButtonsCompanion;
+    public Button[] selectLoadoutButtonsPrimaryCompanion;
+    public Button[] selectLoadoutButtonsSecondaryCompanion;
     public Button[] selectLoadoutButtonsArmor;
     public Button[] selectLoadoutButtonsBack;
 
     [Header("LoadoutItemsSO")]
     LoadoutItemsSO selectedPrimaryWeapon;
     LoadoutItemsSO selectedSecondaryWeapon;
-    LoadoutItemsSO selectedCompanion;
+    LoadoutItemsSO selectedPrimaryCompanion;
+    LoadoutItemsSO selectedSecondaryCompanion;
     LoadoutItemsSO selectedArmor;
     LoadoutItemsSO selectedBack;
 
@@ -70,9 +74,11 @@ public class LoadoutMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerLoadout = GameObject.FindWithTag("Player").GetComponent<PlayerLoadout>();
+        var player = GameObject.FindWithTag("Player");
+
+        playerLoadout = player.GetComponent<PlayerLoadout>();
+        playerEquipment = player.GetComponent<PlayerEquipment>();
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
-        playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
 
         if (uiManager.npcsActive)
         {
@@ -165,9 +171,9 @@ public class LoadoutMenu : MonoBehaviour
             selectedPrimaryWeapon = loadoutItemsSOWeapons[0];
             selectLoadoutButtonsWeapons[0].interactable = false;
         }
-        if (!selectedCompanion)
+        if (!selectedPrimaryCompanion)
         {
-            selectedCompanion = loadoutItemsSOCompanion[0];
+            selectedPrimaryCompanion = loadoutItemsSOCompanion[0];
             selectLoadoutButtonsCompanion[0].interactable = false;
         }
         if (!selectedArmor)
@@ -276,19 +282,90 @@ public class LoadoutMenu : MonoBehaviour
 
     void LoadCompanions()
     {
-        for (int i = 0; i < loadoutItemsSOCompanion.Length; i++)
+        if (!selectedBack)
         {
-            loadoutPannelsCompanion[i].titleText.text = loadoutItemsSOCompanion[i].title;
-            loadoutPannelsCompanion[i].descriptionText.text = loadoutItemsSOCompanion[i].description;
-
-            if (playerLoadout.selectedCompanion && loadoutItemsSOCompanion[i].title == playerLoadout.selectedCompanion.title)
+            if (playerLoadout.seedBagActive)
             {
-                selectedCompanion = loadoutItemsSOCompanion[i];
-                selectLoadoutButtonsCompanion[i].interactable = false;
+                isSeedBagActive = true;
             }
             else
             {
-                selectLoadoutButtonsCompanion[i].interactable = true;
+                isSeedBagActive = false;
+            }
+        }
+        else
+        {
+            if (selectedBack.title == "Seed Bag")
+            {
+                isSeedBagActive = true;
+            }
+            else
+            {
+                isSeedBagActive = false;
+            }
+        }
+        if (isSeedBagActive)
+        {
+            for (int i = 0; i < loadoutItemsSOCompanion.Length; i++)
+            {
+                loadoutPannelsCompanion[i].titleText.text = loadoutItemsSOCompanion[i].title;
+                loadoutPannelsCompanion[i].descriptionText.text = loadoutItemsSOCompanion[i].description;
+                
+                selectLoadoutButtonsCompanion[i].gameObject.SetActive(false);
+                selectLoadoutButtonsPrimaryCompanion[i].gameObject.SetActive(true);
+                selectLoadoutButtonsSecondaryCompanion[i].gameObject.SetActive(true);
+
+                if (playerLoadout.selectedPrimaryCompanion && (loadoutItemsSOCompanion[i].title == playerLoadout.selectedPrimaryCompanion.title || 
+                    loadoutItemsSOCompanion[i].title == playerLoadout.selectedSecondaryCompanion.title))
+                {
+                    if (loadoutItemsSOCompanion[i].title == playerLoadout.selectedPrimaryCompanion.title)
+                    {
+                        selectedPrimaryCompanion = loadoutItemsSOCompanion[i];
+                    }
+                    primaryIndex = i;
+                    selectLoadoutButtonsPrimaryCompanion[i].interactable = false;
+                }
+                else
+                {
+                    selectLoadoutButtonsPrimaryCompanion[i].interactable = true;
+                }
+
+                if (playerLoadout.selectedSecondaryCompanion && (loadoutItemsSOCompanion[i].title == playerLoadout.selectedSecondaryCompanion.title ||
+                    loadoutItemsSOCompanion[i].title == playerLoadout.selectedPrimaryCompanion.title))
+                {
+                    if (loadoutItemsSOCompanion[i].title == playerLoadout.selectedSecondaryCompanion.title)
+                    {
+                        selectedSecondaryCompanion = loadoutItemsSOCompanion[i];
+                    }
+                    secondaryIndex = i;
+                    selectLoadoutButtonsSecondaryCompanion[i].interactable = false;
+                }
+                else
+                {
+                    selectLoadoutButtonsSecondaryCompanion[i].interactable = true;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < loadoutItemsSOCompanion.Length; i++)
+            {
+                loadoutPannelsCompanion[i].titleText.text = loadoutItemsSOCompanion[i].title;
+                loadoutPannelsCompanion[i].descriptionText.text = loadoutItemsSOCompanion[i].description;
+                
+                selectLoadoutButtonsCompanion[i].gameObject.SetActive(true);
+                selectLoadoutButtonsPrimaryCompanion[i].gameObject.SetActive(false);
+                selectLoadoutButtonsSecondaryCompanion[i].gameObject.SetActive(false);
+
+                if (playerLoadout.selectedPrimaryCompanion && loadoutItemsSOCompanion[i].title == playerLoadout.selectedPrimaryCompanion.title)
+                {
+                    selectedPrimaryCompanion = loadoutItemsSOCompanion[i];
+                    selectLoadoutButtonsCompanion[i].interactable = false;
+                }
+                else
+                {
+                    selectLoadoutButtonsCompanion[i].interactable = true;
+                }
             }
         }
     }
@@ -386,7 +463,7 @@ public class LoadoutMenu : MonoBehaviour
     }
     public void SelectedLoadoutCompanion(int btnNo)
     {
-        selectedCompanion = loadoutItemsSOCompanion[btnNo];
+        selectedPrimaryCompanion = loadoutItemsSOCompanion[btnNo];
         for (int i = 0; i < selectLoadoutButtonsCompanion.Length; i++)
         {
             if (selectLoadoutButtonsCompanion[i] == selectLoadoutButtonsCompanion[btnNo])
@@ -396,6 +473,44 @@ public class LoadoutMenu : MonoBehaviour
             else
             {
                 selectLoadoutButtonsCompanion[i].interactable = true;
+            }
+        }
+    }
+    public void SelectedLoadoutPrimaryCompanion(int btnNo)
+    {
+        selectedPrimaryCompanion = loadoutItemsSOCompanion[btnNo];
+        primaryIndex = btnNo;
+        for (int i = 0; i < selectLoadoutButtonsPrimaryCompanion.Length; i++)
+        {
+            if (selectLoadoutButtonsPrimaryCompanion[i] == selectLoadoutButtonsPrimaryCompanion[btnNo])
+            {
+                selectLoadoutButtonsPrimaryCompanion[i].interactable = false;
+                selectLoadoutButtonsSecondaryCompanion[i].interactable = false;
+            }
+            else if (selectLoadoutButtonsPrimaryCompanion[i] != selectLoadoutButtonsPrimaryCompanion[secondaryIndex] && 
+                        selectLoadoutButtonsSecondaryCompanion[i] != selectLoadoutButtonsSecondaryCompanion[secondaryIndex])
+            {
+                selectLoadoutButtonsPrimaryCompanion[i].interactable = true;
+                selectLoadoutButtonsSecondaryCompanion[i].interactable = true;
+            }
+        }
+    }
+    public void SelectedLoadoutSecondaryCompanion(int btnNo)
+    {
+        selectedSecondaryCompanion = loadoutItemsSOCompanion[btnNo];
+        secondaryIndex = btnNo;
+        for (int i = 0; i < selectLoadoutButtonsSecondaryCompanion.Length; i++)
+        {
+            if (selectLoadoutButtonsSecondaryCompanion[i] == selectLoadoutButtonsSecondaryCompanion[btnNo])
+            {
+                selectLoadoutButtonsPrimaryCompanion[i].interactable = false;
+                selectLoadoutButtonsSecondaryCompanion[i].interactable = false;
+            }
+            else if (selectLoadoutButtonsPrimaryCompanion[i] != selectLoadoutButtonsPrimaryCompanion[primaryIndex] && 
+                        selectLoadoutButtonsSecondaryCompanion[i] != selectLoadoutButtonsSecondaryCompanion[primaryIndex])
+            {
+                selectLoadoutButtonsPrimaryCompanion[i].interactable = true;
+                selectLoadoutButtonsSecondaryCompanion[i].interactable = true;
             }
         }
     }
@@ -430,11 +545,12 @@ public class LoadoutMenu : MonoBehaviour
         }
 
         LoadWeapons();
+        LoadCompanions();
     }
 
     public void ConfirmSelected()
     {
-        playerLoadout.SetLoadout(selectedPrimaryWeapon, selectedSecondaryWeapon, selectedCompanion, selectedArmor, selectedBack);
+        playerLoadout.SetLoadout(selectedPrimaryWeapon, selectedSecondaryWeapon, selectedPrimaryCompanion, selectedSecondaryCompanion, selectedArmor, selectedBack);
 
         ExitStore();
     }
@@ -442,7 +558,9 @@ public class LoadoutMenu : MonoBehaviour
     public void ExitStore()
     {
         selectedPrimaryWeapon = null;
-        selectedCompanion = null;
+        selectedSecondaryWeapon = null;
+        selectedPrimaryCompanion = null;
+        selectedSecondaryCompanion = null;
         selectedArmor = null;
         selectedBack = null;
         LoadLoadoutPannels();

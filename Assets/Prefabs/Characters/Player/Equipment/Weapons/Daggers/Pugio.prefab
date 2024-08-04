@@ -155,6 +155,7 @@ MonoBehaviour:
   damage: 0
   piercing: 0
   canDamageEnemies: 0
+  specialAttacking: 0
   weapon: {fileID: 0}
 --- !u!95 &7149514712631583380
 Animator:

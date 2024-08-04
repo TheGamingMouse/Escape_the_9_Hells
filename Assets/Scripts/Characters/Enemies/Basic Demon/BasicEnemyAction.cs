@@ -16,6 +16,8 @@ public class BasicEnemyAction : MonoBehaviour
     public bool attacking;
     public bool boss;
     bool canAttack;
+    public bool male;
+    bool canLaugh = true;
 
     [Header("Animator")]
     Animator animator;
@@ -30,6 +32,7 @@ public class BasicEnemyAction : MonoBehaviour
     BasicEnemyMovement enemyMovement;
     Pugio pugio;
     BasicEnemyHealth enemyHealth;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -40,6 +43,8 @@ public class BasicEnemyAction : MonoBehaviour
     {
         enemyMovement = GetComponent<BasicEnemyMovement>();
         enemyHealth = GetComponent<BasicEnemyHealth>();
+
+        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
         
         boss = enemyHealth.boss;
 
@@ -69,6 +74,15 @@ public class BasicEnemyAction : MonoBehaviour
         animator.SetFloat("AttackSpeed", attackSpeed);
 
         canAttack = true;
+
+        if (boss)
+        {
+            male = true;
+        }
+        else
+        {
+            male = Random.Range(0, 10) < 2;
+        }
     }
 
     // Update is called once per frame
@@ -76,12 +90,17 @@ public class BasicEnemyAction : MonoBehaviour
     {
         if (enemyMovement.targetInRange && !attacking && !boss)
         {
-            Attack();
+            StartAttack();
         }
-        else if (enemyMovement.targetInRange && canAttack)
+        else if (enemyMovement.targetInRange && canAttack && boss)
         {
             animator.SetBool("Boss", boss);
-            BossAttack();
+            BossStartAttack();
+        }
+
+        if (canLaugh)
+        {
+            StartCoroutine(Laugh());
         }
     }
 
@@ -89,16 +108,18 @@ public class BasicEnemyAction : MonoBehaviour
 
     #region Attack Methods
 
-    void Attack()
+    void StartAttack()
     {
         pugio.piercing = true;
         animator.SetBool("Piercing", true);
-        StartCoroutine(Unattack());
+
+        StartCoroutine(EndAttack());
+        StartCoroutine(pugio.PlayNormalAudio());
 
         attacking = true;
     }
 
-    IEnumerator Unattack()
+    IEnumerator EndAttack()
     {
         float clipLength = clip.length / animator.GetFloat("AttackSpeed");
 
@@ -110,24 +131,23 @@ public class BasicEnemyAction : MonoBehaviour
         attacking = false;
     }
 
-    void BossAttack()
+    void BossStartAttack()
     {
         pugio.piercing = true;
         animator.SetBool("Piercing", true);
-        StartCoroutine(BossUnattack());
+        
+        StartCoroutine(BossEndAttack());
 
         attacking = true;
         canAttack = false;
     }
 
-    IEnumerator BossUnattack()
+    IEnumerator BossEndAttack()
     {
         float clipLength = clip.length / animator.GetFloat("AttackSpeed");
         float attackTime = bossAttackTime / animator.GetFloat("AttackSpeed");
 
         yield return new WaitForSeconds(attackTime);
-
-        // Play particle system
 
         Collider[] colliders = Physics.OverlapSphere(pugio.transform.position, splashRange, playerMask);
         if (colliders.Length > 0 && colliders[0].GetComponent<PlayerHealth>())
@@ -144,6 +164,34 @@ public class BasicEnemyAction : MonoBehaviour
         yield return new WaitForSeconds(cooldown);
 
         canAttack = true;
+    }
+
+    IEnumerator Laugh()
+    {
+        canLaugh = false;
+
+        yield return new WaitForSeconds(5f);
+
+        if (Random.Range(0, 3) == 0)
+        {
+            EnemyLaugh();
+        }
+        canLaugh = true;
+    }
+
+    void EnemyLaugh()
+    {
+        int randLaugh;
+        if (male)
+        {
+            randLaugh = Random.Range(0, sfxManager.enemyLaughMale.Count);
+            sfxManager.PlayClip(sfxManager.enemyLaughMale[randLaugh], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+        }
+        else
+        {
+            randLaugh = Random.Range(0, sfxManager.enemyLaughFemale.Count);
+            sfxManager.PlayClip(sfxManager.enemyLaughFemale[randLaugh], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+        }
     }
 
     #endregion

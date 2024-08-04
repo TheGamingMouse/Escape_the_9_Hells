@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Palmmedia.ReportGenerator.Core;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,7 +17,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     public int screenMode;
     [HideInInspector]
     public int higestLayerReached;
-    [HideInInspector]
+    // [HideInInspector]
     public int currentSouls;
     [HideInInspector]
     public int totalSouls;
@@ -54,7 +50,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     [HideInInspector]
     public float sfxVolume;
     [HideInInspector]
-    public float hubMenuMusicTime;
+    public float musicTime;
 
     // In-layer
     [HideInInspector]
@@ -69,6 +65,10 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     public bool rickyStartComp;
     [HideInInspector]
     public bool ready;
+    [HideInInspector]
+    public bool backpackPrimary;
+    [HideInInspector]
+    public bool seedBagPrimary;
 
     [Header("Lists")]
     public List<LoadoutItemsSO> setWeapons;
@@ -108,6 +108,8 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     public List<SoulsItemsSO> startLevelSoulsBought = new();
     [HideInInspector]
     public List<SoulsItemsSO> reRollSoulsBought = new();
+    [HideInInspector]
+    public List<SoulsItemsSO> pathFinderSoulsBought = new();
     
     [HideInInspector]
     public List<UpgradeItemsSO> pugioUpgrades = new();
@@ -133,6 +135,8 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     public List<UpgradeItemsSO> backpackUpgrades = new();
     [HideInInspector]
     public List<UpgradeItemsSO> capeOWindUpgrades = new();
+    [HideInInspector]
+    public List<UpgradeItemsSO> seedBagUpgrades = new();
 
     // In-layer
     [HideInInspector]
@@ -158,7 +162,13 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     [HideInInspector]
     public LoadoutItemsSO secondaryWeapon;
     [HideInInspector]
-    public LoadoutItemsSO companion;
+    public LoadoutItemsSO selectedWeapon;
+    [HideInInspector]
+    public LoadoutItemsSO primaryCompanion;
+    [HideInInspector]
+    public LoadoutItemsSO secondaryCompanion;
+    [HideInInspector]
+    public LoadoutItemsSO selectedCompanion;
     [HideInInspector]
     public LoadoutItemsSO armor;
     [HideInInspector]
@@ -222,60 +232,9 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
     public int CheckLayer()
     {
-        string layer = SceneManager.GetActiveScene().name.ToLower();
-        if (layer == "main menu")
-        {
-            return -1;
-        }
-        else if (layer == "hub")
-        {
-            return 0;
-        }
-        else if (layer == "9th layer")
-        {
-            return 1;
-        }
-        else if (layer == "8th layer")
-        {
-            return 2;
-        }
-        else if (layer == "7th layer")
-        {
-            return 3;
-        }
-        else if (layer == "6th layer")
-        {
-            return 4;
-        }
-        else if (layer == "5th layer")
-        {
-            return 5;
-        }
-        else if (layer == "4th layer")
-        {
-            return 6;
-        }
-        else if (layer == "3rd layer")
-        {
-            return 7;
-        }
-        else if (layer == "2nd layer")
-        {
-            return 8;
-        }
-        else if (layer == "1st layer")
-        {
-            return 9;
-        }
-        else if (layer == "void layer")
-        {
-            return 10;
-        }
-        else if (layer == "golden gates")
-        {
-            return 11;
-        }
-        return -2;
+        int layer = SceneManager.GetActiveScene().buildIndex;
+        
+        return layer - 1;
     }
 
     #endregion
@@ -284,6 +243,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
     public void LoadData(GameData data)
     {
+        currentSouls = data.souls;
         if (lState != LayerState.MainMenu)
         {
             if (lState == LayerState.Hub)
@@ -292,30 +252,70 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                 GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>().AddSouls(data.souls, true);
             }
 
+            // Total Souls
+            totalSouls = data.totalSoulsCollected;
+
             // NPC variables
             rickyStartComp = data.rickyStartComp;
 
             // Selected Equipment
-            foreach (var primarySelect in setWeapons)
+            foreach (var weapon in setWeapons)
             {
-                if (primarySelect.title == data.primaryWeapon)
+                if (weapon.title == data.primaryWeapon)
                 {
-                    primaryWeapon = primarySelect;
+                    primaryWeapon = weapon;
                 }
             }
-            foreach (var secondarySelect in setWeapons)
+            foreach (var weapon in setWeapons)
             {
-                if (secondarySelect.title == data.secondaryWeapon)
+                if (weapon.title == data.secondaryWeapon)
                 {
-                    secondaryWeapon = secondarySelect;
+                    secondaryWeapon = weapon;
                 }
             }
-            foreach (var companionSelect in setCompanions)
+            foreach (var weapon in setWeapons)
             {
-                if (companionSelect.title == data.companion)
+                if (weapon.title == data.selectedWeapon)
                 {
-                    companion = companionSelect;
+                    selectedWeapon = weapon;
                 }
+            }
+            if (selectedWeapon.title == data.primaryWeapon)
+            {
+                backpackPrimary = true;
+            }
+            else if (selectedWeapon.title == data.secondaryWeapon)
+            {
+                backpackPrimary = false;
+            }
+            foreach (var companion in setCompanions)
+            {
+                if (companion.title == data.primaryCompanion)
+                {
+                    primaryCompanion = companion;
+                }
+            }
+            foreach (var companion in setCompanions)
+            {
+                if (companion.title == data.secondaryCompanion)
+                {
+                    secondaryCompanion = companion;
+                }
+            }
+            foreach (var companion in setCompanions)
+            {
+                if (companion.title == data.selectedCompanion)
+                {
+                    selectedCompanion = companion;
+                }
+            }
+            if (selectedCompanion.title == data.primaryCompanion)
+            {
+                seedBagPrimary = true;
+            }
+            else if (selectedCompanion.title == data.secondaryCompanion)
+            {
+                seedBagPrimary = false;
             }
             foreach (var armorSelect in setArmors)
             {
@@ -386,6 +386,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             SoulsItemsSO luckSoul = null;
             SoulsItemsSO startLevelSoul = null;
             SoulsItemsSO reRollSoul = null;
+            SoulsItemsSO pathFinderSoul = null;
 
             foreach (var soul in setSoulItems)
             {
@@ -417,6 +418,10 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                 {
                     reRollSoul = soul;
                 }
+                else if (soul.title == "Path Finder Soul")
+                {
+                    pathFinderSoul = soul;
+                }
             }
             if (!attackSpeedSoul)
             {
@@ -445,6 +450,10 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             if (!reRollSoul)
             {
                 Debug.LogError("Re Roll Soul was not found");
+            }
+            if (!pathFinderSoul)
+            {
+                Debug.LogError("Path Finder Soul was not found");
             }
 
             attackSpeedSoulsBought.Clear();
@@ -525,6 +534,17 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                 reRolls++;
             }
             reRolls -= data.reRollsSpent;
+
+            pathFinderSoulsBought.Clear();
+            if (data.pathFinderSoulsBought > 1)
+            {
+                data.pathFinderSoulsBought = 0;
+                Debug.LogWarning("More than 1 Souls found in pathFinderSouls");
+            }
+            for (int i = 0; i < data.pathFinderSoulsBought; i++)
+            {
+                pathFinderSoulsBought.Add(pathFinderSoul);
+            }
 
             // Bought Upgrades
             // Weapons
@@ -665,6 +685,17 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                     }
                 }
             }
+            seedBagUpgrades.Clear();
+            foreach (var seedBag in setBackUpgrades)
+            {
+                foreach (var dataSeedBag in data.seedBagUpgrades)
+                {
+                    if (seedBag.title == dataSeedBag)
+                    {
+                        seedBagUpgrades.Add(seedBag);
+                    }
+                }
+            }
 
             // Equipment
             capeOWindCooldown = data.capeOWindCooldown;
@@ -724,16 +755,15 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             higestLayerReached = data.highestLayerReached;
             totalLevels = data.totalLevelUps;
             totalSouls = data.totalSoulsCollected;
-            currentSouls = data.souls;
         }
 
         if (lState == LayerState.MainMenu || lState == LayerState.Hub)
         {
-            hubMenuMusicTime = data.hubMenuMusicTime;
+            musicTime = data.musicTime;
         }
         else
         {
-            hubMenuMusicTime = 0f;
+            musicTime = 0f;
         }
 
         // Settings
@@ -775,13 +805,11 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             // Selected Equipment
             if (playerLoadout.selectedWeapon != null)
             {
+                data.selectedWeapon = playerLoadout.selectedWeapon.title;
+
                 if (playerLoadout.selectedPrimaryWeapon)
                 {
                     data.primaryWeapon = playerLoadout.selectedPrimaryWeapon.title;
-                }
-                else
-                {
-                    data.primaryWeapon = playerLoadout.selectedWeapon.title;
                 }
                 
                 if (playerLoadout.selectedSecondaryWeapon)
@@ -790,21 +818,38 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                 }
                 else
                 {
-                    data.secondaryWeapon = data.primaryWeapon;
+                    data.secondaryWeapon = null;
                 }
             }
             else
             {
                 data.primaryWeapon = null;
                 data.secondaryWeapon = null;
+                data.selectedWeapon = null;
             }
             if (playerLoadout.selectedCompanion != null)
             {
-                data.companion = playerLoadout.selectedCompanion.title;
+                data.selectedCompanion = playerLoadout.selectedCompanion.title;
+
+                if (playerLoadout.selectedPrimaryCompanion)
+                {
+                    data.primaryCompanion = playerLoadout.selectedPrimaryCompanion.title;
+                }
+                
+                if (playerLoadout.selectedSecondaryCompanion)
+                {
+                    data.secondaryCompanion = playerLoadout.selectedSecondaryCompanion.title;
+                }
+                else
+                {
+                    data.secondaryCompanion = null;
+                }
             }
             else
             {
-                data.companion = null;
+                data.primaryCompanion = null;
+                data.secondaryCompanion = null;
+                data.selectedCompanion = null;
             }
             if (playerLoadout.selectedArmor != null)
             {
@@ -882,6 +927,11 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                 data.reRollSoulsBought++;
             }
             data.reRollsSpent = perkMenu.reRollsSpent;
+            data.pathFinderSoulsBought = 0;
+            if (playerSouls.playerPathfinder)
+            {
+                data.pathFinderSoulsBought = 1;
+            }
 
             // Bought Upgrades
             // Weapons
@@ -950,6 +1000,11 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             foreach (var capeOWind in playerUpgrades.upgradesCapeOWinds)
             {
                 data.capeOWindUpgrades.Add(capeOWind.title);
+            }
+            data.seedBagUpgrades.Clear();
+            foreach (var seedBag in playerUpgrades.upgradesSeedBag)
+            {
+                data.seedBagUpgrades.Add(seedBag.title);
             }
 
             // Equipment
@@ -1046,11 +1101,11 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
         if (lState == LayerState.MainMenu || lState == LayerState.Hub)
         {
-            data.hubMenuMusicTime = musicManager.hubMenuMusicTime;
+            data.musicTime = musicManager.musicTime;
         }
         else
         {
-            data.hubMenuMusicTime = 0f;
+            data.musicTime = 0f;
         }
     }
 

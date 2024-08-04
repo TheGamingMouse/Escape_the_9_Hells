@@ -51,7 +51,6 @@ MonoBehaviour:
   impChance: 0
   fillOut: 0
   size: {x: 5, y: 5}
-  offset: {x: 14, y: 14}
   startPos: 0
   layerGenerated: 0
   printPops: 0
@@ -59,8 +58,9 @@ MonoBehaviour:
   internalFloorRemover: {fileID: 4341523305830121117, guid: 3100b98ad069f0d458339183bef4e5d0, type: 3}
   enemySpawnPoint: {fileID: 1272571612746630239, guid: 466b129df9850f64baa619bf2616a787, type: 3}
   rooms:
-  - {fileID: 5001487914795478421, guid: 34431d7f31c127d42b73c54d3970ab6c, type: 3}
+  - {fileID: 5001487914795478421, guid: 66ee628cc1f8e34409c961d1c27fb4dd, type: 3}
   - {fileID: 5001487914795478421, guid: 43be9869a3480d1439182129030774c5, type: 3}
   - {fileID: 5001487914795478421, guid: fc7702518464acb45969d2320199915b, type: 3}
   - {fileID: 5001487914795478421, guid: 23e01e863e091c348a166d1a5a1972d6, type: 3}
   - {fileID: 5001487914795478421, guid: 4dbc3a1de6321fe48852563a67650402, type: 3}
+  offset: {x: 14, y: 14}

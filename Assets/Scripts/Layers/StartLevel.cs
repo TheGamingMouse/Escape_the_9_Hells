@@ -11,10 +11,13 @@ public class StartLevel : MonoBehaviour
     bool doorOpening;
     bool doorOpened;
     bool firstRoomLoaded;
+    bool doorOpenedAudio;
+    bool playerPathfinder;
 
     [Header("GameObjects")]
     public GameObject door;
     public GameObject startWalls;
+    public GameObject startLight;
 
     [Header("Arrays")]
     GameObject[] rooms;
@@ -22,9 +25,14 @@ public class StartLevel : MonoBehaviour
     [Header("Quaternions")]
     public Quaternion openRot;
 
+    [Header("Colors")]
+    Color mainPathColor = new(0f, 0.5686275f, 1f);
+
     [Header("Components")]
     LayerManager layerManager;
-    public BoxCollider startWallCollider;
+    SaveLoadManager slManager;
+    LayerGenerator layerGenerator;
+    SFXAudioManager sfxManager;
 
     #endregion
     
@@ -32,11 +40,26 @@ public class StartLevel : MonoBehaviour
 
     void Start()
     {
-        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+        var managers = GameObject.FindWithTag("Managers");
+
+        layerManager = managers.GetComponent<LayerManager>();
+        slManager = managers.GetComponent<SaveLoadManager>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
+        
+        if (slManager.lState == SaveLoadManager.LayerState.InLayers)
+        {
+            layerGenerator = GameObject.FindWithTag("Generator").GetComponent<LayerGenerator>();
+        }
     }
 
     void Update()
     {
+        if (layerGenerator && layerGenerator.layerGenerated && layerGenerator.playerPathfinder)
+        {
+            startLight.GetComponentInChildren<Light>().color = mainPathColor;
+            startLight.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+        }
+        
         if (doorOpening || layerManager.showroom)
         {
             OpenDoor();
@@ -51,11 +74,12 @@ public class StartLevel : MonoBehaviour
 
                 foreach (GameObject r in rooms)
                 {
-                    if (r.GetComponent<RoomBehavior>().x == 0 && r.GetComponent<RoomBehavior>().y == 0)
+                    if (r.GetComponent<RoomBehavior>().index == layerGenerator.startPos)
                     {
                         r.SetActive(true);
                         r.GetComponent<RoomBehavior>().active = true;
                         r.GetComponent<RoomBehavior>().backDoor.transform.Find("DoorHinge").gameObject.SetActive(false);
+                        r.GetComponent<RoomBehavior>().backDoor.GetComponentInChildren<MeshCollider>().enabled = false;
                     }
                 }
 
@@ -80,14 +104,17 @@ public class StartLevel : MonoBehaviour
 
     void OpenDoor()
     {
-        door.GetComponent<BoxCollider>().enabled = false;
-        startWallCollider.enabled = false;
-        
         door.transform.localRotation = Quaternion.Slerp(door.transform.localRotation, openRot, Time.deltaTime);
         if (door.transform.rotation == openRot)
         {
             doorOpened = true;
             doorOpening = false;
+        }
+
+        if (!doorOpenedAudio)
+        {
+            sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+            doorOpenedAudio = true;
         }
     }
 

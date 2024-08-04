@@ -100,8 +100,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door: {fileID: 457438435858174734}
   startWalls: {fileID: 7237128428163170130}
+  startLight: {fileID: 3858803717450489229}
   openRot: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  startWallCollider: {fileID: 3194940798816992341}
 --- !u!1 &3698188516086394130
 GameObject:
   m_ObjectHideFlags: 0
@@ -2658,6 +2658,11 @@ PrefabInstance:
 --- !u!4 &2498728927979866237 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8717893220990095113, guid: fc1c85edbe0284f47b4e8f1b96926272, type: 3}
+  m_PrefabInstance: {fileID: 6508098425729124212}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3858803717450489229 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8060405944448375545, guid: fc1c85edbe0284f47b4e8f1b96926272, type: 3}
   m_PrefabInstance: {fileID: 6508098425729124212}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6527661788998199870

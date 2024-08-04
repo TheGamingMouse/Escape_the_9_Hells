@@ -15,11 +15,11 @@ public class Companion : MonoBehaviour
     public float abilityStrengthMultiplier = 1f;
 
     [Header("GameObjects")]
-    GameObject loyalSphereObj;
-    GameObject attackSquareObj;
+    [SerializeField] GameObject loyalSphereObj;
+    [SerializeField] GameObject attackSquareObj;
 
     [Header("Lists")]
-    readonly List<GameObject> companionObjs = new();
+    [SerializeField] List<GameObject> companionObjs = new();
 
     [Header("Components")]
     public LoyalSphereCombat loyalSphere;

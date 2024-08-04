@@ -271,9 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cb20cb9aa8b599408df6783b66f8bdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 0
   slashing: 0
-  bladeColl: {fileID: 6500000}
-  nRot: {x: -0.24376272, y: 0.3766877, z: 0.65723795, w: 0.60557777}
-  sRot1: {x: -0.17020741, y: 0.41514257, z: 0.75753736, w: 0.47415537}
-  sRot2: {x: -0.23986253, y: 0.6061701, z: 0.7396369, w: 0.16721527}
-  sRotEnd: {x: 0.15796636, y: 0.6324737, z: 0.6986771, w: -0.29474398}
+  specialAttacking: 0
+  weapon: {fileID: 0}

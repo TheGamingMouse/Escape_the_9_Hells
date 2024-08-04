@@ -12,6 +12,7 @@ public class ExplosionComponentStorage : MonoBehaviour
     [Header("Bools")]
     public bool canDamagePlayer;
     public bool canDamageEnemies;
+    bool firstColl;
 
     [Header("GameObjects")]
     public GameObject Ground;
@@ -20,6 +21,9 @@ public class ExplosionComponentStorage : MonoBehaviour
     public GameObject Impact;
     public GameObject Fire_up;
     public GameObject Spark;
+    
+    [Header("Components")]
+    public SFXAudioManager sfxManager;
 
     #endregion
 
@@ -43,6 +47,24 @@ public class ExplosionComponentStorage : MonoBehaviour
             else if (coll.TryGetComponent(out ImpHealth impComp))
             {
                 impComp.TakeDamage(damage, false);
+            }
+        }
+
+        if (!firstColl)
+        {
+            sfxManager.PlayClip(sfxManager.fireboltExplosion, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod / 2, gameObject);
+
+            firstColl = true;
+        }
+    }
+
+    void OnDestroy()
+    {
+        foreach (var source in gameObject.GetComponents<AudioSource>())
+        {
+            if (sfxManager.audioSourcePool.Contains(source))
+            {
+                sfxManager.audioSourcePool.Remove(source);
             }
         }
     }

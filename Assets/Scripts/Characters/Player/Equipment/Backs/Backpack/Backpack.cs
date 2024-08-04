@@ -7,7 +7,7 @@ public class Backpack : MonoBehaviour
     #region Variables
 
     [Header("Floats")]
-    readonly float baseCooldown = 10f;
+    readonly float baseCooldown = 2.5f;
     float cooldown;
 
     [Header("Bools")]
@@ -16,8 +16,8 @@ public class Backpack : MonoBehaviour
     bool secondary;
 
     [Header("LoadoutItemsSOs")]
-    [SerializeField] LoadoutItemsSO primaryWeapon;
-    [SerializeField] LoadoutItemsSO secondaryWeapon;
+    LoadoutItemsSO primaryWeapon;
+    LoadoutItemsSO secondaryWeapon;
 
     [Header("Components")]
     PlayerUpgrades playerUpgrades;
@@ -25,6 +25,7 @@ public class Backpack : MonoBehaviour
     Weapon playerWeapon;
     SaveLoadManager slManager;
     Backs playerBacks;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -34,19 +35,22 @@ public class Backpack : MonoBehaviour
     void Start()
     {
         var player = GameObject.FindWithTag("Player");
+        var managers = GameObject.FindWithTag("Managers");
 
         playerUpgrades = player.GetComponent<PlayerUpgrades>();
         playerLoadout = player.GetComponent<PlayerLoadout>();
         playerWeapon = player.GetComponentInChildren<Weapon>();
         playerBacks = player.GetComponentInChildren<Backs>();
 
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+        slManager = managers.GetComponent<SaveLoadManager>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         primaryWeapon = slManager.primaryWeapon;
         secondaryWeapon = slManager.secondaryWeapon;
 
         canSwitch = true;
-        primary = true;
+        primary = slManager.backpackPrimary;
+        secondary = !primary;
     }
 
     // Update is called once per frame
@@ -97,6 +101,8 @@ public class Backpack : MonoBehaviour
 
         playerLoadout.selectedWeapon = primaryWeapon;
         playerUpgrades.weaponUpdated = false;
+
+        sfxManager.PlayClip(sfxManager.backpackActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true);
     }
 
     void SwitchToSecondary()
@@ -112,6 +118,8 @@ public class Backpack : MonoBehaviour
 
         playerLoadout.selectedWeapon = secondaryWeapon;
         playerUpgrades.weaponUpdated = false;
+
+        sfxManager.PlayClip(sfxManager.backpackActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true);
     }
 
     IEnumerator CooldownRoutine()

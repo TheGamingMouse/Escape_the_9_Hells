@@ -30,6 +30,12 @@ public class EquipmentMenu : MonoBehaviour
     [Header("TMP_Pros")]
     public TMP_Text soulsText;
 
+    [Header("Scrollbars")]
+    public Scrollbar weaponScroll;
+    public Scrollbar companionScroll;
+    public Scrollbar armorScroll;
+    public Scrollbar backScroll;
+
     [Header("Arrays")]
     public LoadoutItemsSO[] equipmentItemsSOWeapons;
     public LoadoutItemsSO[] equipmentItemsSOCompanion;

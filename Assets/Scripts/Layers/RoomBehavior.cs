@@ -9,12 +9,15 @@ public class RoomBehavior : MonoBehaviour
     [Header("Ints")]
     public int x;
     public int y;
+    public int index;
 
     [Header("Bools")]
     public bool doInterior;
     bool activating;
     public bool completed;
     public bool active;
+    public bool mainPath;
+    public bool playerPathfinder;
 
     [Header("GameObjects")]
     public GameObject door;
@@ -29,6 +32,9 @@ public class RoomBehavior : MonoBehaviour
 
     [Header("Vector2")]
     public Vector2 boardSize;
+
+    [Header("Colors")]
+    Color mainPathColor = new(0f, 0.5686275f, 1f);
 
     [Header("Components")]
     LayerManager layerManager;
@@ -49,22 +55,6 @@ public class RoomBehavior : MonoBehaviour
             StartCoroutine(ActivatingRoutine());
             activating = true;
         }
-
-        if (active)
-        {
-            if (door)
-            {
-                door.GetComponentInChildren<MeshCollider>().enabled = false;
-                if (secondDoor)
-                {
-                    secondDoor.GetComponentInChildren<MeshCollider>().enabled = false;
-                }
-            }
-            if (backDoor)
-            {
-                backDoor.GetComponentInChildren<MeshCollider>().enabled = false;
-            }
-        }
     }
 
     #endregion
@@ -78,6 +68,20 @@ public class RoomBehavior : MonoBehaviour
             doors[i].SetActive(status[i]);
             lights[i].SetActive(status[i]);
             walls[i].SetActive(!status[i]);
+
+            if (mainPath && doors[i] == backDoor && playerPathfinder)
+            {
+                lights[i].GetComponentInChildren<Light>().color = mainPathColor;
+                lights[i].GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+            }
+
+            if (TryGetComponent(out BossGenerator _))
+            {
+                foreach (GameObject l in lights)
+                {
+                    l.GetComponentInChildren<Light>().color = mainPathColor;
+                }
+            }
         }
     }
 

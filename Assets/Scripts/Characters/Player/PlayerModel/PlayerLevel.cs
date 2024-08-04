@@ -47,6 +47,7 @@ public class PlayerLevel : MonoBehaviour
     UIManager uiManager;
     ExpSoulsManager expSoulsManager;
     SaveLoadManager slManager;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -77,6 +78,7 @@ public class PlayerLevel : MonoBehaviour
         uiManager = managers.GetComponent<UIManager>();
         expSoulsManager = managers.GetComponent<ExpSoulsManager>();
         slManager = managers.GetComponent<SaveLoadManager>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         if (slManager.lState == SaveLoadManager.LayerState.InLayers)
         {
@@ -143,7 +145,7 @@ public class PlayerLevel : MonoBehaviour
 
     #region General Methods
 
-    public void LevelUp(bool expLoss, bool midLayer)
+    public void LevelUp(bool expLoss, bool midLayer, bool boss = false)
     {
         timesLeveledUp++;
 
@@ -163,6 +165,11 @@ public class PlayerLevel : MonoBehaviour
             expMultiplier *= 1.65f;
         }
 
+        if (boss)
+        {
+            devilsKilled++;
+        }
+
         OnLevelUp?.Invoke();
     }
 
@@ -177,6 +184,8 @@ public class PlayerLevel : MonoBehaviour
             {
                 LevelUp(false, true);
                 expOverflow--;
+
+                sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod / 2);
             }
         }
         
@@ -186,6 +195,8 @@ public class PlayerLevel : MonoBehaviour
             if (exp >= 1f)
             {
                 LevelUp(true, true);
+
+                sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod / 2);
             }
         }
 
@@ -208,10 +219,11 @@ public class PlayerLevel : MonoBehaviour
 
     void HandleExpChange(int newExp, string enemyType)
     {
-        int luckCheck = Random.Range(1, 101);
+        int luckCheck = Random.Range(1, 501);
         if (luckCheck <= luck)
         {
             exp += newExp / expMultiplier * expLayerMultiplier * 2;
+            sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod / 2);
         }
         else
         {
@@ -220,6 +232,8 @@ public class PlayerLevel : MonoBehaviour
 
         if (exp >= 1f)
         {
+            sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod / 2);
+
             while (exp >= 1f)
             {
                 LevelUp(true, true);
@@ -229,10 +243,6 @@ public class PlayerLevel : MonoBehaviour
         if (enemyType.ToLower() == "demon")
         {
             demonsKilled++;
-        }
-        else if (enemyType.ToLower() == "devil")
-        {
-            devilsKilled++;
         }
     }
 
@@ -244,6 +254,8 @@ public class PlayerLevel : MonoBehaviour
         {
             gainSoulsEffectObj.SetActive(true);
             gainSoulsEffect.Play();
+
+            sfxManager.PlayClip(sfxManager.gainSouls, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
         }
     }
 

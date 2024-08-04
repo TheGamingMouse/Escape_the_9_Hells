@@ -23,6 +23,8 @@ public class ImpAction : MonoBehaviour
     public bool boss;
     bool canAttack;
     bool cooling;
+    public bool male;
+    bool canLaugh = true;
 
     [Header("GameObjects")]
     public GameObject firebolt;
@@ -35,6 +37,7 @@ public class ImpAction : MonoBehaviour
     ImpMovement enemyMovement;
     ImpHealth enemyHealth;
     EnemySight enemySight;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -46,8 +49,19 @@ public class ImpAction : MonoBehaviour
         enemyMovement = GetComponent<ImpMovement>();
         enemyHealth = GetComponent<ImpHealth>();
         enemySight = GetComponent<EnemySight>();
+
+        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
         
         boss = enemyHealth.boss;
+
+        if (boss)
+        {
+            male = true;
+        }
+        else
+        {
+            male = Random.Range(0, 10) < 2;
+        }
     }
 
     // Update is called once per frame
@@ -77,6 +91,11 @@ public class ImpAction : MonoBehaviour
             canAttack = false;
             StopAllCoroutines();
         }
+
+        if (canLaugh)
+        {
+            StartCoroutine(Laugh());
+        }
     }
 
     #endregion
@@ -92,6 +111,7 @@ public class ImpAction : MonoBehaviour
         newProjectile.GetComponent<Firebolt>().explostionScale = 0.75f;
         newProjectile.GetComponent<Firebolt>().canDamagePlayer = true;
         newProjectile.GetComponent<Firebolt>().canDamageEnemies = false;
+        newProjectile.GetComponent<Firebolt>().sfxManager = sfxManager;
 
         Destroy(newProjectile, 10f);
 
@@ -99,6 +119,8 @@ public class ImpAction : MonoBehaviour
 
         attacking = true;
         canAttack = false;
+
+        AttackAudio();
     }
 
     void BossAttack()
@@ -111,6 +133,7 @@ public class ImpAction : MonoBehaviour
         newProjectile.GetComponent<Firebolt>().explostionScale = 3.5f;
         newProjectile.GetComponent<Firebolt>().canDamagePlayer = true;
         newProjectile.GetComponent<Firebolt>().canDamageEnemies = false;
+        newProjectile.GetComponent<Firebolt>().sfxManager = sfxManager;
 
         Destroy(newProjectile, 10f);
 
@@ -131,9 +154,71 @@ public class ImpAction : MonoBehaviour
 
     IEnumerator CoolingRoutine()
     {
+        TargetingAudio();
+
         yield return new WaitForSeconds(attackSpeed / 2f);
 
         canAttack = true;
+    }
+
+    IEnumerator Laugh()
+    {
+        canLaugh = false;
+
+        yield return new WaitForSeconds(5f);
+
+        if (Random.Range(0, 3) == 0)
+        {
+            EnemyLaugh();
+        }
+        canLaugh = true;
+    }
+
+    void EnemyLaugh()
+    {
+        int randLaugh;
+        if (male)
+        {
+            randLaugh = Random.Range(0, sfxManager.enemyLaughMale.Count);
+            sfxManager.PlayClip(sfxManager.enemyLaughMale[randLaugh], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+        }
+        else
+        {
+            randLaugh = Random.Range(0, sfxManager.enemyLaughFemale.Count);
+            sfxManager.PlayClip(sfxManager.enemyLaughFemale[randLaugh], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+        }
+    }
+
+    void TargetingAudio()
+    {
+        int randTarget;
+        if (male)
+        {
+            randTarget = Random.Range(0, sfxManager.impTargetingMale.Count);
+            sfxManager.PlayClip(sfxManager.impTargetingMale[randTarget], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod * 2, gameObject);
+        }
+        else
+        {
+            randTarget = Random.Range(0, sfxManager.impTargetingFemale.Count);
+            sfxManager.PlayClip(sfxManager.impTargetingFemale[randTarget], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod * 2, gameObject);
+        }
+    }
+
+    void AttackAudio()
+    {
+        int randAttack;
+        if (male)
+        {
+            randAttack = Random.Range(0, sfxManager.impAttackMale.Count);
+            sfxManager.PlayClip(sfxManager.impAttackMale[randAttack], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject);
+        }
+        else
+        {
+            randAttack = Random.Range(0, sfxManager.impAttackFemale.Count);
+            sfxManager.PlayClip(sfxManager.impAttackFemale[randAttack], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject);
+        }
+
+        sfxManager.PlayClip(sfxManager.firebolt, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject);
     }
 
     #endregion

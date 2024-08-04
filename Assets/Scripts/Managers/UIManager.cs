@@ -26,6 +26,7 @@ public class UIManager : MonoBehaviour
     int devilsKilled;
     int levelsGained;
     int soulsGained;
+    int totalSouls;
 
     [Header("Floats")]
     [Range(0f, 1f)]
@@ -70,6 +71,7 @@ public class UIManager : MonoBehaviour
     GameObject npcConvos;
     public GameObject cursorObj;
     GameObject bossObj;
+    GameObject disableSoulsText;
 
     [Header("Transforms")]
     Transform canvas;
@@ -88,9 +90,8 @@ public class UIManager : MonoBehaviour
     TMP_Text npcName;
     TMP_Text bossName;
     TMP_Text reRollText;
-
-    [Header("Images")]
-    Image bossHealthImage;
+    TMP_Text totalSoulsText;
+    TMP_Text pauseMenuSoulsText;
 
     [Header("Coroutines")]
     Coroutine countingCoroutine;
@@ -108,16 +109,12 @@ public class UIManager : MonoBehaviour
     PlayerMovement playerMovement;
     Ricky ricky;
     SoulsMenu rickyConvo;
-    Barbara barbara;
     LoadoutMenu barbaraConvo;
     NPCSpawner npcSpawner;
-    Alexander alexander;
     EquipmentMenu alexanderConvo;
     public BossGenerator bossGenerator;
     SaveLoadManager saveLoadManager;
     UpgradeMenu jensConvo;
-    Jens jens;
-
     #endregion
 
     #region Subscriptions
@@ -172,19 +169,6 @@ public class UIManager : MonoBehaviour
 
         if (npcsActive)
         {
-            if (npcSpawner.barbSpawned)
-            {
-                barbara = npcs.GetComponentInChildren<Barbara>();
-            }
-            if (npcSpawner.alexSpawned)
-            {
-                alexander = npcs.GetComponentInChildren<Alexander>();
-            }
-            if (npcSpawner.jensSpawned)
-            {
-                jens = npcs.GetComponentInChildren<Jens>();
-            }
-
             npcConvos.SetActive(true);
         }
         else
@@ -221,6 +205,7 @@ public class UIManager : MonoBehaviour
         UpdateNPCPannels();
         UpdateBossName(bossNameString);
         UpdateReRollText();
+        UpdateTotalSouls();
 
         if (fadeTime > 0)
         {
@@ -292,7 +277,7 @@ public class UIManager : MonoBehaviour
         menus = canvas.Find("Menus");
         
         dialogueBox = canvas.Find("DialogueBox").gameObject;
-        dialogue = dialogueBox.GetComponent<Dialogue>();
+        dialogue = dialogueBox.GetComponentInChildren<Dialogue>();
 
         progressBarExp = canvas.Find("Vertical Progress Bar").GetComponent<ExpProgressBar>();
         progressBarHealth = canvas.Find("Vertical Progress Bar (1)").GetComponent<ExpProgressBar>();
@@ -310,8 +295,16 @@ public class UIManager : MonoBehaviour
         deathMenu = menus.Find("DeathMenu").gameObject;
         pauseMenu = menus.Find("PauseMenu").gameObject;
 
+        GameObject pauseMenuCurrentSouls = pauseMenu.transform.Find("Souls").gameObject;
+        GameObject pauseMenuTotalSouls = pauseMenu.transform.Find("TotalSouls").gameObject;
+
+        if (saveLoadManager.lState == SaveLoadManager.LayerState.Hub)
+        {
+            pauseMenuCurrentSouls.SetActive(false);
+            pauseMenuTotalSouls.transform.position += new Vector3(0, 113, 0);
+        }
+
         bossObj = canvas.Find("Boss").gameObject;
-        bossHealthImage = bossObj.transform.Find("BossHealthBar/Health Bar Fill").GetComponent<Image>();
 
         promt = canvas.Find("Promt").gameObject;
 
@@ -335,7 +328,18 @@ public class UIManager : MonoBehaviour
         canvas = GameObject.FindWithTag("Canvas").transform;
 
         levelText = canvas.Find("uf_level_elite/LevelText (TMP)").GetComponent<TextMeshProUGUI>();
-        soulsText = canvas.Find("Souls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
+        if (saveLoadManager.lState == SaveLoadManager.LayerState.Hub)
+        {
+            soulsText = canvas.Find("HubSouls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
+            disableSoulsText = canvas.Find("Souls").gameObject;
+        }
+        else
+        {
+            soulsText = canvas.Find("Souls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
+            disableSoulsText = canvas.Find("HubSouls").gameObject;
+        }
+        totalSoulsText = canvas.Find("Menus/PauseMenu/TotalSouls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
+        pauseMenuSoulsText = canvas.Find("Menus/PauseMenu/Souls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
 
         dmDemonsKilled = deathMenu.transform.Find("StatBackground/DemonsKilledText (TMP)").GetComponent<TextMeshProUGUI>();
         dmDevilsKilled = deathMenu.transform.Find("StatBackground/DevilsKilledText (TMP)").GetComponent<TextMeshProUGUI>();
@@ -359,6 +363,7 @@ public class UIManager : MonoBehaviour
         deathMenu.SetActive(false);
         pauseMenu.SetActive(false);
         bossObj.SetActive(false);
+        disableSoulsText.SetActive(false);
 
         playerMovement.startBool = false;
         if (npcsActive)
@@ -533,6 +538,7 @@ public class UIManager : MonoBehaviour
                 }
 
                 soulsText.SetText(previousValue.ToString("N0"));
+                pauseMenuSoulsText.SetText(previousValue.ToString("N0"));
 
                 yield return wait;
             }
@@ -548,6 +554,7 @@ public class UIManager : MonoBehaviour
                 }
 
                 soulsText.SetText(previousValue.ToString("N0"));
+                pauseMenuSoulsText.SetText(previousValue.ToString("N0"));
 
                 yield return wait;
             }
@@ -598,6 +605,20 @@ public class UIManager : MonoBehaviour
     void UpdateReRollText()
     {
         reRollText.text = $"Re-Rolls ({perkMenu.GetComponent<PerkMenu>().reRolls})";
+    }
+
+    void UpdateTotalSouls()
+    {
+        if (saveLoadManager.lState == SaveLoadManager.LayerState.InLayers)
+        {
+            totalSouls = saveLoadManager.currentSouls + _soulsCounterValue;
+        }
+        else
+        {
+            totalSouls = saveLoadManager.currentSouls;
+        }
+
+        totalSoulsText.text = totalSouls.ToString();
     }
 
     #endregion

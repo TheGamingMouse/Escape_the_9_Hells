@@ -18,6 +18,7 @@ public class PlayerSouls : MonoBehaviour
 
     [Header("Bools")]
     bool soulsUpdated;
+    public bool playerPathfinder;
 
     [Header("Lists")]
     public List<SoulsItemsSO> templateSouls = new();
@@ -67,6 +68,7 @@ public class PlayerSouls : MonoBehaviour
         startLevelSouls = slManager.startLevelSoulsBought;
         reRollSouls = slManager.reRollSoulsBought;
         reRolls = slManager.reRolls;
+        playerPathfinder = slManager.pathFinderSoulsBought.Count == 1;
     }
 
     // Update is called once per frame
@@ -148,6 +150,10 @@ public class PlayerSouls : MonoBehaviour
         {
             reRollSouls.Add(soul);
             perkMenu.reRolls = reRolls;
+        }
+        else if (soul.title == "Path Finder Soul")
+        {
+            playerPathfinder = true;
         }
     }
 

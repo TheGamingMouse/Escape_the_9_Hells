@@ -28,6 +28,7 @@ public class BossGenerator : MonoBehaviour
     public bool inArea;
     bool bossSpawned;
     public bool doRandomObstacles;
+    bool canTriggerMusic = true;
 
     [Header("GameObjects")]
     public GameObject boss;
@@ -49,15 +50,19 @@ public class BossGenerator : MonoBehaviour
     TreasureRoom treasure;
     UIManager uiManager;
     LayerManager layerManager;
+    MusicAudioManager musicManager;
     
     #endregion
 
     // Start is called before the first frame update
     void Start()
     {
+        var managers = GameObject.FindWithTag("Managers");
+
         room = GetComponent<RoomBehavior>();
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
-        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+        uiManager = managers.GetComponent<UIManager>();
+        layerManager = managers.GetComponent<LayerManager>();
+        musicManager = managers.GetComponent<MusicAudioManager>();
         
         GenerateExit();
 
@@ -92,7 +97,10 @@ public class BossGenerator : MonoBehaviour
             }
         }
 
-        GenerateObstacles();
+        if (doRandomObstacles)
+        {
+            GenerateObstacles();
+        }
 
         if (layerManager.showroom)
         {
@@ -104,7 +112,10 @@ public class BossGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GenerateObstacles();
+        if (doRandomObstacles)
+        {
+            GenerateObstacles();
+        }
 
         if (treasure.ready && !ready)
         {
@@ -120,14 +131,6 @@ public class BossGenerator : MonoBehaviour
         {
             var newBoss = Instantiate(boss, bossSpawn.position, Quaternion.identity, transform).GetComponent<EnemySight>();
             newBoss.bossGenerator = this;
-            if (newBoss.TryGetComponent(out BasicEnemyHealth basicHealth))
-            {
-                basicHealth.bossGenerator = this;
-            }
-            else if (newBoss.TryGetComponent(out ImpHealth impHealth))
-            {
-                impHealth.bossGenerator = this;
-            }
             
             uiManager.bossGenerator = this;
             
@@ -215,7 +218,7 @@ public class BossGenerator : MonoBehaviour
 
     void GenerateObstacles()
     {
-        if (doRandomObstacles)
+        if (obstaclesSpawned < obstacleAmount)
         {
             floorActive = new bool[floorTiles.Length];
             while (obstaclesSpawned < obstacleAmount)
@@ -253,11 +256,28 @@ public class BossGenerator : MonoBehaviour
         }
     }
 
+    IEnumerator TriggerCooldown()
+    {
+        canTriggerMusic = false;
+
+        yield return new WaitForSeconds(0.5f);
+        
+        canTriggerMusic = true;
+    }
+
     void OnTriggerEnter(Collider coll)
     {
         if (coll.transform.CompareTag("Player"))
         {
             inArea = true;
+
+            if (!musicManager.inBossRoom && canTriggerMusic)
+            {
+                musicManager.inBossRoom = true;
+                musicManager.CheckMusicTrack();
+
+                StartCoroutine(TriggerCooldown());
+            }
         }
     }
     void OnTriggerExit(Collider coll)
@@ -265,6 +285,14 @@ public class BossGenerator : MonoBehaviour
         if (coll.transform.CompareTag("Player"))
         {
             inArea = false;
+
+            if (musicManager.inBossRoom && canTriggerMusic)
+            {
+                musicManager.inBossRoom = false;
+                musicManager.CheckMusicTrack();
+
+                StartCoroutine(TriggerCooldown());
+            }
         }
     }
 }

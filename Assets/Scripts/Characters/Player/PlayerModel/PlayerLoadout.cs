@@ -9,6 +9,7 @@ public class PlayerLoadout : MonoBehaviour
     [Header("Bools")]
     public bool start;
     public bool backpackActive;
+    public bool seedBagActive;
     bool ready;
 
     [Header("LoadoutItemsSO")]
@@ -16,6 +17,8 @@ public class PlayerLoadout : MonoBehaviour
     public LoadoutItemsSO selectedPrimaryWeapon;
     public LoadoutItemsSO selectedSecondaryWeapon;
     public LoadoutItemsSO selectedCompanion;
+    public LoadoutItemsSO selectedPrimaryCompanion;
+    public LoadoutItemsSO selectedSecondaryCompanion;
     public LoadoutItemsSO selectedArmor;
     public LoadoutItemsSO selectedBack;
 
@@ -68,10 +71,13 @@ public class PlayerLoadout : MonoBehaviour
             playerUpgrades = GetComponent<PlayerUpgrades>();
 
             selectedPrimaryWeapon = slManager.primaryWeapon;
-            selectedWeapon = selectedPrimaryWeapon;
             selectedSecondaryWeapon = slManager.secondaryWeapon;
+            selectedWeapon = slManager.selectedWeapon;
 
-            selectedCompanion = slManager.companion;
+            selectedPrimaryCompanion = slManager.primaryCompanion;
+            selectedSecondaryCompanion = slManager.secondaryCompanion;
+            selectedCompanion = slManager.selectedCompanion;
+
             selectedArmor = slManager.armor;
             selectedBack = slManager.back;
 
@@ -126,9 +132,7 @@ public class PlayerLoadout : MonoBehaviour
     #endregion
 
     #region General Methods
-
-    #nullable enable
-    public void SetLoadout(LoadoutItemsSO primaryWeapon, LoadoutItemsSO? secondaryWeapon, LoadoutItemsSO companion, LoadoutItemsSO armor, LoadoutItemsSO back)
+    public void SetLoadout(LoadoutItemsSO primaryWeapon, LoadoutItemsSO secondaryWeapon, LoadoutItemsSO primaryCompanion, LoadoutItemsSO secondaryCompanion, LoadoutItemsSO armor, LoadoutItemsSO back)
     {
         selectedPrimaryWeapon = primaryWeapon;
         if (secondaryWeapon)
@@ -140,7 +144,16 @@ public class PlayerLoadout : MonoBehaviour
             selectedSecondaryWeapon = primaryWeapon;
         }
         selectedWeapon = selectedPrimaryWeapon;
-        selectedCompanion = companion;
+        selectedPrimaryCompanion = primaryCompanion;
+        if (secondaryCompanion)
+        {
+            selectedSecondaryCompanion = secondaryCompanion;
+        }
+        else
+        {
+            selectedSecondaryCompanion = primaryCompanion;
+        }
+        selectedCompanion = selectedPrimaryCompanion;
         selectedArmor = armor;
         selectedBack = back;
 
@@ -187,6 +200,15 @@ public class PlayerLoadout : MonoBehaviour
 
     void UpdateCompanion()
     {
+        if (selectedBack && selectedBack.title == "Seed Bag")
+        {
+            seedBagActive = true;
+        }
+        else
+        {
+            seedBagActive = false;
+        }
+
         if (!selectedCompanion || selectedCompanion.title == "Unequiped")
         {
             playerCompanion.SwitchToNone();
@@ -248,6 +270,10 @@ public class PlayerLoadout : MonoBehaviour
         else if (selectedBack.title == "Cape O' Wind")
         {
             playerBack.SwitchToCapeOWind();
+        }
+        else if (selectedBack.title == "Seed Bag")
+        {
+            playerBack.SwitchToSeedBag();
         }
         playerUpgrades.backUpdated = false;
     }

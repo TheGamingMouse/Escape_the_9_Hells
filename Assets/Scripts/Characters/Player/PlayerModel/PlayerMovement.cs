@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public bool startBool = true;
     bool isDashing;
     bool dashCooldown;
-    bool canTriggerMusic = true;
+    bool walking;
 
     [Header("Vector3s")]
     Vector3 move;
@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
     public RoomSpawner roomSpawner;
     UIManager uiManager;
     Backs backs;
-    MusicAudioManager musicManager;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -51,7 +51,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         uiManager = managers.GetComponent<UIManager>();
         backs = GetComponentInChildren<Backs>();
-        musicManager = managers.GetComponent<MusicAudioManager>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         dashSpeed = baseSpeed * 1.5f;
         currentSpeed = baseSpeed;
@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (startBool)
         {
-            rb.MovePosition(rb.position + currentSpeed * speedMultiplier * Time.fixedDeltaTime * move);
+            rb.position += move * currentSpeed * speedMultiplier * Time.fixedDeltaTime;
             Mathf.Clamp(transform.position.y, -20f, 0.55f);
         }
     }
@@ -74,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
             Move();
             LookAtMouse();
             
-            if (Input.GetKeyDown(KeyCode.Space) && !isDashing && !dashCooldown && (move.x != 0 || move.z != 0))
+            if (Input.GetKeyDown(KeyCode.Space) && !isDashing && !dashCooldown && move.sqrMagnitude > 0)
             {
                 StartCoroutine(Dash());
             }
@@ -83,25 +83,35 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (Input.GetMouseButton(0) && weapon.canAttack)
                 {
-                    weapon.Slash();
+                    weapon.UlfberhtStartNormal();
                 }
                 
                 if (Input.GetMouseButton(1) && weapon.canAttack && weapon.canSpecial && weapon.specialAttack)
                 {
-                    weapon.UlfberhtSpecial();
+                    weapon.UlfberhtStartSpecial();
                 }
             }
             else if (weapon.rState == Weapon.RangeState.Melee && weapon.aType == Weapon.AttackType.Pierce)
             {
                 if (Input.GetMouseButton(0) && weapon.canAttack)
                 {
-                    weapon.Pierce();
+                    weapon.PugioStartNormal();
                 }
 
                 if (Input.GetMouseButton(1) && weapon.canAttack && weapon.canSpecial && weapon.specialAttack)
                 {
-                    weapon.PugioSpecial();
+                    weapon.PugioStartSpecial();
                 }
+            }
+
+            if (move.sqrMagnitude > 0 && !isDashing)
+            {
+                if (!walking)
+                {
+                    StartCoroutine(PlayWalkingAudio());
+                }
+
+                walking = true;
             }
         }
 
@@ -126,7 +136,7 @@ public class PlayerMovement : MonoBehaviour
             move.x = Input.GetAxisRaw("Horizontal");
             move.z = Input.GetAxisRaw("Vertical");
 
-            if (move.x == 0 && move.z == 0)
+            if (move.sqrMagnitude == 0)
             {
                 rb.velocity = new Vector3(0f, -currentSpeed, 0f);
             }
@@ -142,6 +152,7 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator Dash()
     {
         isDashing = true;
+        walking = false;
         currentSpeed = dashSpeed;
 
         GetComponent<MeshRenderer>().material.SetColor("_Color", dashColor);
@@ -164,11 +175,15 @@ public class PlayerMovement : MonoBehaviour
         {
             StartCoroutine(backs.angelWings.BonusDash(dashCooldownTime));
             GetComponent<MeshRenderer>().material.SetColor("_Color", normalColor);
+
+            sfxManager.PlayClip(sfxManager.angelWingsActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true);
         }
         else if (backs.steelWings.active && backs.bActive == Backs.BackActive.SteelWings)
         {
             StartCoroutine(backs.steelWings.SteelDash(dashCooldownTime));
             StartCoroutine(DashCooldown());
+
+            sfxManager.PlayClip(sfxManager.angelWingsActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true, "none", null, 0.5f);
         }
         else
         {
@@ -186,41 +201,36 @@ public class PlayerMovement : MonoBehaviour
         dashCooldown = false;
     }
 
-    IEnumerator TriggerCooldown()
+    IEnumerator PlayWalkingAudio()
     {
-        float triggerCooldown = 0.5f;
-        canTriggerMusic = false;
+        for (int i = 0; i < sfxManager.playerWalking.Count; i++)
+        {
+            sfxManager.PlayClip(sfxManager.playerWalking[i], sfxManager.masterManager.sBlend2D, sfxManager.playerVolumeMod);
+            
+            yield return new WaitForSeconds(sfxManager.playerWalking[i].length);
+            
+            if (move.sqrMagnitude == 0 || isDashing)
+            {
+                walking = false;
+                yield break;
+            }
 
-        yield return new WaitForSeconds(triggerCooldown);
-        
-        canTriggerMusic = true;
+            if (i >= sfxManager.playerWalking.Count - 1)
+            {
+                i = 0;
+            }
+        }
     }
 
-    void OnTriggerStay(Collider coll)
+    void OnTriggerEnter(Collider coll)
     {
         if (coll.transform.CompareTag("LayerRoom"))
         {
             roomSpawner = coll.GetComponent<RoomSpawner>();
-
-            if (musicManager.inBossRoom && canTriggerMusic)
-            {
-                musicManager.inBossRoom = false;
-                musicManager.CheckMusicTrack();
-
-                StartCoroutine(TriggerCooldown());
-            }
         }
         else if (coll.transform.CompareTag("BossRoom"))
         {
             bossGenerator = coll.GetComponent<BossGenerator>();
-
-            if (!musicManager.inBossRoom && canTriggerMusic)
-            {
-                musicManager.inBossRoom = true;
-                musicManager.CheckMusicTrack();
-
-                StartCoroutine(TriggerCooldown());
-            }
         }
     }
 

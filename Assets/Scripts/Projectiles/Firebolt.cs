@@ -19,6 +19,7 @@ public class Firebolt : MonoBehaviour
 
     [Header("GameObjects")]
     public GameObject explosion;
+    public SFXAudioManager sfxManager;
 
     #endregion
 
@@ -79,9 +80,22 @@ public class Firebolt : MonoBehaviour
         newExplosion.GetComponent<ExplosionComponentStorage>().canDamageEnemies = canDamageEnemies;
 
         newExplosion.GetComponent<ExplosionComponentStorage>().damage = damage / 2;
+
+        newExplosion.GetComponent<ExplosionComponentStorage>().sfxManager = sfxManager;
         
         Destroy(newExplosion, 1f);
         Destroy(gameObject);
+    }
+
+    void OnDestroy()
+    {
+        foreach (var source in gameObject.GetComponents<AudioSource>())
+        {
+            if (sfxManager.audioSourcePool.Contains(source))
+            {
+                sfxManager.audioSourcePool.Remove(source);
+            }
+        }
     }
 
     #endregion

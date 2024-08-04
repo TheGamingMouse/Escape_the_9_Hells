@@ -69,7 +69,7 @@ public class PlayerUpgrades : MonoBehaviour
     public List<UpgradeItemsSO> upgradesSteelWings = new();
     public List<UpgradeItemsSO> upgradesBackpacks = new();
     public List<UpgradeItemsSO> upgradesCapeOWinds = new();
-    public List<UpgradeItemsSO> upgradesBacks1 = new();
+    public List<UpgradeItemsSO> upgradesSeedBag = new();
     public List<UpgradeItemsSO> upgradesBacks2 = new();
 
     [Header("Components")]
@@ -123,6 +123,7 @@ public class PlayerUpgrades : MonoBehaviour
                 upgradesSteelWings = slManager.steelWingsUpgrades;
                 upgradesBackpacks = slManager.backpackUpgrades;
                 upgradesCapeOWinds = slManager.capeOWindUpgrades;
+                upgradesSeedBag = slManager.seedBagUpgrades;
 
                 loaded = true;
             }
@@ -542,6 +543,14 @@ public class PlayerUpgrades : MonoBehaviour
                     activeCool = upgradesCapeOWinds.Where(x => x.name == "Cooldown").Count() * cool;
                     backs.abilityCooldownMultiplier += activeCool;
                 }
+                else if (loadout.selectedBack.title.ToLower() == "seed bag")
+                {
+                    // Cooldown
+                    backs.abilityCooldownMultiplier -= activeCool;
+
+                    activeCool = upgradesSeedBag.Where(x => x.name == "Cooldown").Count() * cool;
+                    backs.abilityCooldownMultiplier += activeCool;
+                }
                 else
                 {
                     // Cooldown
@@ -724,9 +733,9 @@ public class PlayerUpgrades : MonoBehaviour
         backUpdated = false;
     }
 
-    public void AddBack1Upgrade(UpgradeItemsSO upgrade)
+    public void AddSeedBagUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesBacks1.Add(upgrade);
+        upgradesSeedBag.Add(upgrade);
 
         backUpdated = false;
     }

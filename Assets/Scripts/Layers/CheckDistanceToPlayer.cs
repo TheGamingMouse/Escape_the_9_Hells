@@ -8,7 +8,7 @@ public class CheckDistanceToPlayer : MonoBehaviour
 
     [Header("Floats")]
     public float distToPlayer;
-    public float maxDist = 25f;
+    readonly float maxDist = 22.5f;
 
     [Header("Bools")]
     bool nameUpdated;

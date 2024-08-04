@@ -26,6 +26,7 @@ public class GameData
     public int luckSoulsBought;
     public int startLevelSoulsBought;
     public int reRollSoulsBought;
+    public int pathFinderSoulsBought;
 
     // In-layer
     public int levelsGainedInLayer;
@@ -48,7 +49,7 @@ public class GameData
     public float healthInLayer;
 
     // Music Length
-    public float hubMenuMusicTime;
+    public float musicTime;
 
     [Header("Bools")]
     // NPC Variables
@@ -58,7 +59,10 @@ public class GameData
     // Selected Equipment
     public string primaryWeapon;
     public string secondaryWeapon;
-    public string companion;
+    public string selectedWeapon;
+    public string primaryCompanion;
+    public string secondaryCompanion;
+    public string selectedCompanion;
     public string armor;
     public string back;
 
@@ -89,6 +93,7 @@ public class GameData
     public List<string> steelWingsUpgrades;
     public List<string> backpackUpgrades;
     public List<string> capeOWindUpgrades;
+    public List<string> seedBagUpgrades;
 
     // In-layer
     public List<string> perks;
@@ -111,7 +116,10 @@ public class GameData
         // Selected Equipment
         primaryWeapon = null;
         secondaryWeapon = null;
-        companion = null;
+        selectedWeapon = null;
+        primaryCompanion = null;
+        secondaryCompanion = null;
+        selectedCompanion = null;
         armor = null;
         back = null;
 
@@ -130,6 +138,7 @@ public class GameData
         startLevelSoulsBought = 0;
         reRollSoulsBought = 0;
         reRollsSpent = 0;
+        pathFinderSoulsBought = 0;
 
         // Bought Upgrades
         // Weapons
@@ -151,6 +160,7 @@ public class GameData
         steelWingsUpgrades = new();
         backpackUpgrades = new();
         capeOWindUpgrades = new();
+        seedBagUpgrades = new();
 
         // Equipment
         capeOWindCooldown = 0f;
@@ -173,6 +183,6 @@ public class GameData
         perks = new();
 
         // Music Length
-        hubMenuMusicTime = 0f;
+        musicTime = 0f;
     }
 }

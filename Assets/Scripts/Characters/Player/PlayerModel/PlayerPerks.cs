@@ -19,6 +19,14 @@ public class PlayerPerks : MonoBehaviour
     readonly float shieldMod = 0.2f;
     readonly float iceAuraSpeedMod = 0.05f;
 
+    [Header("Bools")]
+    bool fAuraActive;
+    bool fAuraPSActive;
+    bool iAuraActive;
+    bool iAuraPSActive;
+    bool shieldActive;
+    bool shieldPSActive;
+
     [Header("Lists")]
     public List<PerkItemsSO> templatePerks = new();
     public List<PerkItemsSO> defencePerks = new();
@@ -39,6 +47,11 @@ public class PlayerPerks : MonoBehaviour
     public FireAura fireAura;
     public Shield shield;
     public IceAura iceAura;
+    SFXAudioManager sfxManager;
+    ParticleSystem iAuraPS;
+    ParticleSystem fAuraPS;
+    ParticleSystem shieldPS;
+    ViewPerksMenu viewPerksMenu;
 
     #endregion
 
@@ -48,13 +61,22 @@ public class PlayerPerks : MonoBehaviour
     void Start()
     {
         var player = GameObject.FindWithTag("Player");
+        var managers = GameObject.FindWithTag("Managers");
+        var canvas = GameObject.FindWithTag("Canvas").transform;
 
         health = player.GetComponent<PlayerHealth>();
         weapon = player.GetComponentInChildren<Weapon>();
         movement = player.GetComponent<PlayerMovement>();
         level = player.GetComponent<PlayerLevel>();
 
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+        slManager = managers.GetComponent<SaveLoadManager>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
+        
+        viewPerksMenu = canvas.Find("Menus/PauseMenu/ViewPerksMenu").GetComponent<ViewPerksMenu>();
+
+        iAuraPS = iceAura.GetComponent<ParticleSystem>();
+        fAuraPS = fireAura.GetComponent<ParticleSystem>();
+        shieldPS = shield.GetComponent<ParticleSystem>();
 
         if (slManager.lState == SaveLoadManager.LayerState.InLayers)
         {
@@ -97,61 +119,103 @@ public class PlayerPerks : MonoBehaviour
             slManager.iceAuraPerks.Clear();
         }
 
-        if (fireAuraPerks.Count > 0)
+        if (fireAuraPerks.Count > 0 && !fAuraActive)
         {
             fireAura.gameObject.SetActive(true);
+            fAuraActive = true;
         }
-        else
+        else if (fireAuraPerks.Count <= 0)
         {
             fireAura.gameObject.SetActive(false);
+            fAuraActive = false;
         }
 
-        if (shieldPerks.Count > 0)
+        if (shieldPerks.Count > 0 && !shieldActive)
         {
             shield.gameObject.SetActive(true);
+            shieldActive = true;
         }
-        else
+        else if (shieldPerks.Count <= 0)
         {
             shield.gameObject.SetActive(false);
+            shieldActive = false;
         }
 
-        if (iceAuraPerks.Count > 0)
+        if (iceAuraPerks.Count > 0 && !iAuraActive)
         {
             iceAura.gameObject.SetActive(true);
+            iAuraActive = true;
         }
-        else
+        else if (iceAuraPerks.Count <= 0)
         {
             iceAura.gameObject.SetActive(false);
+            iAuraActive = false;
         }
     }
 
     void Update()
     {
-        if (fireAuraPerks.Count > 0)
+        if (fireAuraPerks.Count > 0 && !fAuraActive)
         {
             fireAura.gameObject.SetActive(true);
+            fAuraActive = true;
         }
-        else
+        else if (fireAuraPerks.Count <= 0)
         {
             fireAura.gameObject.SetActive(false);
+            fAuraActive = false;
         }
 
-        if (shieldPerks.Count > 0)
+        if (fAuraActive)
+        {
+            if (fAuraPS.time <= 0.1f && !fAuraPSActive)
+            {
+                PlayFireAuraAudio();
+
+                StartCoroutine(FireAuraActivateCooldown());
+            }
+        }
+
+        if (shieldPerks.Count > 0 && !shieldActive)
         {
             shield.gameObject.SetActive(true);
+            shieldActive = true;
         }
-        else
+        else if (shieldPerks.Count <= 0)
         {
             shield.gameObject.SetActive(false);
+            shieldActive = false;
         }
 
-        if (iceAuraPerks.Count > 0)
+        if (shieldActive)
+        {
+            if (shieldPS.time <= 0.1f && !shieldPSActive)
+            {
+                PlayShieldAudio();
+
+                StartCoroutine(ShieldActivateCooldown());
+            }
+        }
+
+        if (iceAuraPerks.Count > 0 && !iAuraActive)
         {
             iceAura.gameObject.SetActive(true);
+            iAuraActive = true;
         }
-        else
+        else if (iceAuraPerks.Count <= 0)
         {
             iceAura.gameObject.SetActive(false);
+            iAuraActive = false;
+        }
+
+        if (iAuraActive)
+        {
+            if (iAuraPS.time <= 0.1f && !iAuraPSActive)
+            {
+                PlayIceAuraAudio();
+
+                StartCoroutine(IceAuraActivateCooldown());
+            }
         }
     }
 
@@ -170,44 +234,104 @@ public class PlayerPerks : MonoBehaviour
         {
             defencePerks.Add(perk);
             health.resistanceMultiplier += defenceMod;
+
+            sfxManager.PlayClip(sfxManager.defencePerk, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Attack Speed Perk")
         {
             attackSpeedPerks.Add(perk);
             weapon.attackSpeedMultiplier += attackSpeedMod;
+
+            sfxManager.PlayClip(sfxManager.attSpeedPerk, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Damage Perk")
         {
             damagePerks.Add(perk);
             weapon.damageMultiplier += damageMod;
+
+            sfxManager.PlayClip(sfxManager.damagePerk, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Movement Speed Perk")
         {
             moveSpeedPerks.Add(perk);
             movement.speedMultiplier += moveSpeedMod;
+
+            sfxManager.PlayClip(sfxManager.moveSpeedPerk, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Luck Perk")
         {
             luckPerks.Add(perk);
             level.luck += luckMod;
+
+            sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Fire Aura Perk")
         {
             fireAuraPerks.Add(perk);
             fireAura.damage += fireAuraMod;
+
+            PlayFireAuraAudio();
         }
         else if (perk.title == "Shield Perk")
         {
             shieldPerks.Add(perk);
             shield.protection += shieldPerks.Count * shieldMod;
             shield.modifierApplied = false;
+
+            PlayShieldAudio();
         }
         else if (perk.title == "Ice Aura Perk")
         {
             iceAuraPerks.Add(perk);
             iceAura.damage += iceAuraDamageMod;
             iceAura.speedPenalty += iceAuraSpeedMod;
+            
+            PlayIceAuraAudio();
         }
+
+        viewPerksMenu.perksAquired++;
+    }
+
+    IEnumerator IceAuraActivateCooldown()
+    {
+        iAuraPSActive = true;
+
+        yield return new WaitForSeconds(2);
+
+        iAuraPSActive = false;
+    }
+
+    void PlayIceAuraAudio()
+    {
+        sfxManager.PlayClip(sfxManager.activeIceAura, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
+    }
+
+    IEnumerator FireAuraActivateCooldown()
+    {
+        fAuraPSActive = true;
+
+        yield return new WaitForSeconds(2);
+
+        fAuraPSActive = false;
+    }
+
+    void PlayFireAuraAudio()
+    {
+        sfxManager.PlayClip(sfxManager.activeFireAura, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod/2);
+    }
+
+    IEnumerator ShieldActivateCooldown()
+    {
+        shieldPSActive = true;
+
+        yield return new WaitForSeconds(2);
+
+        shieldPSActive = false;
+    }
+
+    void PlayShieldAudio()
+    {
+        sfxManager.PlayClip(sfxManager.activeShield, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod*2);
     }
 
     #endregion

@@ -35,6 +35,7 @@ public class Ricky : MonoBehaviour, IInteractable
     public bool canTalk;
     public bool daggerGiven;
     bool weaponsActivated;
+    bool doorOpenedAudio;
 
     [Header("Strings")]
     readonly static string line1 = "Welcome to Hell! You must be the new guy, what was your name again? Ahh, doesn't matter, I just need a drop of blood. *Stabs your hand with dagger*. You really messed up in life huh? Managed to make your way all the way down to the 9th layer of Hell, quite a feat to be honest.";
@@ -54,7 +55,7 @@ public class Ricky : MonoBehaviour, IInteractable
     readonly static string dLine2 = "For example, you could spend some of them with me, and I can infuse some of that energy into you. Essentially that just means, that I'll make you stronger, if you pay me for it.";
     readonly static string dLine3 = "Additionally, keep in mind, that different weapons are used differently. I know truely thought provoking stuff, but I mean it, remember not to stick with a weapon you don't like the attack pattern of. Go talk to Barbara, she'll sort you out.";
     readonly static string dLine4 = "You should also remember, you're gonna have to buy the equipment first. Go talk to Alexander, he won't give you a good price, but no-one else will either.";
-    // readonly static string dLine5 = "Also, you might want to talk to [Not Implemented Yet], they can teach you to get the maximum potential out of your equipment.";
+    readonly static string dLine5 = "Also, you might want to talk to Jens, they can teach you to get the maximum potential out of your equipment.";
 
     [Header("Transforms")]
     Transform target;
@@ -73,7 +74,7 @@ public class Ricky : MonoBehaviour, IInteractable
     [Header("Arrays")]
     readonly string[] lines1 = {line1, line2, line3, line4, line5, line6};
     readonly string[] lines2 = {line7, line8, line9, line10, line11};
-    readonly string[] defaultLines = {dLine1, dLine2, dLine3, dLine4};
+    readonly string[] defaultLines = {dLine1, dLine2, dLine3, dLine4, dLine5};
 
     [Header("Lists")]
     readonly List<string[]> linesList = new();
@@ -92,6 +93,7 @@ public class Ricky : MonoBehaviour, IInteractable
     PlayerMovement playerMovement;
     SaveLoadManager saveLoadManager;
     NPCSpawner spawner;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -99,19 +101,24 @@ public class Ricky : MonoBehaviour, IInteractable
 
     void Start()
     {
-        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox").GetComponent<Dialogue>();
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        var managers = GameObject.FindWithTag("Managers");
+        var findPlayer = GameObject.FindWithTag("Player");
+        var terrain = GameObject.FindWithTag("Terrain");
+
+        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
+        uiManager = managers.GetComponent<UIManager>();
         rb = GetComponent<Rigidbody>();
-        player = GameObject.FindWithTag("Player").transform;
+        player = findPlayer.transform;
         healthImage = transform.Find("HealthBarCanvas/Health Bar Fill").GetComponent<Image>();
         healthbar = transform.Find("HealthBarCanvas").gameObject;
         cam = Camera.main;
-        mainDoor = GameObject.FindWithTag("Terrain").transform.Find("ExitDoor/DoorHinge").gameObject;
-        entrance = GameObject.FindWithTag("Terrain").transform.Find("ExitDoor/Wall_Entrance").gameObject;
-        playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
-        saveLoadManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+        mainDoor = terrain.transform.Find("ExitDoor/DoorHinge").gameObject;
+        entrance = terrain.transform.Find("ExitDoor/Wall_Entrance").gameObject;
+        playerMovement = findPlayer.GetComponent<PlayerMovement>();
+        saveLoadManager = managers.GetComponent<SaveLoadManager>();
         spawner = GetComponentInParent<NPCSpawner>();
         weapon = player.GetComponentInChildren<Weapon>().gameObject;
+        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         linesList.Add(lines1);
         linesList.Add(lines2);
@@ -224,6 +231,12 @@ public class Ricky : MonoBehaviour, IInteractable
                         playerMovement.startBool = true;
                         dialogueStartComplete = true;
                         saveLoadManager.rickyStartComp = dialogueStartComplete;
+
+                        if (!doorOpenedAudio)
+                        {
+                            sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+                            doorOpenedAudio = true;
+                        }
                     }
                 }
             }
@@ -237,6 +250,12 @@ public class Ricky : MonoBehaviour, IInteractable
                 if (mainDoor.transform.rotation == new Quaternion(0f, 0.707106829f, 0f, 0.707106829f))
                 {
                     openedDoor = true;
+                }
+
+                if (!doorOpenedAudio)
+                {
+                    sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+                    doorOpenedAudio = true;
                 }
             }
         }
@@ -378,6 +397,8 @@ public class Ricky : MonoBehaviour, IInteractable
     {
         talking = true;
         uiManager.rickyTalking = true;
+
+        sfxManager.PlayRickyGreetings();
         
         return true;
     }
@@ -389,6 +410,8 @@ public class Ricky : MonoBehaviour, IInteractable
         dialogue.dialogueDone = false;
         uiManager.dialogueStart = true;
         beginDialogue = true;
+
+        sfxManager.PlayRickyGreetings();
         
         return true;
     }

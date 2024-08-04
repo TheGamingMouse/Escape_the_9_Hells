@@ -8,6 +8,9 @@ public class BladeCollision : MonoBehaviour
     [Header("Floats")]
     float damage;
 
+    [Header("Transform")]
+    public Transform player;
+
     [Header("Components")]
     Ulfberht ulfberht;
 
@@ -57,6 +60,23 @@ public class BladeCollision : MonoBehaviour
             else if (coll.TryGetComponent(out ImpHealth iComp))
             {
                 iComp.TakeDamage((int)damage, false);
+            }
+        }
+
+        if (ulfberht.slashing && Vector3.Distance(coll.transform.position, player.position) < 1.1f)
+        {
+            if (coll.TryGetComponent(out Ricky ricky))
+            {
+                ricky.TakeDamage((int)damage / 2);
+            }
+
+            if (coll.TryGetComponent(out BasicEnemyHealth eComp))
+            {
+                eComp.TakeDamage((int)damage / 2, false);
+            }
+            else if (coll.TryGetComponent(out ImpHealth iComp))
+            {
+                iComp.TakeDamage((int)damage / 2, false);
             }
         }
     }

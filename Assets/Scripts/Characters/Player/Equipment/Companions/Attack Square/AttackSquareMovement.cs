@@ -20,6 +20,8 @@ public class AttackSquareMovement : MonoBehaviour
     Rigidbody rb;
     AttackSquareSight sight;
     public ParticleSystem teleportEffect;
+    SFXAudioManager sfxManager;
+    SaveLoadManager slManager;
 
     #endregion
 
@@ -28,9 +30,13 @@ public class AttackSquareMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        var managers = GameObject.FindWithTag("Managers");
+
         player = GameObject.FindWithTag("Player").transform;
         rb = GetComponent<Rigidbody>();
         sight = GetComponent<AttackSquareSight>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
+        slManager = managers.GetComponent<SaveLoadManager>();
 
         teleportEffect.Stop();
         teleportEffect.gameObject.SetActive(false);
@@ -82,9 +88,9 @@ public class AttackSquareMovement : MonoBehaviour
             }
         }
 
-        if (Vector3.Distance(player.position, transform.position) > 30f)
+        if (Vector3.Distance(player.position, transform.position) > 10f && slManager.lState == SaveLoadManager.LayerState.InLayers)
         {
-            transform.position = player.position;
+            transform.position = new Vector3(player.position.x, transform.position.y, player.position.z);
 
             StartCoroutine(Teleport());
         }
@@ -98,6 +104,8 @@ public class AttackSquareMovement : MonoBehaviour
     {
         teleportEffect.gameObject.SetActive(true);
         teleportEffect.Play();
+
+        sfxManager.PlayClip(sfxManager.attackSquareTeleport, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject);
 
         yield return new WaitForSeconds(2f);
 

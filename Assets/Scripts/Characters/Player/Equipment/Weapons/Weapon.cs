@@ -27,6 +27,9 @@ public class Weapon : MonoBehaviour
     GameObject ulfberhtObj;
     GameObject pugioObj;
 
+    [Header("Transform")]
+    Transform player;
+
     [Header("Lists")]
     readonly List<GameObject> weaponObjs = new();
 
@@ -37,7 +40,7 @@ public class Weapon : MonoBehaviour
     [Header("AnimationClips")]
     AnimationClip ulfClip;
     AnimationClip pugClip;
-    AnimationClip pugSpecialClip;
+    public AnimationClip pugSpecialClip;
     AnimationClip ulfSpecialClip;
 
     [Header("Components")]
@@ -51,6 +54,8 @@ public class Weapon : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.FindWithTag("Player").transform;
+
         ulfberhtObj = ulfberht.gameObject;
         pugioObj = pugio.gameObject;
 
@@ -125,19 +130,21 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public void Slash()
+    public void UlfberhtStartNormal()
     {
         if (wActive == WeaponActive.Ulfberht)
         {
             ulfAnimator.SetBool("Slashing", true);
-            StartCoroutine(Unslash());
+
+            StartCoroutine(UlfberhtEndNormal());
+            StartCoroutine(ulfberht.PlayNormalAudio(true));
 
             ulfberht.slashing = true;
             canAttack = false;
         }
     }
 
-    IEnumerator Unslash()
+    IEnumerator UlfberhtEndNormal()
     {
         if (wActive == WeaponActive.Ulfberht)
         {
@@ -152,25 +159,26 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public void UlfberhtSpecial()
+    public void UlfberhtStartSpecial()
     {
         if (wActive == WeaponActive.Ulfberht)
         {
             ulfberht.specialAttacking = true;
             ulfAnimator.SetBool("Special Attack", true);
 
-            StartCoroutine(UlfberhtUnSpecial());
+            StartCoroutine(UlfberhtEndSpecial());
+            StartCoroutine(ulfberht.PlaySpecialAudio());
 
             canAttack = false;
             canSpecial = false;
         }
     }
 
-    IEnumerator UlfberhtUnSpecial()
+    IEnumerator UlfberhtEndSpecial()
     {
         if (wActive == WeaponActive.Ulfberht)
         {
-            float clipLength = ulfSpecialClip.length / ulfAnimator.GetFloat("AttackSpeed") - ulfSpecialClip.length * 0.1f;
+            float clipLength = ulfSpecialClip.length * 0.9f;
 
             yield return new WaitForSeconds(clipLength * 4f);
 
@@ -204,19 +212,21 @@ public class Weapon : MonoBehaviour
         }
     }
     
-    public void Pierce()
+    public void PugioStartNormal()
     {
         if (wActive == WeaponActive.Pugio)
         {
             pugio.piercing = true;
             pugAnimator.SetBool("Piercing", true);
-            StartCoroutine(Unpierce());
+
+            StartCoroutine(PugioEndNormal());
+            StartCoroutine(pugio.PlayNormalAudio(true));
 
             canAttack = false;
         }
     }
 
-    IEnumerator Unpierce()
+    IEnumerator PugioEndNormal()
     {
         if (wActive == WeaponActive.Pugio)
         {
@@ -231,24 +241,26 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    public void PugioSpecial()
+    public void PugioStartSpecial()
     {
         if (wActive == WeaponActive.Pugio)
         {
             pugio.specialAttacking = true;
             pugAnimator.SetBool("Special Attack", true);
-            StartCoroutine(PugioUnSpecial());
+
+            StartCoroutine(PugioEndSpecial());
+            StartCoroutine(pugio.PlaySpecialAudio());
 
             canAttack = false;
             canSpecial = false;
         }
     }
 
-    IEnumerator PugioUnSpecial()
+    IEnumerator PugioEndSpecial()
     {
         if (wActive == WeaponActive.Pugio)
         {
-            float clipLength = pugSpecialClip.length / pugAnimator.GetFloat("AttackSpeed") - pugSpecialClip.length * 0.1f;
+            float clipLength = pugSpecialClip.length * 0.9f;
 
             yield return new WaitForSeconds(clipLength);
 
@@ -271,6 +283,7 @@ public class Weapon : MonoBehaviour
     {
         if (ulfberhtObj)
         {
+            ulfberht.player = player;
             wActive = WeaponActive.Ulfberht;
 
             foreach (GameObject weaponObj in weaponObjs)
@@ -291,6 +304,7 @@ public class Weapon : MonoBehaviour
     {
         if (pugioObj)
         {
+            pugio.player = player;
             wActive = WeaponActive.Pugio;
 
             foreach (GameObject weaponObj in weaponObjs)

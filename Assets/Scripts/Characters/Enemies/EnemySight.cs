@@ -6,6 +6,9 @@ public class EnemySight : MonoBehaviour
 {
     #region Variables
 
+    [Header("Enums")]
+    public EnemyType eType; 
+
     [Header("Bools")]
     public bool isObstructed;
     public bool isInArea;
@@ -36,13 +39,19 @@ public class EnemySight : MonoBehaviour
     {
         player = GameObject.FindWithTag("Player").transform;
         
-        if (TryGetComponent(out BasicEnemyHealth basicHealth))
+        if (eType == EnemyType.basicEnemy)
         {
-            boss = basicHealth.boss;
+            BasicEnemyHealth health = GetComponent<BasicEnemyHealth>();
+            
+            health.bossGenerator = bossGenerator;
+            boss = health.boss;
         }
-        else if (TryGetComponent(out ImpHealth impHealth))
+        else if (eType == EnemyType.imp)
         {
-            boss = impHealth.boss;
+            ImpHealth health = GetComponent<ImpHealth>();
+            
+            health.bossGenerator = bossGenerator;
+            boss = health.boss;
         }
     }
 
@@ -82,6 +91,16 @@ public class EnemySight : MonoBehaviour
     bool TargetObstructed()
     {
         return Physics.Linecast(transform.position, player.position, obstructionMask);
+    }
+
+    #endregion
+
+    #region Enums
+
+    public enum EnemyType
+    {
+        basicEnemy,
+        imp
     }
 
     #endregion

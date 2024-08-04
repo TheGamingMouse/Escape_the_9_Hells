@@ -23,7 +23,7 @@ public class BackUpgradesMenu : MonoBehaviour
     public Transform steelWingsContents;
     public Transform backpackContents;
     public Transform capeOWindContents;
-    public Transform back1Contents;
+    public Transform seedBagContents;
     public Transform back2Contents;
 
     [Header("TMP_Texts")]
@@ -35,19 +35,19 @@ public class BackUpgradesMenu : MonoBehaviour
     public UpgradeTemplate[] PannelsSteelWings;
     public UpgradeTemplate[] PannelsBackpack;
     public UpgradeTemplate[] PannelsCapeOWind;
-    public UpgradeTemplate[] PannelsBacks1;
+    public UpgradeTemplate[] PannelsSeedBag;
     public UpgradeTemplate[] PannelsBacks2;
     public GameObject[] PannelsSOAngelWings;
     public GameObject[] PannelsSOSteelWings;
     public GameObject[] PannelsSOBackpack;
     public GameObject[] PannelsSOCapeOWind;
-    public GameObject[] PannelsSOBacks1;
+    public GameObject[] PannelsSOSeedBag;
     public GameObject[] PannelsSOBacks2;
     public Button[] ButtonsAngelWings;
     public Button[] ButtonsSteelWings;
     public Button[] ButtonsBackpack;
     public Button[] ButtonsCapeOWind;
-    public Button[] ButtonsBacks1;
+    public Button[] ButtonsSeedBag;
     public Button[] ButtonsBacks2;
     public GameObject[] backs;
 
@@ -106,10 +106,10 @@ public class BackUpgradesMenu : MonoBehaviour
                 PannelsSOCapeOWind[i].SetActive(true);
             }
 
-            // Back1
+            // SeedBag
             for (int i = 0; i < itemsSO.Length; i++)
             {
-                PannelsSOBacks1[i].SetActive(true);
+                PannelsSOSeedBag[i].SetActive(true);
             }
 
             // Back2
@@ -122,7 +122,7 @@ public class BackUpgradesMenu : MonoBehaviour
             steelWingsContents.position = new Vector3(1000f, steelWingsContents.position.y);
             backpackContents.position = new Vector3(1000f, backpackContents.position.y);
             capeOWindContents.position = new Vector3(1000f, capeOWindContents.position.y);
-            back1Contents.position = new Vector3(1000f, back1Contents.position.y);
+            seedBagContents.position = new Vector3(1000f, seedBagContents.position.y);
             back2Contents.position = new Vector3(1000f, back2Contents.position.y);
 
             CheckUpgradesPurchaseable();
@@ -210,18 +210,18 @@ public class BackUpgradesMenu : MonoBehaviour
             }
         }
 
-        // Back1
+        // SeedBag
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            PannelsBacks1[i].titleText.text = itemsSO[i].title;
-            PannelsBacks1[i].descriptionText.text = itemsSO[i].description;
-            PannelsBacks1[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
+            PannelsSeedBag[i].titleText.text = itemsSO[i].title;
+            PannelsSeedBag[i].descriptionText.text = itemsSO[i].description;
+            PannelsSeedBag[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
 
-            PannelsBacks1[i].counter.fillAmount = playerUpgrades.upgradesBacks1.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
+            PannelsSeedBag[i].counter.fillAmount = playerUpgrades.upgradesSeedBag.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
 
-            if (playerUpgrades.upgradesBacks1.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+            if (playerUpgrades.upgradesSeedBag.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
             {
-                PannelsBacks1[i].lights.SetActive(true);
+                PannelsSeedBag[i].lights.SetActive(true);
             }
         }
 
@@ -297,16 +297,16 @@ public class BackUpgradesMenu : MonoBehaviour
             }
         }
 
-        // Back1
+        // SeedBag
         for (int i = 0; i < itemsSO.Length; i++)
         {
-            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesBacks1.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesSeedBag.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
             {
-                ButtonsBacks1[i].interactable = true;
+                ButtonsSeedBag[i].interactable = true;
             }
             else
             {
-                ButtonsBacks1[i].interactable = false;
+                ButtonsSeedBag[i].interactable = false;
             }
         }
 
@@ -372,14 +372,14 @@ public class BackUpgradesMenu : MonoBehaviour
         }
     }
     
-    public void PurchaseUpgradesBack1(int btnNo)
+    public void PurchaseUpgradesSeedBag(int btnNo)
     {
         if (upgradeMenu.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddBack1Upgrade(itemsSO[btnNo]);
+            playerUpgrades.AddSeedBagUpgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }

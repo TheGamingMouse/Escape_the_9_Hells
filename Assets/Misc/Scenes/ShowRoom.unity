@@ -498,7 +498,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
       propertyPath: iChoice
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
       propertyPath: doInterior
@@ -515,7 +515,7 @@ PrefabInstance:
     - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
       propertyPath: rooms.Array.data[0]
       value: 
-      objectReference: {fileID: 5001487914795478421, guid: 34431d7f31c127d42b73c54d3970ab6c, type: 3}
+      objectReference: {fileID: 5001487914795478421, guid: 66ee628cc1f8e34409c961d1c27fb4dd, type: 3}
     - target: {fileID: 5918839697638403941, guid: 8c05c01ef36ef234596dd96ba69f6113, type: 3}
       propertyPath: rooms.Array.data[1]
       value: 

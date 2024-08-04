@@ -8,7 +8,7 @@ public class KillBox : MonoBehaviour
     {
         if (coll.transform.CompareTag("Player") && coll.TryGetComponent(out PlayerHealth pComp))
         {
-            pComp.TakeDamage(99999);
+            pComp.Die();
         }
     }
 }

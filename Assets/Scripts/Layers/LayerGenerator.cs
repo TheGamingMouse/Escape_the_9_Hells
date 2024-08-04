@@ -13,6 +13,7 @@ public class LayerGenerator : MonoBehaviour
 
         [Header("Bools")]
         public bool visited = false;
+        public bool mainPath = false;
 
         [Header("Arrays")]
         public bool[] status = new bool[4];
@@ -47,10 +48,10 @@ public class LayerGenerator : MonoBehaviour
     public bool layerGenerated;
     public bool printPops;
     bool doInterior;
+    public bool playerPathfinder;
 
     [Header("GameObjects")]
     public GameObject internalCell;
-    public GameObject internalFloorRemover;
     public GameObject enemySpawnPoint;
 
     [Header("Array")]
@@ -64,23 +65,34 @@ public class LayerGenerator : MonoBehaviour
 
     [Header("Components")]
     LayerManager layerManager;
+    [SerializeField] PlayerSouls playerSouls;
+    SaveLoadManager slManager;
+
 
     #endregion
 
     #region StartUpdate Methods
 
-    // Start is called before the first frame update
     void Start()
     {
-        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+        var managers = GameObject.FindWithTag("Managers");
 
-        Generator();
+        layerManager = managers.GetComponent<LayerManager>();
+        slManager = managers.GetComponent<SaveLoadManager>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if (slManager.ready && !layerGenerated)
+        {
+            if (!layerManager.showroom)
+            {
+                playerSouls = GameObject.FindWithTag("Player").GetComponent<PlayerSouls>();
+                playerPathfinder = playerSouls.playerPathfinder;
+            }
+
+            Generator();
+        }
     }
 
     #endregion
@@ -118,7 +130,6 @@ public class LayerGenerator : MonoBehaviour
 
                     var newRoom = Instantiate(rooms[randomRoom], new Vector3(i * offset.x, 0, -j * offset.y), 
                         Quaternion.identity, transform).GetComponentInChildren<RoomBehavior>();
-                    newRoom.UpdateRoom(board[Mathf.FloorToInt(i + j * size.x)].status);
                     newRoom.UpdateDoors(board[Mathf.FloorToInt(i + j * size.x)].doors);
                     newRoom.UpdateBackDoors(board[Mathf.FloorToInt(i + j * size.x)].backDoors);
 
@@ -126,12 +137,17 @@ public class LayerGenerator : MonoBehaviour
                     newRoom.boardSize = new Vector2(size.x - 1, size.y - 1);
                     newRoom.x = i;
                     newRoom.y = j;
+                    newRoom.index = Mathf.FloorToInt(i + j * size.x);
                     newRoom.doInterior = doInterior;
+                    newRoom.mainPath = currentCell.mainPath;
+
+                    newRoom.playerPathfinder = playerPathfinder || layerManager.showroom;
 
                     if (!doInterior && newRoom.interior != null)
                     {
                         int randRot = Random.Range(0, 2);
                         newRoom.interior.transform.rotation = Quaternion.Euler(0f, randRot * 90f, 0f);
+                        newRoom.transform.Find("Floor").rotation = Quaternion.Euler(0f, randRot * 90f, 0f);
                     }
 
                     if (doInterior)
@@ -139,7 +155,6 @@ public class LayerGenerator : MonoBehaviour
                         var maze = newRoom.gameObject.AddComponent<InternalMaze>();
 
                         maze.internalCell = internalCell;
-                        maze.floorRemover = internalFloorRemover;
                         maze.enemySpawnPoint = enemySpawnPoint;
                         maze.roomBehavior = newRoom;
                         maze.size = new Vector2(7f, 7f);
@@ -149,6 +164,8 @@ public class LayerGenerator : MonoBehaviour
 
                         maze.MazeGenerator();
                     }
+                    
+                    newRoom.UpdateRoom(board[Mathf.FloorToInt(i + j * size.x)].status);
                 }
             }
         }
@@ -177,6 +194,7 @@ public class LayerGenerator : MonoBehaviour
             k++;
 
             board[currentCell].visited = true;
+            board[currentCell].mainPath = true;
 
             if (currentCell == board.Count - 1  && !fillOut)
             {
@@ -204,6 +222,7 @@ public class LayerGenerator : MonoBehaviour
                 }
                 else
                 {
+                    board[currentCell].mainPath = false;
                     currentCell = path.Pop();
                     if (printPops)
                     {

@@ -138,8 +138,34 @@ public class SoulsMenu : MonoBehaviour
             {
                 soulsCount = playerSouls.reRollSouls.Count;
             }
+            else if (soulsItemsSO[i].title == "Path Finder Soul")
+            {
+                if (playerSouls.playerPathfinder)
+                {
+                    soulsCount = 1;
+                }
+                else
+                {
+                    soulsCount = 0;
+                }
+            }
 
-            switch (soulsCount)
+            if (soulsItemsSO[i].title == "Path Finder Soul")
+            {
+                if (soulsCount == 1)
+                {
+                    soulsPannels[i].counter1.gameObject.SetActive(true);
+                    soulsPannels[i].counter2.gameObject.SetActive(true);
+                }
+                else
+                {
+                    soulsPannels[i].counter1.gameObject.SetActive(false);
+                    soulsPannels[i].counter2.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                switch (soulsCount)
                 {
                     case 0:
                         soulsPannels[i].counter1.fillAmount = 0f;
@@ -176,6 +202,7 @@ public class SoulsMenu : MonoBehaviour
                         soulsPannels[i].counter2.fillAmount = 1f;
                         break;
                 }
+            }
         }
 
         pannelsLoaded = true;
@@ -214,6 +241,10 @@ public class SoulsMenu : MonoBehaviour
                 purchaseSoulsButtons[i].interactable = false;
             }
             else if (soulsItemsSO[i].title == "Re Roll Soul" && playerSouls.reRollSouls.Count == soulsMax)
+            {
+                purchaseSoulsButtons[i].interactable = false;
+            }
+            else if (soulsItemsSO[i].title == "Path Finder Soul" && playerSouls.playerPathfinder)
             {
                 purchaseSoulsButtons[i].interactable = false;
             }

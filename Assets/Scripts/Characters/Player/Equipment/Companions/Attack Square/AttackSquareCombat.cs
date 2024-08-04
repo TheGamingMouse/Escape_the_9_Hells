@@ -7,7 +7,7 @@ public class AttackSquareCombat : MonoBehaviour
     #region Variables
 
     [Header("Ints")]
-    readonly int baseDamage = 5;
+    readonly int baseDamage = 13;
     int damage;
 
     [Header("Floats")]
@@ -19,10 +19,16 @@ public class AttackSquareCombat : MonoBehaviour
 
     [Header("Components")]
     public Companion companion;
+    SFXAudioManager sfxManager;
 
     #endregion
 
     #region StartUpdate Methods
+
+    void Start()
+    {
+        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
+    }
 
     void Update()
     {
@@ -43,10 +49,14 @@ public class AttackSquareCombat : MonoBehaviour
         {
             eComp.TakeDamage(damage, false);
             StartCoroutine(DamageRoutine());
+
+            sfxManager.PlayClip(sfxManager.attackSquareHit, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject, "low");
         }
-        else if (coll.transform.TryGetComponent(out ImpHealth iComp))
+        else if (coll.transform.TryGetComponent(out ImpHealth iComp) && canAttack)
         {
             iComp.TakeDamage(damage, false);
+
+            sfxManager.PlayClip(sfxManager.attackSquareHit, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject, "low");
         }
     }
 

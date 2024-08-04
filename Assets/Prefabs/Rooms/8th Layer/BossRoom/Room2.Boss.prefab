@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 2222016473014105569}
   - component: {fileID: 6087883898127004410}
   - component: {fileID: 8970804961718526144}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Room2.Boss
   m_TagString: BossRoom
   m_Icon: {fileID: 0}
@@ -286,6 +286,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 0
   y: 0
+  index: 0
   doInterior: 0
   completed: 0
   active: 0
@@ -608,8 +609,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 46, y: 3, z: 22}
-  m_Center: {x: 0, y: 1.5, z: -4}
+  m_Size: {x: 78.5, y: 3, z: 38.5}
+  m_Center: {x: 0, y: 1.5, z: -12}
 --- !u!1 &5489255045279423939
 GameObject:
   m_ObjectHideFlags: 0

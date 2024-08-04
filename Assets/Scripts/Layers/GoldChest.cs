@@ -22,6 +22,7 @@ public class GoldChest : MonoBehaviour
     Animator animator;
     PlayerLevel playerLevel;
     LayerManager layerManager;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -30,13 +31,15 @@ public class GoldChest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+        var managers = GameObject.FindWithTag("Managers");
+        layerManager = managers.GetComponent<LayerManager>();
 
         if (!layerManager.showroom)
         {
             animator = GetComponentInChildren<Animator>();
             player = GameObject.FindWithTag("Player").transform;
             playerLevel = player.GetComponent<PlayerLevel>();
+            sfxManager = managers.GetComponent<SFXAudioManager>();
         }
     }
 
@@ -54,6 +57,7 @@ public class GoldChest : MonoBehaviour
                 if (luckCheck <= playerLevel.luck)
                 {
                     playerLevel.AddExperience(exp * 2, false, "none");
+                    sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
                 }
                 else
                 {
@@ -66,10 +70,15 @@ public class GoldChest : MonoBehaviour
                 {
                     playerLevel.LevelUp(false, true);
                     playerLevel.LevelUp(false, true);
+
+                    sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+                    sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
                 }
                 else
                 {
                     playerLevel.LevelUp(false, true);
+
+                    sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
                 }
             }
 

@@ -33,6 +33,7 @@ public class Barbara : MonoBehaviour, IInteractable
     UIManager uiManager;
     Dialogue dialogue;
     PlayerMovement playerMovement;
+    SFXAudioManager sfxManager;
     
     #endregion
 
@@ -41,9 +42,12 @@ public class Barbara : MonoBehaviour, IInteractable
     // Start is called before the first frame update
     void Start()
     {
-        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox").GetComponent<Dialogue>();
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        var managers = GameObject.FindWithTag("Managers");
+
+        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
+        uiManager = managers.GetComponent<UIManager>();
         playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
     }
 
     // Update is called once per frame
@@ -101,6 +105,8 @@ public class Barbara : MonoBehaviour, IInteractable
         talking = true;
         uiManager.barbaraTalking = true;
 
+        sfxManager.PlayBarbaraGreetings();
+
         return true;
     }
     public bool InteractQ(Interactor interactor)
@@ -111,6 +117,8 @@ public class Barbara : MonoBehaviour, IInteractable
         dialogue.dialogueDone = false;
         uiManager.dialogueStart = true;
         beginDialogue = true;
+
+        sfxManager.PlayBarbaraGreetings();
         
         return true;
     }

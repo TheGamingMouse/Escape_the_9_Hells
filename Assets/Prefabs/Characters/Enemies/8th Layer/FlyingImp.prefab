@@ -205,7 +205,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 3
+  distToPlayer: 0
   targetInRange: 0
+  slowed: 0
   target: {fileID: 0}
   rb: {fileID: 974801452347641876}
   enemySight: {fileID: 8610593429390522268}
@@ -223,8 +225,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42490fa85364eef4ea4d13393f327e7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eType: 1
   isObstructed: 0
   isInArea: 0
+  minion: 0
   target: {fileID: 0}
   playerMask:
     serializedVersion: 2
@@ -248,7 +252,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attacking: 0
   boss: 0
+  male: 0
   firebolt: {fileID: 947250871755532473, guid: 473d079eb020ad24184a63656bf54144, type: 3}
+  fireball: {fileID: 0}
   playerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -268,9 +274,11 @@ MonoBehaviour:
   soulAmount: 60
   expAmount: 55
   boss: 0
-  parentObj: {fileID: 6064618411734082069}
+  minion: 0
+  bossName: 
   roomSpawner: {fileID: 0}
   bossGenerator: {fileID: 0}
+  minionSpawner: {fileID: 0}
 --- !u!1001 &7971209420407923678
 PrefabInstance:
   m_ObjectHideFlags: 0

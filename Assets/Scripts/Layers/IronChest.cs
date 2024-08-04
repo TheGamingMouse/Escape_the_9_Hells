@@ -21,6 +21,7 @@ public class IronChest : MonoBehaviour
     Animator animator;
     LayerManager layerManager;
     PlayerLevel playerLevel;
+    SFXAudioManager sfxManager;
     
 
     #endregion
@@ -30,24 +31,16 @@ public class IronChest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
+        var managers = GameObject.FindWithTag("Managers");
+        layerManager = managers.GetComponent<LayerManager>();
 
         if (!layerManager.showroom)
         {
-            expSoulsManager = GameObject.FindWithTag("Managers").GetComponent<ExpSoulsManager>();
+            expSoulsManager = managers.GetComponent<ExpSoulsManager>();
             animator = GetComponentInChildren<Animator>();
             player = GameObject.FindWithTag("Player").transform;
             playerLevel = player.GetComponent<PlayerLevel>();
-
-            int luckCheck = Random.Range(1, 101);
-            if (luckCheck <= playerLevel.luck)
-            {
-                souls = Random.Range(10, 26) * 2;
-            }
-            else
-            {
-                souls = Random.Range(10, 26);
-            }
+            sfxManager = managers.GetComponent<SFXAudioManager>();
         }
     }
 
@@ -57,6 +50,17 @@ public class IronChest : MonoBehaviour
         if (!layerManager.showroom && Vector3.Distance(player.position, transform.position) < 2 && !chestOpened)
         {
             animator.SetTrigger("OpenChest");
+            
+            int luckCheck = Random.Range(1, 101);
+            if (luckCheck <= playerLevel.luck)
+            {
+                souls = Random.Range(10, 26) * 2;
+                sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+            }
+            else
+            {
+                souls = Random.Range(10, 26);
+            }
             expSoulsManager.AddSouls(souls, false);
 
             chestOpened = true;
