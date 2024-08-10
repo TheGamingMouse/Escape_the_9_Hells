@@ -280,9 +280,13 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                     selectedWeapon = weapon;
                 }
             }
-            if (selectedWeapon.title == data.primaryWeapon)
+            if (selectedWeapon && selectedWeapon.title == data.primaryWeapon)
             {
                 backpackPrimary = true;
+            }
+            else if (!selectedWeapon)
+            {
+                backpackPrimary = false;
             }
             else if (selectedWeapon.title == data.secondaryWeapon)
             {
@@ -309,9 +313,13 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
                     selectedCompanion = companion;
                 }
             }
-            if (selectedCompanion.title == data.primaryCompanion)
+            if (selectedCompanion && selectedCompanion.title == data.primaryCompanion)
             {
                 seedBagPrimary = true;
+            }
+            else if (!selectedCompanion)
+            {
+                seedBagPrimary = false;
             }
             else if (selectedCompanion.title == data.secondaryCompanion)
             {
