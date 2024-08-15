@@ -14,6 +14,8 @@ public class EquipmentMenu : MonoBehaviour
 
     [Header("Bools")]
     public bool menuOpen;
+    public bool menuCanClose;
+    public bool menuCanOpen;
     bool pannelsLoaded;
     bool playerStoped;
     public bool pannelsActivated;
@@ -63,18 +65,27 @@ public class EquipmentMenu : MonoBehaviour
     PlayerEquipment playerEquipment;
     LoadoutMenu loadoutMenu;
     UpgradeMenu upgradeMenu;
+    SFXAudioManager sfxManager;
 
     #endregion
 
     #region StartUpdate Methods
 
+    void Start()
+    {
+        menuCanOpen = true;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        var managers = GameObject.FindWithTag("Managers");
+
+        uiManager = managers.GetComponent<UIManager>();
         playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
         loadoutMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Barbara").GetComponent<LoadoutMenu>();
         upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         if (uiManager.npcsActive)
         {
@@ -302,10 +313,24 @@ public class EquipmentMenu : MonoBehaviour
             playerEquipment.PurchaseBack(equipmentItemsSOBack[btnNo]);
         }
     }
+
+    IEnumerator SetMenuCanClose()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanClose = true;
+    }
+
+    IEnumerator SetMenuCanOpen()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanOpen = true;
+    }
     
     public void OpenStore()
     {
+        menuCanOpen = false;
         menuOpen = true;
+        StartCoroutine(SetMenuCanClose());
     }
 
     public void CloseStore()
@@ -313,8 +338,12 @@ public class EquipmentMenu : MonoBehaviour
         if (alexander)
         {
             menuOpen = false;
+            menuCanClose = false;
             uiManager.alexanderTalking = false;
             alexander.talking = false;
+            StartCoroutine(SetMenuCanOpen());
+
+            sfxManager.PlayAlexanderVO(false);
         }
     }
 

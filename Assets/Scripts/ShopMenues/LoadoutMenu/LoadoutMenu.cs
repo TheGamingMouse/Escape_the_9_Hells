@@ -15,6 +15,8 @@ public class LoadoutMenu : MonoBehaviour
 
     [Header("Bools")]
     public bool menuOpen;
+    public bool menuCanClose;
+    public bool menuCanOpen;
     bool pannelsLoaded;
     bool playerStoped;
     public bool pannelsActivated;
@@ -66,19 +68,27 @@ public class LoadoutMenu : MonoBehaviour
     UIManager uiManager;
     NPCSpawner npcSpawner;
     PlayerEquipment playerEquipment;
+    SFXAudioManager sfxManager;
 
     #endregion
 
     #region StartUpdate Methods
 
+    void Start()
+    {
+        menuCanOpen = true;
+    }
+
     // Update is called once per frame
     void Update()
     {
         var player = GameObject.FindWithTag("Player");
+        var managers = GameObject.FindWithTag("Managers");
 
         playerLoadout = player.GetComponent<PlayerLoadout>();
         playerEquipment = player.GetComponent<PlayerEquipment>();
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        uiManager = managers.GetComponent<UIManager>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         if (uiManager.npcsActive)
         {
@@ -567,9 +577,23 @@ public class LoadoutMenu : MonoBehaviour
         CloseStore();
     }
 
+    IEnumerator SetMenuCanClose()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanClose = true;
+    }
+
+    IEnumerator SetMenuCanOpen()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanOpen = true;
+    }
+
     public void OpenStore()
     {
+        menuCanOpen = false;
         menuOpen = true;
+        StartCoroutine(SetMenuCanClose());
     }
 
     public void CloseStore()
@@ -577,8 +601,12 @@ public class LoadoutMenu : MonoBehaviour
         if (barbara)
         {
             menuOpen = false;
+            menuCanClose = false;
             uiManager.barbaraTalking = false;
             barbara.talking = false;
+            StartCoroutine(SetMenuCanOpen());
+
+            sfxManager.PlayBarbaraVO(false);
         }
     }
 

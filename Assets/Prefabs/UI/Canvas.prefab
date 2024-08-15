@@ -2678,18 +2678,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SFXAudioManager, Assembly-CSharp
-        m_MethodName: PlayRickyFarewell
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &363267664514026198
 GameObject:
   m_ObjectHideFlags: 0
@@ -30276,18 +30264,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SFXAudioManager, Assembly-CSharp
-        m_MethodName: PlayAlexanderFarewell
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &5355918416511398514
 GameObject:
   m_ObjectHideFlags: 0
@@ -33279,6 +33255,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   souls: 0
   menuOpen: 0
+  menuCanClose: 0
+  menuCanOpen: 0
   soulsText: {fileID: 7617319239366984776}
   soulsItemsSO:
   - {fileID: 11400000, guid: d8d6bd8c89195f847b731d67ed9025d8, type: 2}
@@ -34775,6 +34753,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuOpen: 0
+  menuCanClose: 0
+  menuCanOpen: 0
   pannelsActivated: 0
   contents: {fileID: 9211840862717164520}
   weaponContents: {fileID: 3299023530699753447}
@@ -35955,6 +35935,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   souls: 0
   menuOpen: 0
+  menuCanClose: 0
+  menuCanOpen: 0
   pannelsActivated: 0
   contents: {fileID: 4710328767661230700}
   weaponContents: {fileID: 484581396483205649}
@@ -39930,8 +39912,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   souls: 0
   menuOpen: 0
+  menuCanClose: 0
+  menuCanOpen: 0
   headerUpdated: 0
   contentsObj: {fileID: 77587393334314819}
+  upgradeSelection: {fileID: 8005889514429987647}
+  weaponUpgrades: {fileID: 825383381365677546}
+  companionUpgrades: {fileID: 6746891535639777222}
+  armorUpgrades: {fileID: 4851794657895087128}
+  backUpgrades: {fileID: 443334023035189003}
   contentsWeapons: {fileID: 2320483646797713865}
   contentsCompanions: {fileID: 2465285129440372831}
   contentsArmors: {fileID: 8542233742511182438}
@@ -44444,18 +44433,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SFXAudioManager, Assembly-CSharp
-        m_MethodName: PlayBarbaraFarewell
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &8105388832308558321
 GameObject:
   m_ObjectHideFlags: 0
@@ -47973,66 +47950,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8005889514429987647}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 825383381365677546}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 6746891535639777222}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 4851794657895087128}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 443334023035189003}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
       - m_Target: {fileID: 1017987414351617718}
         m_TargetAssemblyTypeName: UpgradeMenu, Assembly-CSharp
         m_MethodName: ChangeHeader

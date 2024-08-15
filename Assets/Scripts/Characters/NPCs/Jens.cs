@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Jens : MonoBehaviour, IInteractable
@@ -14,14 +15,8 @@ public class Jens : MonoBehaviour, IInteractable
     bool beginDialogue;
     bool talkingOver;
 
-    [Header("Strings")]
-    readonly static string dLine1 = "Look at that fresh face!" + "\n" + "Ahhh, I love the look of newfound sadness.";
-    readonly static string dLine2 = "Anyhow, if you ever want to make you equipment stronger, just come to me! I'll teach you get the best out of it.";
-    readonly static string dLine3 = "Just remember that I can only help you with the equipment you already own, if you want something new you have to go talk to Alexander.";
-    readonly static string dLine4 = "Do also remember to talk to Barbara, she's the one holding on to all your stuff.";
-
     [Header("Arrays")]
-    readonly string[] defaultLines = {dLine1, dLine2, dLine3, dLine4};
+    string[] defaultLines;
 
     [Header("Lists")]
     readonly List<string[]> linesList = new();
@@ -33,6 +28,7 @@ public class Jens : MonoBehaviour, IInteractable
     UIManager uiManager;
     Dialogue dialogue;
     PlayerMovement playerMovement;
+    public NPCSpawner npcSpawner;
     
     #endregion
 
@@ -41,6 +37,15 @@ public class Jens : MonoBehaviour, IInteractable
     // Start is called before the first frame update
     void Start()
     {
+        if (npcSpawner)
+        {
+            defaultLines = npcSpawner.jensMessages.ToArray();
+        }
+        else
+        {
+            Debug.LogError("npcSpawner was not found");
+        }
+
         dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
         playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();

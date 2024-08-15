@@ -161,46 +161,65 @@ public class SFXAudioManager : MonoBehaviour
         PlayClip(reRollSFX[randReRoll], masterManager.sBlend2D, effectsVolumeMod);
     }
 
-    public void PlayAlexanderGreetings()
+    public void PlayAlexanderVO(bool isGreeting)
     {
-        int randInt = Random.Range(0, alexanderGreetings.Count);
+        List<List<AudioClip>> clipList = new()
+        {
+            alexanderGreetings,
+            alexanderFarewells
+        };
 
-        PlayClip(alexanderGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod);
+        if (isGreeting)
+        {
+            int randInt = Random.Range(0, alexanderGreetings.Count);
+            PlayClip(alexanderGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
+        }
+        else
+        {
+            int randInt = Random.Range(0, alexanderFarewells.Count);
+            PlayClip(alexanderFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
+        }
     }
 
-    public void PlayAlexanderFarewell()
+    public void PlayBarbaraVO(bool isGreeting)
     {
-        int randInt = Random.Range(0, alexanderFarewells.Count);
+        
+        List<List<AudioClip>> clipList = new()
+        {
+            barbaraGreetings,
+            barbaraFarewells
+        };
 
-        PlayClip(alexanderFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod);
+        if (isGreeting)
+        {
+            int randInt = Random.Range(0, barbaraGreetings.Count);
+            PlayClip(barbaraGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
+        }
+        else
+        {
+            int randInt = Random.Range(0, barbaraFarewells.Count);
+            PlayClip(barbaraFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
+        }
     }
 
-    public void PlayBarbaraGreetings()
+    public void PlayRickyVO(bool isGreeting)
     {
-        int randInt = Random.Range(0, barbaraGreetings.Count);
+        List<List<AudioClip>> clipList = new()
+        {
+            rickyGreetings,
+            rickyFarewells
+        };
 
-        PlayClip(barbaraGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod);
-    }
-
-    public void PlayBarbaraFarewell()
-    {
-        int randInt = Random.Range(0, barbaraFarewells.Count);
-
-        PlayClip(barbaraFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod);
-    }
-
-    public void PlayRickyGreetings()
-    {
-        int randInt = Random.Range(0, rickyGreetings.Count);
-
-        PlayClip(rickyGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod);
-    }
-
-    public void PlayRickyFarewell()
-    {
-        int randInt = Random.Range(0, rickyFarewells.Count);
-
-        PlayClip(rickyFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod);
+        if (isGreeting)
+        {
+            int randInt = Random.Range(0, rickyGreetings.Count);
+            PlayClip(rickyGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
+        }
+        else
+        {
+            int randInt = Random.Range(0, rickyFarewells.Count);
+            PlayClip(rickyFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
+        }
     }
 
     #endregion
@@ -279,7 +298,7 @@ public class SFXAudioManager : MonoBehaviour
         return newSource;
     }
 
-    AudioSource GetAvailablePoolSource(float blend, float volumeOverride, GameObject objectSource, string priority, float pitchOverride)
+    AudioSource GetAvailablePoolSource(float blend, float volumeOverride, GameObject objectSource, string priority, float pitchOverride, bool canPlayIfPlaying, List<List<AudioClip>> clipLists)
     {
         //Fetch the first source in the pool that is not currently playing anything
         foreach (var source in audioSourcePool)
@@ -287,6 +306,15 @@ public class SFXAudioManager : MonoBehaviour
             if (source.IsDestroyed())
             {
                 audioSourcePool.Remove(source);
+            }
+
+            if (!canPlayIfPlaying)
+            {
+                if (IsAudioPlaying(clipLists, source))
+                {
+                    source.Stop();
+                }
+                return source;
             }
 
             if (!objectSource)
@@ -304,7 +332,7 @@ public class SFXAudioManager : MonoBehaviour
                 }
             }
         }
- 
+
         //No unused sources. Create and fetch a new source
         return AddNewSourceToPool(blend, volumeOverride, objectSource, priority.ToLower(), pitchOverride);
     }
@@ -322,10 +350,31 @@ public class SFXAudioManager : MonoBehaviour
         return null;
     }
 
-    public void PlayClip(AudioClip clip, float blend, float volumeOverride, bool randomPitch = false, string priority = "none", GameObject objectSource = null, float pitchOverride = 1f)
+    bool IsAudioPlaying(List<List<AudioClip>> clipLists, AudioSource source)
     {
-        AudioSource source = GetAvailablePoolSource(blend, volumeOverride, objectSource, priority, pitchOverride);
-        source.clip = clip;
+        foreach (List<AudioClip> list in clipLists)
+        {
+            if (list.Contains(source.clip) && source.isPlaying)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void PlayClip(AudioClip clip, float blend, float volumeOverride, bool randomPitch = false, string priority = "none", GameObject objectSource = null, float pitchOverride = 1f, bool canPlayIfPlaying = true, List<List<AudioClip>> clipLists = null)
+    {
+        AudioSource source = GetAvailablePoolSource(blend, volumeOverride, objectSource, priority, pitchOverride, canPlayIfPlaying, clipLists);
+        if (source)
+        {
+            source.clip = clip;
+        }
+        else
+        {
+            return;
+        }
+
         if (settingsManager.sfxVolume == -30 || settingsManager.masterVolume == -30)
         {
             source.volume = 0f;
@@ -334,7 +383,9 @@ public class SFXAudioManager : MonoBehaviour
         {
             source.volume = volumeOverride;
         }
+
         source.spatialBlend = blend;
+
         if (randomPitch)
         {
             source.pitch = CalculateRandomPitch(pitchOverride);
@@ -343,6 +394,7 @@ public class SFXAudioManager : MonoBehaviour
         {
             source.pitch = pitchOverride;
         }
+
         source.Play();
     }
 

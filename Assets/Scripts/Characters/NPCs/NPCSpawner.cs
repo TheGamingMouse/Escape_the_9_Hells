@@ -22,11 +22,16 @@ public class NPCSpawner : MonoBehaviour
     public Vector3 alexPos;
     public Vector3 jensPos;
 
+    [Header("Lists")]
+    public List<string> barbaraMessages;
+    public List<string> alexanderMessages;
+    public List<string> jensMessages;
+
     [Header("Components")]
-    Ricky ricky;
-    Barbara barbara;
-    Alexander alexander;
-    Jens jens;
+    public Ricky ricky;
+    public Barbara barbara;
+    public Alexander alexander;
+    public Jens jens;
 
     #endregion
 
@@ -45,18 +50,21 @@ public class NPCSpawner : MonoBehaviour
             {
                 barbara = Instantiate(barbaraObj, barbPos, Quaternion.identity, transform).GetComponent<Barbara>();
                 barbSpawned = true;
+                barbara.npcSpawner = this;
             }
 
             if (!alexSpawned)
             {
                 alexander = Instantiate(alexanderObj, alexPos, Quaternion.identity, transform).GetComponent<Alexander>();
                 alexSpawned = true;
+                alexander.npcSpawner = this;
             }
 
             if (!jensSpawned)
             {
                 jens = Instantiate(jensObj, jensPos, Quaternion.identity, transform).GetComponent<Jens>();
                 jensSpawned = true;
+                jens.npcSpawner = this;
             }
         }
     }

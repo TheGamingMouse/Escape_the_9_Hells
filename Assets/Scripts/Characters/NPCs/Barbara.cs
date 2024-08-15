@@ -15,13 +15,8 @@ public class Barbara : MonoBehaviour, IInteractable
     bool beginDialogue;
     bool talkingOver;
 
-    [Header("Strings")]
-    readonly static string dLine1 = "Hello there new face, welcome to the 9th. Ricky tells me you ain't here for your fault, that's some tough shit newbie.";
-    readonly static string dLine2 = "I can help you out sorting you eqiupment though. You won't be able to carry more than one of each kind of equipment, but I'll hold on to any of the stuff you're not running around with.";
-    readonly static string dLine3 = "You can always just come talk to me, if you want to switch it up, but make sure to talk to Alexander as well, he's the one selling the stuff.";
-
     [Header("Arrays")]
-    readonly string[] defaultLines = {dLine1, dLine2, dLine3};
+    string[] defaultLines;
 
     [Header("Lists")]
     readonly List<string[]> linesList = new();
@@ -34,6 +29,7 @@ public class Barbara : MonoBehaviour, IInteractable
     Dialogue dialogue;
     PlayerMovement playerMovement;
     SFXAudioManager sfxManager;
+    public NPCSpawner npcSpawner;
     
     #endregion
 
@@ -42,6 +38,15 @@ public class Barbara : MonoBehaviour, IInteractable
     // Start is called before the first frame update
     void Start()
     {
+        if (npcSpawner)
+        {
+            defaultLines = npcSpawner.barbaraMessages.ToArray();
+        }
+        else
+        {
+            Debug.LogError("npcSpawner was not found");
+        }
+
         var managers = GameObject.FindWithTag("Managers");
 
         dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
@@ -105,7 +110,7 @@ public class Barbara : MonoBehaviour, IInteractable
         talking = true;
         uiManager.barbaraTalking = true;
 
-        sfxManager.PlayBarbaraGreetings();
+        sfxManager.PlayBarbaraVO(true);
 
         return true;
     }
@@ -118,7 +123,7 @@ public class Barbara : MonoBehaviour, IInteractable
         uiManager.dialogueStart = true;
         beginDialogue = true;
 
-        sfxManager.PlayBarbaraGreetings();
+        sfxManager.PlayBarbaraVO(true);
         
         return true;
     }

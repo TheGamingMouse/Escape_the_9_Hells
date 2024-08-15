@@ -15,6 +15,8 @@ public class SoulsMenu : MonoBehaviour
 
     [Header("Bools")]
     public bool menuOpen;
+    public bool menuCanClose;
+    public bool menuCanOpen;
     bool pannelsLoaded;
     bool playerStoped;
     bool pannelsActivated;
@@ -39,10 +41,13 @@ public class SoulsMenu : MonoBehaviour
     Ricky ricky;
     PlayerSouls playerSouls;
     SaveLoadManager slManager;
+    SFXAudioManager sfxManager;
 
     void Start()
     {
         slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+
+        menuCanOpen = true;
     }
 
     void Update()
@@ -60,6 +65,7 @@ public class SoulsMenu : MonoBehaviour
 
                 uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
                 playerSouls = GameObject.FindWithTag("Player").GetComponent<PlayerSouls>();
+                sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
 
                 if (uiManager.npcsActive)
                 {
@@ -265,9 +271,23 @@ public class SoulsMenu : MonoBehaviour
         }
     }
 
+    IEnumerator SetMenuCanClose()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanClose = true;
+    }
+
+    IEnumerator SetMenuCanOpen()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanOpen = true;
+    }
+
     public void OpenStore()
     {
+        menuCanOpen = false;
         menuOpen = true;
+        StartCoroutine(SetMenuCanClose());
     }
 
     public void CloseStore()
@@ -275,8 +295,12 @@ public class SoulsMenu : MonoBehaviour
         if (ricky)
         {
             menuOpen = false;
+            menuCanClose = false;
             uiManager.rickyTalking = false;
             ricky.talking = false;
+            StartCoroutine(SetMenuCanOpen());
+
+            sfxManager.PlayRickyVO(false);
         }
     }
 }

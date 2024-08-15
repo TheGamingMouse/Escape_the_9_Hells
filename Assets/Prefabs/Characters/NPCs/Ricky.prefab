@@ -157,6 +157,48 @@ MonoBehaviour:
   postCombatPlayerPos: {x: 0, y: 0.55, z: 0}
   stPos: {x: 0, y: 1.05, z: 2}
   ndPos: {x: -8, y: 1.05, z: 2}
+  lines1:
+  - Welcome to Hell! You must be the new guy, what was your name again? Ahh, doesn't
+    matter, I just need a drop of blood. *Stabs your hand with dagger*. You really
+    messed up in life huh? Managed to make your way all the way down to the 9th layer
+    of Hell, quite a feat to be honest.
+  - Hmmmm, weird...
+  - You don't seem to be on the list. You're not on any of the lists actually. Shit,
+    that can't be good. You weren't supposed to go to Hell.
+  - Okay, let me think for a second. *Snaps finger like he got an idea* I know what
+    to do! Although you might not like it. You are going to have to fight your way
+    through the layers, and escape through the gates. This is going to be very difficult,
+    but I mean, it'll be a lot better than sticking around, and you got the time.
+  - No need to worry too much though! Death isn't the end down here, as anytime you
+    die on any layer, you will just wake up, right back here with me.
+  - Here, take this dagger, don't mind the blood, you know where it came from. Let
+    me see what you got!
+  lines2:
+  - Not terrible, who knows, you might actually make it through a couple of rooms.
+    You are going to have to get some better gear though, which, luckily for you,
+    already comes with what you are about to do.
+  - You need Souls to upgrade yourself and your gear, but we'll talk more about that
+    once you actually have some Souls.
+  - Souls can be found in a bunch of different ways, killing devils will get you
+    a bunch of Souls, but they can also be found in chests, which may be found across
+    the layers.
+  - Devils, I should clarify, are the big ugly guardians at the end of every layer.
+    Taking out one of those assholes is no small feat though.
+  - To reiterete, come see me after you have some Souls, we'll talk. If you need
+    help again in the future, don't hesitate to come talk to me again! Regardless,
+    you should get going, you only have all of eternety after all.
+  defaultLines:
+  - Remeber to spend your Souls! They'll make you life much easier in the layers.
+  - For example, you could spend some of them with me, and I can infuse some of that
+    energy into you. Essentially that just means, that I'll make you stronger, if
+    you pay me for it.
+  - Additionally, keep in mind, that different weapons are used differently. I know
+    truely thought provoking stuff, but I mean it, remember not to stick with a weapon
+    you don't like the attack pattern of. Go talk to Barbara, she'll sort you out.
+  - You should also remember, you're gonna have to buy the equipment first. Go talk
+    to Alexander, he won't give you a good price, but no-one else will either.
+  - Also, you might want to talk to Jens, they can teach you to get the maximum potential
+    out of your equipment.
   npcSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
 --- !u!1001 &5616825753197344682
 PrefabInstance:

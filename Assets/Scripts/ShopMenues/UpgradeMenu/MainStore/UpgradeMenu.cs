@@ -14,6 +14,8 @@ public class UpgradeMenu : MonoBehaviour
 
     [Header("Bools")]
     public bool menuOpen;
+    public bool menuCanClose;
+    public bool menuCanOpen;
     bool playerStoped;
     public bool headerUpdated;
 
@@ -22,6 +24,11 @@ public class UpgradeMenu : MonoBehaviour
 
     [Header("GameObjects")]
     public GameObject contentsObj;
+    public GameObject upgradeSelection;
+    public GameObject weaponUpgrades;
+    public GameObject companionUpgrades;
+    public GameObject armorUpgrades;
+    public GameObject backUpgrades;
 
     [Header("Transforms")]
     public Transform contentsWeapons;
@@ -45,6 +52,11 @@ public class UpgradeMenu : MonoBehaviour
     #endregion
 
     #region StartUpdate Methods
+
+    void Start()
+    {
+        menuCanOpen = true;
+    }
 
     // Update is called once per frame
     void Update()
@@ -96,18 +108,40 @@ public class UpgradeMenu : MonoBehaviour
 
     #region General Methods
 
+    IEnumerator SetMenuCanClose()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanClose = true;
+    }
+
+    IEnumerator SetMenuCanOpen()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanOpen = true;
+    }
+
     public void OpenStore()
     {
+        menuCanOpen = false;
         menuOpen = true;
+        StartCoroutine(SetMenuCanClose());
     }
 
     public void CloseStore()
     {
         if (jens)
         {
+            upgradeSelection.SetActive(true);
+            weaponUpgrades.SetActive(false);
+            companionUpgrades.SetActive(false);
+            armorUpgrades.SetActive(false);
+            backUpgrades.SetActive(false);
+
             menuOpen = false;
+            menuCanClose = false;
             uiManager.jensTalking = false;
             jens.talking = false;
+            StartCoroutine(SetMenuCanOpen());
         }
     }
 

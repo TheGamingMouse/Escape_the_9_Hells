@@ -51,8 +51,8 @@ public class UIManager : MonoBehaviour
     public bool rickyTalking;
     public bool barbaraTalking;
     public bool alexanderTalking;
-    bool cursorObjSpawned;
     public bool jensTalking;
+    bool cursorObjSpawned;
     bool bossSpawned;
     bool bossDead;
 
@@ -265,6 +265,29 @@ public class UIManager : MonoBehaviour
         {
             bossObj.SetActive(false);
         }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (rickyConvo.menuCanClose)
+            {
+                rickyConvo.CloseStore();
+            }
+
+            if (barbaraConvo.menuCanClose)
+            {
+                barbaraConvo.CloseStore();
+            }
+            
+            if (alexanderConvo.menuCanClose)
+            {
+                alexanderConvo.CloseStore();
+            }
+
+            if (jensConvo.menuCanClose)
+            {
+                jensConvo.CloseStore();
+            }
+        }
     }
 
     #endregion
@@ -366,22 +389,6 @@ public class UIManager : MonoBehaviour
         disableSoulsText.SetActive(false);
 
         playerMovement.startBool = false;
-        if (npcsActive)
-        {
-            rickyConvo.CloseStore();
-            if (npcSpawner.barbSpawned)
-            {
-                barbaraConvo.CloseStore();
-            }
-            if (npcSpawner.alexSpawned)
-            {
-                alexanderConvo.CloseStore();
-            }
-            if (npcSpawner.jensSpawned)
-            {
-                jensConvo.CloseStore();
-            }
-        }
     }
 
     void StartGame()
@@ -488,22 +495,22 @@ public class UIManager : MonoBehaviour
 
     void UpdateNPCPannels()
     {
-        if (rickyTalking)
+        if (rickyTalking && rickyConvo.menuCanOpen)
         {
             rickyConvo.OpenStore();
         }
         
-        if (barbaraTalking)
+        if (barbaraTalking && barbaraConvo.menuCanOpen)
         {
             barbaraConvo.OpenStore();
         }
 
-        if (alexanderTalking)
+        if (alexanderTalking && alexanderConvo.menuCanOpen)
         {
             alexanderConvo.OpenStore();
         }
 
-        if (jensTalking)
+        if (jensTalking && jensConvo.menuCanOpen)
         {
             jensConvo.OpenStore();
         }
