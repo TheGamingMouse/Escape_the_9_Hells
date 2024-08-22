@@ -35,7 +35,7 @@ public class PlayerSouls : MonoBehaviour
     PlayerHealth health;
     Weapon weapon;
     PlayerMovement movement;
-    Ricky ricky;
+    public Ricky ricky;
     PlayerLevel level;
     PerkMenu perkMenu;
 
@@ -55,11 +55,6 @@ public class PlayerSouls : MonoBehaviour
         level = player.GetComponent<PlayerLevel>();
         perkMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/PerkMenu").GetComponent<PerkMenu>();
 
-        if (GameObject.FindWithTag("NPC") != null && GameObject.FindWithTag("NPC").transform.Find("Ricky").TryGetComponent(out Ricky rickyCmop))
-        {
-            ricky = rickyCmop;
-        }
-
         attackSpeedSouls = slManager.attackSpeedSoulsBought;
         damageSouls = slManager.damageSoulsBought;
         defenceSouls = slManager.defenceSoulsBought;
@@ -74,7 +69,7 @@ public class PlayerSouls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (ricky != null && ricky.daggerGiven)
+        if (ricky && ricky.daggerGiven)
         {
             health = GameObject.FindWithTag("Player").GetComponent<PlayerHealth>();
             weapon = GameObject.FindWithTag("Player").GetComponentInChildren<Weapon>();

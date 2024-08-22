@@ -69,6 +69,8 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     public bool backpackPrimary;
     [HideInInspector]
     public bool seedBagPrimary;
+    [HideInInspector]
+    public bool returnedToRicky;
 
     [Header("Lists")]
     public List<LoadoutItemsSO> setWeapons;
@@ -257,6 +259,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
             // NPC variables
             rickyStartComp = data.rickyStartComp;
+            returnedToRicky = data.returnedToRicky;
 
             // Selected Equipment
             foreach (var weapon in setWeapons)
@@ -800,6 +803,7 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
 
             // NPC Variables
             data.rickyStartComp = rickyStartComp;
+            data.returnedToRicky = returnedToRicky;
 
             // In-game Statistics
             data.demonsKilled += playerLevel.demonsKilled;

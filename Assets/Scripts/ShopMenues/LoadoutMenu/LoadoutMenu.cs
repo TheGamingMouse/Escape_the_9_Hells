@@ -69,6 +69,8 @@ public class LoadoutMenu : MonoBehaviour
     NPCSpawner npcSpawner;
     PlayerEquipment playerEquipment;
     SFXAudioManager sfxManager;
+    Interactor interactor;
+
 
     #endregion
 
@@ -89,10 +91,16 @@ public class LoadoutMenu : MonoBehaviour
         playerEquipment = player.GetComponent<PlayerEquipment>();
         uiManager = managers.GetComponent<UIManager>();
         sfxManager = managers.GetComponent<SFXAudioManager>();
+        interactor = player.GetComponent<Interactor>();
 
         if (uiManager.npcsActive)
         {
             npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
+
+            if (npcSpawner.barbSpawned)
+            {
+                barbara = npcSpawner.barbara;
+            }
         }
         
         if (!pannelsActivated && playerEquipment.equipmentLoaded)
@@ -132,11 +140,6 @@ public class LoadoutMenu : MonoBehaviour
             backContents.position = new Vector3(backContents.position.x, -10000f);
 
             pannelsActivated = true;
-        }
-
-        if (uiManager.npcsActive && npcSpawner.barbSpawned)
-        {
-            barbara = GameObject.FindWithTag("NPC").GetComponentInChildren<Barbara>();
         }
         
         if (!pannelsLoaded && playerLoadout.start)
@@ -577,37 +580,25 @@ public class LoadoutMenu : MonoBehaviour
         CloseStore();
     }
 
-    IEnumerator SetMenuCanClose()
-    {
-        yield return new WaitForSeconds(0.1f);
-        menuCanClose = true;
-    }
-
-    IEnumerator SetMenuCanOpen()
-    {
-        yield return new WaitForSeconds(0.1f);
-        menuCanOpen = true;
-    }
-
     public void OpenStore()
     {
-        menuCanOpen = false;
-        menuOpen = true;
-        StartCoroutine(SetMenuCanClose());
+        if (!interactor.interacting)
+        {
+            menuCanOpen = false;
+            menuOpen = true;
+            menuCanClose = true;
+        }
     }
 
     public void CloseStore()
     {
-        if (barbara)
-        {
-            menuOpen = false;
-            menuCanClose = false;
-            uiManager.barbaraTalking = false;
-            barbara.talking = false;
-            StartCoroutine(SetMenuCanOpen());
+        menuOpen = false;
+        menuCanClose = false;
+        menuCanOpen = true;
+        uiManager.barbaraTalking = false;
+        barbara.talking = false;
 
-            sfxManager.PlayBarbaraVO(false);
-        }
+        sfxManager.PlayBarbaraVO(false);
     }
 
     #endregion

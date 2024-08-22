@@ -256,11 +256,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 823121}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &54626063 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-  m_PrefabInstance: {fileID: 2581173690302413734}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &130055136 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6229247520373792897, guid: 3ad7a1cffb2556547a8b7e60fd320431, type: 3}
@@ -295,8 +290,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 54626063}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &269360735
@@ -312,15 +306,80 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rickyStart: 0
+  rickySpawned: 0
   barbSpawned: 0
   alexSpawned: 0
   jensSpawned: 0
+  rickyObj: {fileID: 3535221476105702027, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
   barbaraObj: {fileID: 2800470968969505152, guid: e75f6074723aa364aba50c3e9385299d, type: 3}
   alexanderObj: {fileID: 8997365333781708471, guid: dc308c20077db7a4c8cc6143c1f93be7, type: 3}
   jensObj: {fileID: 482702907287446454, guid: 60cbd37db61eb6a4e85e3f3b2f294625, type: 3}
   barbPos: {x: -10, y: 1.05, z: -5}
   alexPos: {x: 8, y: 1.05, z: 2}
   jensPos: {x: 7, y: 1.05, z: -4}
+  rickyPos:
+    startPos:
+    - {x: 0, y: 1.05, z: 2}
+    endPos:
+    - {x: 0, y: 0.55, z: 0}
+    rickyDefaultPos:
+    - {x: -8, y: 1.05, z: 2}
+  rickyMessages:
+    lines1:
+    - Welcome to Hell! You must be the new guy, what was your name again? Ahh, doesn't
+      matter, I just need a drop of blood. *Stabs your hand with dagger*. You really
+      messed up in life huh? Managed to make your way all the way down to the 9th
+      layer of Hell, quite a feat to be honest.
+    - Hmmmm, weird...
+    - You don't seem to be on the list. You're not on any of the lists actually.
+      Shit, that can't be good. You weren't supposed to go to Hell.
+    - Okay, let me think for a second. *Snaps finger like he got an idea* I know
+      what to do! Although you might not like it. You are going to have to fight
+      your way through the layers, and escape through the gates. This is going to
+      be very difficult, but I mean, it'll be a lot better than sticking around,
+      and you got the time.
+    - No need to worry too much though! Death isn't the end down here, as anytime
+      you die on any layer, you will just wake up, right back here with me.
+    - Here, take this dagger, don't mind the blood, you know where it came from.
+      Let me see what you got!
+    lines2:
+    - Not terrible, who knows, you might actually make it through a couple of rooms.
+      You are going to have to get some better gear though, which, luckily for you,
+      already comes with what you are about to do.
+    - You need Souls to upgrade yourself and your gear, but we'll talk more about
+      that once you actually have some Souls.
+    - Souls can be found in a bunch of different ways, killing devils will get you
+      a bunch of Souls, but they can also be found in chests, which may be found
+      across the layers.
+    - Devils, I should clarify, are the big ugly guardians at the end of every layer.
+      Taking out one of those assholes is no small feat though.
+    - To reiterete, come see me after you have some Souls, we'll talk. If you need
+      help again in the future, don't hesitate to come talk to me again! Regardless,
+      you should get going, you only have all of eternety after all.
+    lines3:
+    - Welcome back, hope you brought some Souls back with you!
+    - Now, take a look at my shop. If there's anything you'd like, and have the Souls
+      for, just give me holler.
+    - You might not have the Souls for anything just yet, but that's okay. Everytime
+      you go into the layers, you'll most likely come back with at least a few Souls.
+    - And even if you don't get any Souls, or just don't get enough of them, you
+      still get experience, meaning you'll little by little get better at navigating,
+      fighting, and so on, within the layers.
+    - Regardless, I'll let you go for now, talk to me again if you want to hear about
+      the rest of the group!
+    dLines:
+    - Remeber to spend your Souls! They'll make you life much easier in the layers.
+    - For example, you could spend some of them with me, and I can infuse some of
+      that energy into you. Essentially that just means, that I'll make you stronger,
+      if you pay me for it.
+    - Additionally, keep in mind, that different weapons are used differently. I
+      know truely thought provoking stuff, but I mean it, remember not to stick with
+      a weapon you don't like the attack pattern of. Go talk to Barbara, she'll sort
+      you out.
+    - You should also remember, you're gonna have to buy the equipment first. Go
+      talk to Alexander, he won't give you a good price, but no-one else will either.
+    - Also, you might want to talk to Jens, they can teach you to get the maximum
+      potential out of your equipment.
   barbaraMessages:
   - Hello there new face, welcome to the 9th. Ricky tells me you ain't here for your
     fault, that's some tough shit newbie.
@@ -2046,19 +2105,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1525619659044892785, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1525619659044892785, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1525619659044892785, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 1152.032
       objectReference: {fileID: 0}
     - target: {fileID: 1525619659044892785, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -334.2112
       objectReference: {fileID: 0}
     - target: {fileID: 1668993654097589297, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2194,19 +2253,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4187138565020753540, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4187138565020753540, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4187138565020753540, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 242.4064
       objectReference: {fileID: 0}
     - target: {fileID: 4187138565020753540, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -334.2112
       objectReference: {fileID: 0}
     - target: {fileID: 4395558058935778788, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_Name
@@ -2250,19 +2309,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5430096820295574280, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5430096820295574280, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5430096820295574280, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 697.21924
       objectReference: {fileID: 0}
     - target: {fileID: 5430096820295574280, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -334.2112
       objectReference: {fileID: 0}
     - target: {fileID: 6123495787489935578, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2509,63 +2568,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e01eb21815e7764aa91afff13eeba94, type: 3}
---- !u!1001 &2581173690302413734
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 269360734}
-    m_Modifications:
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
-      objectReference: {fileID: 0}
-    - target: {fileID: 1090471994073017033, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3535221476105702027, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
-      propertyPath: m_Name
-      value: Ricky
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: cfa4f9632a6a27445ad82d3933b83574, type: 3}
 --- !u!1001 &2685013250062458003
 PrefabInstance:
   m_ObjectHideFlags: 0

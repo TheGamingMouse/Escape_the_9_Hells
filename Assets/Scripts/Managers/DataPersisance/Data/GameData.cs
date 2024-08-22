@@ -54,6 +54,7 @@ public class GameData
     [Header("Bools")]
     // NPC Variables
     public bool rickyStartComp;
+    public bool returnedToRicky;
 
     [Header("Strings")]
     // Selected Equipment
@@ -102,6 +103,7 @@ public class GameData
     {
         // NPC Variables
         rickyStartComp = false;
+        returnedToRicky = false;
 
         // Souls
         souls = 0;

@@ -66,6 +66,7 @@ public class EquipmentMenu : MonoBehaviour
     LoadoutMenu loadoutMenu;
     UpgradeMenu upgradeMenu;
     SFXAudioManager sfxManager;
+    Interactor interactor;
 
     #endregion
 
@@ -80,16 +81,23 @@ public class EquipmentMenu : MonoBehaviour
     void Update()
     {
         var managers = GameObject.FindWithTag("Managers");
+        var player = GameObject.FindWithTag("Player");
 
         uiManager = managers.GetComponent<UIManager>();
-        playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
+        playerEquipment = player.GetComponent<PlayerEquipment>();
         loadoutMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Barbara").GetComponent<LoadoutMenu>();
         upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
         sfxManager = managers.GetComponent<SFXAudioManager>();
+        interactor = player.GetComponent<Interactor>();
 
         if (uiManager.npcsActive)
         {
             npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
+
+            if (npcSpawner.alexSpawned)
+            {
+                alexander = npcSpawner.alexander;
+            }
         }
         
         if (!pannelsActivated && playerEquipment.equipmentLoaded)
@@ -151,11 +159,6 @@ public class EquipmentMenu : MonoBehaviour
             CheckEquipmentPurchaseable();
 
             pannelsActivated = true;
-        }
-
-        if (uiManager.npcsActive && npcSpawner.alexSpawned)
-        {
-            alexander = GameObject.FindWithTag("NPC").GetComponentInChildren<Alexander>();
         }
         
         if (!pannelsLoaded)
@@ -313,38 +316,26 @@ public class EquipmentMenu : MonoBehaviour
             playerEquipment.PurchaseBack(equipmentItemsSOBack[btnNo]);
         }
     }
-
-    IEnumerator SetMenuCanClose()
-    {
-        yield return new WaitForSeconds(0.1f);
-        menuCanClose = true;
-    }
-
-    IEnumerator SetMenuCanOpen()
-    {
-        yield return new WaitForSeconds(0.1f);
-        menuCanOpen = true;
-    }
     
     public void OpenStore()
     {
-        menuCanOpen = false;
-        menuOpen = true;
-        StartCoroutine(SetMenuCanClose());
+        if (!interactor.interacting)
+        {
+            menuCanOpen = false;
+            menuOpen = true;
+            menuCanClose = true;
+        }
     }
 
     public void CloseStore()
     {
-        if (alexander)
-        {
-            menuOpen = false;
-            menuCanClose = false;
-            uiManager.alexanderTalking = false;
-            alexander.talking = false;
-            StartCoroutine(SetMenuCanOpen());
+        menuOpen = false;
+        menuCanClose = false;
+        menuCanOpen = true;
+        uiManager.alexanderTalking = false;
+        alexander.talking = false;
 
-            sfxManager.PlayAlexanderVO(false);
-        }
+        sfxManager.PlayAlexanderVO(false);
     }
 
     #endregion

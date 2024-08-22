@@ -48,6 +48,7 @@ public class UpgradeMenu : MonoBehaviour
     public CompanionUpgradesMenu companionMenu;
     public ArmorUpgradesMenu armorMenu;
     public BackUpgradesMenu backMenu;
+    Interactor interactor;
 
     #endregion
 
@@ -62,15 +63,16 @@ public class UpgradeMenu : MonoBehaviour
     void Update()
     {
         uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+        interactor = GameObject.FindWithTag("Player").GetComponent<Interactor>();
 
         if (uiManager.npcsActive)
         {
             npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
-        }
 
-        if (uiManager.npcsActive && npcSpawner.jensSpawned)
-        {
-            jens = GameObject.FindWithTag("NPC").GetComponentInChildren<Jens>();
+            if (npcSpawner.jensSpawned)
+            {
+                jens = npcSpawner.jens;
+            }
         }
 
         if (!headerUpdated)
@@ -108,41 +110,29 @@ public class UpgradeMenu : MonoBehaviour
 
     #region General Methods
 
-    IEnumerator SetMenuCanClose()
-    {
-        yield return new WaitForSeconds(0.1f);
-        menuCanClose = true;
-    }
-
-    IEnumerator SetMenuCanOpen()
-    {
-        yield return new WaitForSeconds(0.1f);
-        menuCanOpen = true;
-    }
-
     public void OpenStore()
     {
-        menuCanOpen = false;
-        menuOpen = true;
-        StartCoroutine(SetMenuCanClose());
+        if (!interactor.interacting)
+        {
+            menuCanOpen = false;
+            menuOpen = true;
+            menuCanClose = true;
+        }
     }
 
     public void CloseStore()
     {
-        if (jens)
-        {
-            upgradeSelection.SetActive(true);
-            weaponUpgrades.SetActive(false);
-            companionUpgrades.SetActive(false);
-            armorUpgrades.SetActive(false);
-            backUpgrades.SetActive(false);
+        upgradeSelection.SetActive(true);
+        weaponUpgrades.SetActive(false);
+        companionUpgrades.SetActive(false);
+        armorUpgrades.SetActive(false);
+        backUpgrades.SetActive(false);
 
-            menuOpen = false;
-            menuCanClose = false;
-            uiManager.jensTalking = false;
-            jens.talking = false;
-            StartCoroutine(SetMenuCanOpen());
-        }
+        menuOpen = false;
+        menuCanClose = false;
+        menuCanOpen = true;
+        uiManager.jensTalking = false;
+        jens.talking = false;
     }
 
     public void ReloadPannels()

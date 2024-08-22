@@ -7,7 +7,7 @@ public class Interactor : MonoBehaviour
     #region Variables
 
     [Header("Ints")]
-    [SerializeField] int numFound;
+    int numFound;
 
     [Header("Floats")]
     readonly float radius = 2.5f;
@@ -15,6 +15,7 @@ public class Interactor : MonoBehaviour
     [Header("Bools")]
     public bool promtFound;
     bool npc;
+    public bool interacting;
 
     [Header("Arrays")]
     public readonly Collider[] colliders = new Collider[3];
@@ -38,10 +39,16 @@ public class Interactor : MonoBehaviour
             if (interactable != null && Input.GetKeyDown(KeyCode.E) && !npc)
             {
                 interactable.InteractE(this);
+                
+                interacting = true;
+                StartCoroutine(InteractingRoutine());
             }
             if (interactable != null && Input.GetKeyDown(KeyCode.Q) && !npc)
             {
                 interactable.InteractQ(this);
+                
+                interacting = true;
+                StartCoroutine(InteractingRoutine());
             }
 
             promtFound = true;
@@ -70,6 +77,12 @@ public class Interactor : MonoBehaviour
         {
             npc = alexanderComp.talking;
         }
+    }
+
+    IEnumerator InteractingRoutine()
+    {
+        yield return new WaitForSeconds(0.1f);
+        interacting = false;
     }
 
     #endregion

@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
     bool cursorObjSpawned;
     bool bossSpawned;
     bool bossDead;
+    bool npcMenuesFound;
 
     [Header("Strings")]
     public string bossNameString;
@@ -107,7 +108,7 @@ public class UIManager : MonoBehaviour
     PlayerHealth playerHealth;
     DevTools devTools;
     PlayerMovement playerMovement;
-    Ricky ricky;
+    public Ricky ricky;
     SoulsMenu rickyConvo;
     LoadoutMenu barbaraConvo;
     NPCSpawner npcSpawner;
@@ -165,6 +166,11 @@ public class UIManager : MonoBehaviour
             Cursor.visible = false;
 
             componentsFound = true;
+        }
+
+        if (!npcMenuesFound)
+        {
+            FindNPCMenues();
         }
 
         if (npcsActive)
@@ -332,18 +338,6 @@ public class UIManager : MonoBehaviour
         promt = canvas.Find("Promt").gameObject;
 
         npcConvos = menus.Find("npcConversations").gameObject;
-
-        if (npcsActive)
-        {
-            npcs = GameObject.FindWithTag("NPC").transform;
-            npcSpawner = npcs.GetComponent<NPCSpawner>();
-            rickyConvo = menus.Find("npcConversations/Ricky").GetComponent<SoulsMenu>();
-            barbaraConvo = menus.Find("npcConversations/Barbara").GetComponent<LoadoutMenu>();
-            alexanderConvo = menus.Find("npcConversations/Alexander").GetComponent<EquipmentMenu>();
-            jensConvo = menus.Find("npcConversations/Jens").GetComponent<UpgradeMenu>();
-
-            ricky = npcs.GetComponentInChildren<Ricky>();
-        }
     }
 
     void FindTextElements()
@@ -376,6 +370,21 @@ public class UIManager : MonoBehaviour
         bossName = bossObj.transform.Find("BossName").GetComponent<TextMeshProUGUI>();
 
         reRollText = perkMenu.transform.Find("Contents/ReRollPerks/Text (TMP)").GetComponent<TextMeshProUGUI>();
+    }
+
+    void FindNPCMenues()
+    {
+        if (npcsActive)
+        {
+            npcs = GameObject.FindWithTag("NPC").transform;
+            npcSpawner = npcs.GetComponent<NPCSpawner>();
+            rickyConvo = menus.Find("npcConversations/Ricky").GetComponent<SoulsMenu>();
+            barbaraConvo = menus.Find("npcConversations/Barbara").GetComponent<LoadoutMenu>();
+            alexanderConvo = menus.Find("npcConversations/Alexander").GetComponent<EquipmentMenu>();
+            jensConvo = menus.Find("npcConversations/Jens").GetComponent<UpgradeMenu>();
+
+            npcMenuesFound = true;
+        }
     }
 
     void DisableObjects()

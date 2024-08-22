@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,7 @@ public class Ricky : MonoBehaviour, IInteractable
     bool damageable = true;
     bool dialogue2;
     bool openedDoor;
+    bool dialogue3;
     public bool dialogueStartComplete;
     public bool secondPosition;
     public bool talking;
@@ -36,6 +38,7 @@ public class Ricky : MonoBehaviour, IInteractable
     public bool daggerGiven;
     bool weaponsActivated;
     bool doorOpenedAudio;
+    public bool returnedTo;
 
     [Header("Transforms")]
     Transform target;
@@ -49,12 +52,6 @@ public class Ricky : MonoBehaviour, IInteractable
 
     [Header("Vector3s")]
     Vector3 moveDirection;
-    public Vector3 postCombatPlayerPos, stPos, ndPos;
-
-    [Header("Arrays")]
-    public string[] lines1;
-    public string[] lines2;
-    public string[] defaultLines;
 
     [Header("Lists")]
     readonly List<string[]> linesList = new();
@@ -72,8 +69,9 @@ public class Ricky : MonoBehaviour, IInteractable
     Camera cam;
     PlayerMovement playerMovement;
     SaveLoadManager saveLoadManager;
-    NPCSpawner spawner;
+    public NPCSpawner npcSpawner;
     SFXAudioManager sfxManager;
+    PlayerSouls playerSouls;
 
     #endregion
 
@@ -96,30 +94,34 @@ public class Ricky : MonoBehaviour, IInteractable
         entrance = terrain.transform.Find("ExitDoor/Wall_Entrance").gameObject;
         playerMovement = findPlayer.GetComponent<PlayerMovement>();
         saveLoadManager = managers.GetComponent<SaveLoadManager>();
-        spawner = GetComponentInParent<NPCSpawner>();
         weapon = player.GetComponentInChildren<Weapon>().gameObject;
         sfxManager = managers.GetComponent<SFXAudioManager>();
+        playerSouls = player.GetComponent<PlayerSouls>();
 
-        linesList.Add(lines1);
-        linesList.Add(lines2);
+        linesList.Add(npcSpawner.rickyMessages.lines1.ToArray());
+        linesList.Add(npcSpawner.rickyMessages.lines2.ToArray());
+        linesList.Add(npcSpawner.rickyMessages.lines3.ToArray());
 
         InitializeDialogue();
 
         health = maxHealth;
 
         dialogueStartComplete = saveLoadManager.rickyStartComp;
+        returnedTo = saveLoadManager.returnedToRicky;
 
         dialogue.dialogueDone = false;
         uiManager.npcsActive = true;
+        npcSpawner.rickyStart = dialogueStartComplete;
         
         if (dialogueStartComplete)
         {
-            transform.position = ndPos;
-            spawner.rickyStart = dialogueStartComplete;
+            transform.position = npcSpawner.rickyPos.rickyDefaultPos.First();
             canTalk = true;
             daggerGiven = true;
         }
 
+        playerSouls.ricky = this;
+        uiManager.ricky = this;
         weapon.SetActive(daggerGiven);
     }
 
@@ -166,9 +168,9 @@ public class Ricky : MonoBehaviour, IInteractable
 
         if (combatDone && !secondPosition)
         {
-            if (Vector3.Distance(player.transform.position, postCombatPlayerPos) > 0.2f && !dialogue.dialogueDone)
+            if (Vector3.Distance(player.transform.position, npcSpawner.rickyPos.endPos.First()) > 0.2f && !dialogue.dialogueDone)
             {
-                moveDirection = (postCombatPlayerPos - player.transform.position).normalized;
+                moveDirection = (npcSpawner.rickyPos.endPos.First() - player.transform.position).normalized;
                 playerMovement.currentSpeed = playerMovement.baseSpeed;
                 playerMovement.rb.velocity = new Vector3(moveDirection.x * playerMovement.currentSpeed, 0f, moveDirection.z * playerMovement.currentSpeed);
                 player.rotation = Quaternion.Slerp(player.rotation, new Quaternion(0f, 0f, 0f, 1f), Time.deltaTime);
@@ -179,9 +181,9 @@ public class Ricky : MonoBehaviour, IInteractable
                 player.rotation = new Quaternion(0f, 0f, 0f, 1f);
             }
 
-            if (Vector3.Distance(transform.position, stPos) > 0.2f)
+            if (Vector3.Distance(transform.position, npcSpawner.rickyPos.startPos.First()) > 0.2f)
             {
-                moveDirection = (stPos - transform.position).normalized;
+                moveDirection = (npcSpawner.rickyPos.startPos.First() - transform.position).normalized;
                 rb.velocity = new Vector3(moveDirection.x * speed, 0f, moveDirection.z * speed);
             }
             else
@@ -240,7 +242,16 @@ public class Ricky : MonoBehaviour, IInteractable
             }
         }
 
-        if (beginDialogue && uiManager.dialogueBox.activeInHierarchy)
+        if (beginDialogue && !returnedTo && uiManager.dialogueBox.activeInHierarchy)
+        {
+            listIndex = 2;
+            BeginNewDialogue(false);
+            beginDialogue = false;
+            returnedTo = true;
+            saveLoadManager.returnedToRicky = true;
+        }
+
+        if (beginDialogue && returnedTo && uiManager.dialogueBox.activeInHierarchy)
         {
             BeginNewDialogue(true);
             beginDialogue = false;
@@ -351,7 +362,7 @@ public class Ricky : MonoBehaviour, IInteractable
 
         if (advice)
         {
-            dialogue.lines = defaultLines;
+            dialogue.lines = npcSpawner.rickyMessages.dLines.ToArray();
         }
         else
         {
