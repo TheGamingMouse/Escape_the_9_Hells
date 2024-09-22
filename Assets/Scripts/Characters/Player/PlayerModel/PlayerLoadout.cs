@@ -29,30 +29,19 @@ public class PlayerLoadout : MonoBehaviour
 
     [Header("Components")]
     Weapon playerWeapon;
-    SaveLoadManager slManager;
     Companion playerCompanion;
     Armor playerArmor;
     Backs playerBack;
-    PlayerUpgrades playerUpgrades;
-    NPCSpawner spawner;
 
     #endregion
 
     #region StartUpdate Methods
 
-    void Start()
-    {
-        if (GameObject.FindWithTag("NPC") && GameObject.FindWithTag("NPC").TryGetComponent(out NPCSpawner npcSpawner))
-        {
-            spawner = npcSpawner;
-        }
-    }
-
     void Update()
     {
-        if (spawner)
+        if (NPCSpawner.Instance)
         {
-            if (spawner.rickyStart)
+            if (NPCSpawner.Instance.rickyStart)
             {
                 ready = true;
             }
@@ -64,22 +53,22 @@ public class PlayerLoadout : MonoBehaviour
         if (!start && ready)
         {
             playerWeapon = GetComponentInChildren<Weapon>();
-            slManager = GameObject.Find("Managers").GetComponent<SaveLoadManager>();
             playerCompanion = GameObject.FindWithTag("Companions").GetComponent<Companion>();
             playerArmor = GetComponentInChildren<Armor>();
             playerBack = GetComponentInChildren<Backs>();
-            playerUpgrades = GetComponent<PlayerUpgrades>();
+            
+            var equipmentData = SaveSystem.loadedEquipmentData;
 
-            selectedPrimaryWeapon = slManager.primaryWeapon;
-            selectedSecondaryWeapon = slManager.secondaryWeapon;
-            selectedWeapon = slManager.selectedWeapon;
+            selectedPrimaryWeapon = equipmentData.weaponData.primaryWeapon;
+            selectedSecondaryWeapon = equipmentData.weaponData.secondaryWeapon;
+            selectedWeapon = equipmentData.weaponData.selectedWeapon;
 
-            selectedPrimaryCompanion = slManager.primaryCompanion;
-            selectedSecondaryCompanion = slManager.secondaryCompanion;
-            selectedCompanion = slManager.selectedCompanion;
+            selectedPrimaryCompanion = equipmentData.companionData.primaryCompanion;
+            selectedSecondaryCompanion = equipmentData.companionData.secondaryCompanion;
+            selectedCompanion = equipmentData.companionData.selectedCompanion;
 
-            selectedArmor = slManager.armor;
-            selectedBack = slManager.back;
+            selectedArmor = equipmentData.armorData.selectedArmor;
+            selectedBack = equipmentData.backData.selectedBack;
 
             // Weapon
             if (playerWeapon != null)
@@ -195,7 +184,7 @@ public class PlayerLoadout : MonoBehaviour
         {
             playerWeapon.SwitchToUlfberht();
         }
-        playerUpgrades.weaponUpdated = false;
+        PlayerComponents.Instance.playerUpgrades.weaponUpdated = false;
     }
 
     void UpdateCompanion()
@@ -221,7 +210,7 @@ public class PlayerLoadout : MonoBehaviour
         {
             playerCompanion.SwitchToAttackSquare();
         }
-        playerUpgrades.companionUpdated = false;
+        PlayerComponents.Instance.playerUpgrades.companionUpdated = false;
     }
 
     void UpdateArmor()
@@ -246,7 +235,7 @@ public class PlayerLoadout : MonoBehaviour
         {
             playerArmor.SwitchToPlate();
         }
-        playerUpgrades.armorUpdated = false;
+        PlayerComponents.Instance.playerUpgrades.armorUpdated = false;
     }
 
     void UpdateBack()
@@ -275,7 +264,7 @@ public class PlayerLoadout : MonoBehaviour
         {
             playerBack.SwitchToSeedBag();
         }
-        playerUpgrades.backUpdated = false;
+        PlayerComponents.Instance.playerUpgrades.backUpdated = false;
     }
 
     #endregion

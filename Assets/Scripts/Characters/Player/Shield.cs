@@ -17,7 +17,6 @@ public class Shield : MonoBehaviour
     public bool onCooldown;
 
     [Header("Components")]
-    PlayerHealth playerHealth;
     ParticleSystem effect;
 
     #endregion
@@ -27,7 +26,6 @@ public class Shield : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerHealth = GameObject.FindWithTag("Player").GetComponent<PlayerHealth>();
         effect = GetComponent<ParticleSystem>();
     }
 
@@ -36,10 +34,10 @@ public class Shield : MonoBehaviour
     {
         if (!modifierApplied)
         {
-            playerHealth.resistanceMultiplier -= oldProtection;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= oldProtection;
             oldProtection = protection;
 
-            playerHealth.resistanceMultiplier += protection;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += protection;
             modifierApplied = true;
         }
 
@@ -60,12 +58,12 @@ public class Shield : MonoBehaviour
         onCooldown = true;
         effect.Stop();
 
-        playerHealth.resistanceMultiplier -= oldProtection;
+        PlayerComponents.Instance.playerHealth.resistanceMultiplier -= oldProtection;
 
         yield return new WaitForSeconds(cooldownTimer);
 
         oldProtection = protection;
-        playerHealth.resistanceMultiplier += protection;
+        PlayerComponents.Instance.playerHealth.resistanceMultiplier += protection;
 
         // Play Start Audio
         onCooldown = false;

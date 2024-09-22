@@ -172,9 +172,9 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
     [HideInInspector]
     public LoadoutItemsSO selectedCompanion;
     [HideInInspector]
-    public LoadoutItemsSO armor;
+    public LoadoutItemsSO selectedArmor;
     [HideInInspector]
-    public LoadoutItemsSO back;
+    public LoadoutItemsSO selectedBack;
 
     [Header("Components")]
     PlayerLevel playerLevel;
@@ -332,14 +332,14 @@ public class SaveLoadManager : MonoBehaviour, IDataPersistence
             {
                 if (armorSelect.title == data.armor)
                 {
-                    armor = armorSelect;
+                    selectedArmor = armorSelect;
                 }
             }
             foreach (var backSelect in setBacks)
             {
                 if (backSelect.title == data.back)
                 {
-                    back = backSelect;
+                    selectedBack = backSelect;
                 }
             }
 

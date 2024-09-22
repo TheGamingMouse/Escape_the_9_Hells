@@ -15,8 +15,6 @@ public class DevTools : MonoBehaviour
     public Transform toBossRoom;
 
     [Header("Components")]
-    PlayerHealth playerHealth;
-    PlayerMovement playerMovement;
     Weapon weapon;
 
     #endregion
@@ -25,8 +23,6 @@ public class DevTools : MonoBehaviour
 
     void Start()
     {
-        playerHealth = GetComponent<PlayerHealth>();
-        playerMovement = GetComponent<PlayerMovement>();
         weapon = GetComponentInChildren<Weapon>();
 
         godMode = false;
@@ -58,8 +54,8 @@ public class DevTools : MonoBehaviour
     {
         if (!godMode)
         {
-            playerHealth.isInvinsible = true;
-            playerMovement.speedMultiplier = 1.25f;
+            PlayerComponents.Instance.playerHealth.isInvinsible = true;
+            PlayerComponents.Instance.playerMovement.speedMultiplier = 1.25f;
             weapon.damageMultiplier = 100f;
 
             godMode = true;
@@ -70,8 +66,8 @@ public class DevTools : MonoBehaviour
     {
         if (godMode)
         {
-            playerHealth.isInvinsible = false;
-            playerMovement.speedMultiplier = 1f;
+            PlayerComponents.Instance.playerHealth.isInvinsible = false;
+            PlayerComponents.Instance.playerMovement.speedMultiplier = 1f;
             weapon.damageMultiplier = 1f;
 
             godMode = false;

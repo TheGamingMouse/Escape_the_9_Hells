@@ -11,6 +11,9 @@ public class MainMenuManager : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static MainMenuManager Instance;
+
     [Header("Ints")]
     public int screenMode;
     int currentSouls;
@@ -59,11 +62,15 @@ public class MainMenuManager : MonoBehaviour
 
     [Header("Components")]
     public AudioMixer audioMixer;
-    SaveLoadManager slManager;
 
     #endregion
 
     #region StartUpdate Methods
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -72,20 +79,21 @@ public class MainMenuManager : MonoBehaviour
             continueGameButton.interactable = false;
         }
 
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+        var settingsData = SaveSystem.loadedSettingsData;
+        var playerData = SaveSystem.loadedPlayerData;
 
-        masterVolume = slManager.masterVolume;
-        musicVolume = slManager.musicVolume;
-        sfxVolume = slManager.sfxVolume;
-        screenMode = slManager.screenMode;
+        masterVolume = settingsData.masterVolume;
+        musicVolume = settingsData.musicVolume;
+        sfxVolume = settingsData.sfxVolume;
+        screenMode = settingsData.screenMode;
 
-        currentSouls = slManager.currentSouls;
-        totalSouls = slManager.totalSouls;
-        totalLevels = slManager.totalLevels;
-        demonsKilled = slManager.demonsKilled;
-        devilsKilled = slManager.devilsKilled;
+        currentSouls = playerData.currentSouls;
+        totalSouls = playerData.totalSouls;
+        totalLevels = playerData.totalLevels;
+        demonsKilled = playerData.demonsKilled;
+        devilsKilled = playerData.devilsKilled;
 
-        CalculateLayerReached(slManager.higestLayerReached);
+        CalculateLayerReached(SaveSystem.loadedLayerData.highestLayerReached);
 
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();

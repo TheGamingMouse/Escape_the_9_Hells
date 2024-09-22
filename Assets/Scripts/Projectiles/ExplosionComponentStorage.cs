@@ -52,7 +52,7 @@ public class ExplosionComponentStorage : MonoBehaviour
 
         if (!firstColl)
         {
-            sfxManager.PlayClip(sfxManager.fireboltExplosion, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod / 2, gameObject);
+            sfxManager.PlayClip(sfxManager.fireboltExplosion, MasterAudioManager.Instance.sBlend3D, sfxManager.effectsVolumeMod / 2, gameObject);
 
             firstColl = true;
         }

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BasicEnemyAction : MonoBehaviour
@@ -30,9 +29,8 @@ public class BasicEnemyAction : MonoBehaviour
 
     [Header("Components")]
     BasicEnemyMovement enemyMovement;
-    Pugio pugio;
     BasicEnemyHealth enemyHealth;
-    SFXAudioManager sfxManager;
+    Pugio pugio;
 
     #endregion
 
@@ -43,18 +41,25 @@ public class BasicEnemyAction : MonoBehaviour
     {
         enemyMovement = GetComponent<BasicEnemyMovement>();
         enemyHealth = GetComponent<BasicEnemyHealth>();
-
-        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
+        pugio = GetComponentInChildren<Pugio>();
         
         boss = enemyHealth.boss;
-
-        pugio = GetComponentInChildren<Pugio>();
         pugio.canDamageEnemies = false;
+        canAttack = true;
+
+        if (boss)
+        {
+            male = true;
+        }
+        else
+        {
+            male = Random.Range(0, 10) < 2;
+        }
 
         animator = pugio.GetComponentInParent<Animator>();
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
 
-        string clipName = "";
+        string clipName;
         if (!boss)
         {
             clipName = "Pugio Pierce";
@@ -72,17 +77,6 @@ public class BasicEnemyAction : MonoBehaviour
         }
 
         animator.SetFloat("AttackSpeed", attackSpeed);
-
-        canAttack = true;
-
-        if (boss)
-        {
-            male = true;
-        }
-        else
-        {
-            male = Random.Range(0, 10) < 2;
-        }
     }
 
     // Update is called once per frame
@@ -181,16 +175,18 @@ public class BasicEnemyAction : MonoBehaviour
 
     void EnemyLaugh()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         int randLaugh;
         if (male)
         {
             randLaugh = Random.Range(0, sfxManager.enemyLaughMale.Count);
-            sfxManager.PlayClip(sfxManager.enemyLaughMale[randLaugh], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.enemyLaughMale[randLaugh], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
         else
         {
             randLaugh = Random.Range(0, sfxManager.enemyLaughFemale.Count);
-            sfxManager.PlayClip(sfxManager.enemyLaughFemale[randLaugh], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.enemyLaughFemale[randLaugh], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
     }
 

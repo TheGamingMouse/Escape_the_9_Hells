@@ -9,6 +9,9 @@ public class LoadoutMenu : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static LoadoutMenu Instance;
+
     [Header("Ints")]
     int primaryIndex = -1;
     int secondaryIndex = -1;
@@ -64,17 +67,17 @@ public class LoadoutMenu : MonoBehaviour
 
     [Header("Components")]
     Barbara barbara;
-    PlayerLoadout playerLoadout;
-    UIManager uiManager;
-    NPCSpawner npcSpawner;
-    PlayerEquipment playerEquipment;
-    SFXAudioManager sfxManager;
     Interactor interactor;
 
 
     #endregion
 
     #region StartUpdate Methods
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -84,51 +87,46 @@ public class LoadoutMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var player = GameObject.FindWithTag("Player");
-        var managers = GameObject.FindWithTag("Managers");
+        var player = PlayerComponents.Instance.player;
 
-        playerLoadout = player.GetComponent<PlayerLoadout>();
-        playerEquipment = player.GetComponent<PlayerEquipment>();
-        uiManager = managers.GetComponent<UIManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
         interactor = player.GetComponent<Interactor>();
 
-        if (uiManager.npcsActive)
+        if (UIManager.Instance.npcsActive)
         {
-            npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
+            NPCSpawner.Instance = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
 
-            if (npcSpawner.barbSpawned)
+            if (NPCSpawner.Instance.barbSpawned)
             {
-                barbara = npcSpawner.barbara;
+                barbara = NPCSpawner.Instance.barbara;
             }
         }
         
-        if (!pannelsActivated && playerEquipment.equipmentLoaded)
+        if (!pannelsActivated && PlayerComponents.Instance.playerEquipment.equipmentLoaded)
         {
             for (int i = 0; i < loadoutItemsSOWeapons.Length; i++)
             {
-                if (playerEquipment.boughtWeapons.Contains(loadoutItemsSOWeapons[i]))
+                if (PlayerComponents.Instance.playerEquipment.boughtWeapons.Contains(loadoutItemsSOWeapons[i]))
                 {
                     loadoutPannelsSOWeapons[i].SetActive(true);
                 }
             }
             for (int i = 0; i < loadoutItemsSOCompanion.Length; i++)
             {
-                if (playerEquipment.boughtCompanions.Contains(loadoutItemsSOCompanion[i]))
+                if (PlayerComponents.Instance.playerEquipment.boughtCompanions.Contains(loadoutItemsSOCompanion[i]))
                 {
                     loadoutPannelsSOCompanion[i].SetActive(true);
                 }
             }
             for (int i = 0; i < loadoutItemsSOArmor.Length; i++)
             {
-                if (playerEquipment.boughtArmors.Contains(loadoutItemsSOArmor[i]))
+                if (PlayerComponents.Instance.playerEquipment.boughtArmors.Contains(loadoutItemsSOArmor[i]))
                 {
                     loadoutPannelsSOArmor[i].SetActive(true);
                 }
             }
             for (int i = 0; i < loadoutItemsSOBack.Length; i++)
             {
-                if (playerEquipment.boughtBacks.Contains(loadoutItemsSOBack[i]))
+                if (PlayerComponents.Instance.playerEquipment.boughtBacks.Contains(loadoutItemsSOBack[i]))
                 {
                     loadoutPannelsSOBack[i].SetActive(true);
                 }
@@ -142,7 +140,7 @@ public class LoadoutMenu : MonoBehaviour
             pannelsActivated = true;
         }
         
-        if (!pannelsLoaded && playerLoadout.start)
+        if (!pannelsLoaded && PlayerComponents.Instance.playerLoadout.start)
         {
             LoadLoadoutPannels();
         }
@@ -207,7 +205,7 @@ public class LoadoutMenu : MonoBehaviour
     {
         if (!selectedBack)
         {
-            if (playerLoadout.backpackActive)
+            if (PlayerComponents.Instance.playerLoadout.backpackActive)
             {
                 isBackpackActive = true;
             }
@@ -229,6 +227,8 @@ public class LoadoutMenu : MonoBehaviour
         }
         if (isBackpackActive)
         {
+            var playerLoadout = PlayerComponents.Instance.playerLoadout;
+
             for (int i = 0; i < loadoutItemsSOWeapons.Length; i++)
             {
                 loadoutPannelsWeapons[i].titleText.text = loadoutItemsSOWeapons[i].title;
@@ -280,7 +280,7 @@ public class LoadoutMenu : MonoBehaviour
                 selectLoadoutButtonsPrimaryWeapons[i].gameObject.SetActive(false);
                 selectLoadoutButtonsSecondaryWeapons[i].gameObject.SetActive(false);
 
-                if (playerLoadout.selectedPrimaryWeapon && loadoutItemsSOWeapons[i].title == playerLoadout.selectedPrimaryWeapon.title)
+                if (PlayerComponents.Instance.playerLoadout.selectedPrimaryWeapon && loadoutItemsSOWeapons[i].title == PlayerComponents.Instance.playerLoadout.selectedPrimaryWeapon.title)
                 {
                     selectedPrimaryWeapon = loadoutItemsSOWeapons[i];
                     selectLoadoutButtonsWeapons[i].interactable = false;
@@ -297,7 +297,7 @@ public class LoadoutMenu : MonoBehaviour
     {
         if (!selectedBack)
         {
-            if (playerLoadout.seedBagActive)
+            if (PlayerComponents.Instance.playerLoadout.seedBagActive)
             {
                 isSeedBagActive = true;
             }
@@ -319,6 +319,8 @@ public class LoadoutMenu : MonoBehaviour
         }
         if (isSeedBagActive)
         {
+            var playerLoadout = PlayerComponents.Instance.playerLoadout;
+
             for (int i = 0; i < loadoutItemsSOCompanion.Length; i++)
             {
                 loadoutPannelsCompanion[i].titleText.text = loadoutItemsSOCompanion[i].title;
@@ -370,7 +372,7 @@ public class LoadoutMenu : MonoBehaviour
                 selectLoadoutButtonsPrimaryCompanion[i].gameObject.SetActive(false);
                 selectLoadoutButtonsSecondaryCompanion[i].gameObject.SetActive(false);
 
-                if (playerLoadout.selectedPrimaryCompanion && loadoutItemsSOCompanion[i].title == playerLoadout.selectedPrimaryCompanion.title)
+                if (PlayerComponents.Instance.playerLoadout.selectedPrimaryCompanion && loadoutItemsSOCompanion[i].title == PlayerComponents.Instance.playerLoadout.selectedPrimaryCompanion.title)
                 {
                     selectedPrimaryCompanion = loadoutItemsSOCompanion[i];
                     selectLoadoutButtonsCompanion[i].interactable = false;
@@ -390,7 +392,7 @@ public class LoadoutMenu : MonoBehaviour
             loadoutPannelsArmor[i].titleText.text = loadoutItemsSOArmor[i].title;
             loadoutPannelsArmor[i].descriptionText.text = loadoutItemsSOArmor[i].description;
 
-            if (playerLoadout.selectedArmor && loadoutItemsSOArmor[i].title == playerLoadout.selectedArmor.title)
+            if (PlayerComponents.Instance.playerLoadout.selectedArmor && loadoutItemsSOArmor[i].title == PlayerComponents.Instance.playerLoadout.selectedArmor.title)
             {
                 selectedArmor = loadoutItemsSOArmor[i];
                 selectLoadoutButtonsArmor[i].interactable = false;
@@ -409,7 +411,7 @@ public class LoadoutMenu : MonoBehaviour
             loadoutPannelsBack[i].titleText.text = loadoutItemsSOBack[i].title;
             loadoutPannelsBack[i].descriptionText.text = loadoutItemsSOBack[i].description;
 
-            if (playerLoadout.selectedBack && loadoutItemsSOBack[i].title == playerLoadout.selectedBack.title)
+            if (PlayerComponents.Instance.playerLoadout.selectedBack && loadoutItemsSOBack[i].title == PlayerComponents.Instance.playerLoadout.selectedBack.title)
             {
                 selectedBack = loadoutItemsSOBack[i];
                 selectLoadoutButtonsBack[i].interactable = false;
@@ -563,7 +565,7 @@ public class LoadoutMenu : MonoBehaviour
 
     public void ConfirmSelected()
     {
-        playerLoadout.SetLoadout(selectedPrimaryWeapon, selectedSecondaryWeapon, selectedPrimaryCompanion, selectedSecondaryCompanion, selectedArmor, selectedBack);
+        PlayerComponents.Instance.playerLoadout.SetLoadout(selectedPrimaryWeapon, selectedSecondaryWeapon, selectedPrimaryCompanion, selectedSecondaryCompanion, selectedArmor, selectedBack);
 
         ExitStore();
     }
@@ -595,10 +597,10 @@ public class LoadoutMenu : MonoBehaviour
         menuOpen = false;
         menuCanClose = false;
         menuCanOpen = true;
-        uiManager.barbaraTalking = false;
+        UIManager.Instance.barbaraTalking = false;
         barbara.talking = false;
 
-        sfxManager.PlayBarbaraVO(false);
+        SFXAudioManager.Instance.PlayBarbaraVO(false);
     }
 
     #endregion

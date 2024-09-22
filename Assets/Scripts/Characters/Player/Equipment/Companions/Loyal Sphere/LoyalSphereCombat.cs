@@ -25,7 +25,6 @@ public class LoyalSphereCombat : MonoBehaviour
     [Header("Components")]
     LoyalSphereSight sight;
     public Companion companion;
-    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -33,7 +32,6 @@ public class LoyalSphereCombat : MonoBehaviour
     void Start()
     {
         sight = GetComponent<LoyalSphereSight>();
-        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
     }
 
     // Update is called once per frame
@@ -64,21 +62,24 @@ public class LoyalSphereCombat : MonoBehaviour
 
     void Shoot()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         GameObject newProjectile = Instantiate(projectile, transform.position, Quaternion.identity, GameObject.FindWithTag("PrefabStorage").transform);
         newProjectile.GetComponent<Rigidbody>().AddForce(transform.forward * force, ForceMode.Impulse);
         newProjectile.GetComponent<Firebolt>().damage = damage;
         newProjectile.GetComponent<Firebolt>().explostionScale = 0.5f;
         newProjectile.GetComponent<Firebolt>().canDamagePlayer = false;
         newProjectile.GetComponent<Firebolt>().canDamageEnemies = true;
-        newProjectile.GetComponent<Firebolt>().sfxManager = sfxManager;
 
-        sfxManager.PlayClip(sfxManager.firebolt, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject);
+        sfxManager.PlayClip(sfxManager.firebolt, MasterAudioManager.Instance.sBlend3D, sfxManager.effectsVolumeMod, gameObject);
 
         Destroy(newProjectile, 3f);
     }
 
     void OnDestroy()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         foreach (var source in gameObject.GetComponents<AudioSource>())
         {
             if (sfxManager.audioSourcePool.Contains(source))

@@ -22,13 +22,6 @@ public class Alexander : MonoBehaviour, IInteractable
 
     [Header("Sprites")]
     public Sprite npcSprite;
-
-    [Header("Components")]
-    UIManager uiManager;
-    Dialogue dialogue;
-    PlayerMovement playerMovement;
-    SFXAudioManager sfxManager;
-    public NPCSpawner npcSpawner;
     
     #endregion
 
@@ -37,6 +30,8 @@ public class Alexander : MonoBehaviour, IInteractable
     // Start is called before the first frame update
     void Start()
     {
+        var npcSpawner = NPCSpawner.Instance;
+
         if (npcSpawner)
         {
             defaultLines = npcSpawner.alexanderMessages.ToArray();
@@ -45,28 +40,21 @@ public class Alexander : MonoBehaviour, IInteractable
         {
             Debug.LogError("npcSpawner was not found");
         }
-
-        var managers = GameObject.FindWithTag("Managers");
-
-        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
-        uiManager = managers.GetComponent<UIManager>();
-        playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (beginDialogue && uiManager.dialogueBox.activeInHierarchy)
+        if (beginDialogue && UIManager.Instance.dialogueBox.activeInHierarchy)
         {
             BeginNewDialogue(true);
             beginDialogue = false;
         }
-        else if (dialogue.dialogueDone && !talkingOver)
+        else if (Dialogue.Instance.dialogueDone && !talkingOver)
         {
-            playerMovement.startBool = true;
+            PlayerComponents.Instance.playerMovement.startBool = true;
             talking = false;
-            uiManager.dialogueStart = false;
+            UIManager.Instance.dialogueStart = false;
 
             talkingOver = true;
         }
@@ -78,7 +66,9 @@ public class Alexander : MonoBehaviour, IInteractable
 
     void BeginNewDialogue(bool advice)
     {
-        playerMovement.startBool = false;
+        var dialogue = Dialogue.Instance;
+
+        PlayerComponents.Instance.playerMovement.startBool = false;
 
         if (advice)
         {
@@ -107,9 +97,9 @@ public class Alexander : MonoBehaviour, IInteractable
     public bool InteractE(Interactor interactor)
     {
         talking = true;
-        uiManager.alexanderTalking = true;
+        UIManager.Instance.alexanderTalking = true;
 
-        sfxManager.PlayAlexanderVO(true);
+        SFXAudioManager.Instance.PlayAlexanderVO(true);
 
         return true;
     }
@@ -118,11 +108,11 @@ public class Alexander : MonoBehaviour, IInteractable
         talking = true;
         talkingOver = false;
 
-        dialogue.dialogueDone = false;
-        uiManager.dialogueStart = true;
+        Dialogue.Instance.dialogueDone = false;
+        UIManager.Instance.dialogueStart = true;
         beginDialogue = true;
 
-        sfxManager.PlayAlexanderVO(true);
+        SFXAudioManager.Instance.PlayAlexanderVO(true);
         
         return true;
     }

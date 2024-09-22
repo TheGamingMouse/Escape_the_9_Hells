@@ -56,11 +56,7 @@ public class RoomSpawner : MonoBehaviour
     Color mainPathColor = new(0f, 0.5686275f, 1f);
 
     [Header("Components")]
-    LayerGenerator generator;
-    StartLevel startLevel;
-    LayerManager layerManager;
     RoomBehavior roomBehavior;
-    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -69,18 +65,12 @@ public class RoomSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
-
-        generator = GameObject.FindWithTag("Generator").GetComponent<LayerGenerator>();
-        startLevel = GameObject.FindWithTag("StartLevel").GetComponent<StartLevel>();
-        layerManager = managers.GetComponent<LayerManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
         roomBehavior = GetComponent<RoomBehavior>();
 
         playerPathfinder = roomBehavior.playerPathfinder;
 
-        basicDemonChance = generator.basicDemonChance;
-        impChance = generator.impChance;
+        basicDemonChance = LayerGenerator.Instance.basicDemonChance;
+        impChance = LayerGenerator.Instance.impChance;
 
         if (basicDemonChance + impChance != 100)
         {
@@ -122,7 +112,7 @@ public class RoomSpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        layerGenerated = generator.layerGenerated;
+        layerGenerated = LayerGenerator.Instance.layerGenerated;
 
         if (layerGenerated)
         {
@@ -154,7 +144,7 @@ public class RoomSpawner : MonoBehaviour
             }
         }
         
-        if (!enemiesSpawned && !layerManager.showroom)
+        if (!enemiesSpawned && !LayerManager.Instance.showroom)
         {
             SpawnEnemies();
         }
@@ -173,22 +163,24 @@ public class RoomSpawner : MonoBehaviour
         if (door != null)
         {
             door.GetComponentInChildren<MeshCollider>().enabled = false;
-            doorHinge.transform.localRotation = Quaternion.Slerp(doorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
+            doorHinge.transform.localRotation = Quaternion.Slerp(doorHinge.transform.localRotation, StartLevel.Instance.openRot, Time.deltaTime);
+
+            var sfxManager = SFXAudioManager.Instance;
 
             if (!primaryDoorAudioPlayed)
             {
-                sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+                sfxManager.PlayClip(sfxManager.doorOpen, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod, true);
                 primaryDoorAudioPlayed = true;
             }
 
             if (secondDoor != null)
             {
                 secondDoor.GetComponentInChildren<MeshCollider>().enabled = false;
-                secondDoorHinge.transform.localRotation = Quaternion.Slerp(secondDoorHinge.transform.localRotation, startLevel.openRot, Time.deltaTime);
+                secondDoorHinge.transform.localRotation = Quaternion.Slerp(secondDoorHinge.transform.localRotation, StartLevel.Instance.openRot, Time.deltaTime);
 
                 if (!secondaryDoorAudioPlayed)
                 {
-                    sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+                    sfxManager.PlayClip(sfxManager.doorOpen, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod, true);
                     secondaryDoorAudioPlayed = true;
                 }
             }
@@ -199,15 +191,15 @@ public class RoomSpawner : MonoBehaviour
     {
         if (door != null)
         {
-            if (roomBehavior.x == roomBehavior.boardSize.x && roomBehavior.y == roomBehavior.boardSize.y && !layerManager.showroom)
+            if (roomBehavior.x == roomBehavior.boardSize.x && roomBehavior.y == roomBehavior.boardSize.y && !LayerManager.Instance.showroom)
             {
-                layerManager.bossRoom.SetActive(true);
-                layerManager.bossRoom.GetComponent<RoomBehavior>().active = true;
+                BossGenerator.Instance.gameObject.SetActive(true);
+                BossGenerator.Instance.GetComponent<RoomBehavior>().active = true;
                 OnBossSpawn?.Invoke();
                 return;
             }
 
-            GameObject[] rooms = layerManager.rooms;
+            GameObject[] rooms = LayerManager.Instance.rooms;
 
             foreach (GameObject r in rooms)
             {
@@ -216,7 +208,7 @@ public class RoomSpawner : MonoBehaviour
                     if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
                     {
                         r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                        if (!layerManager.showroom)
+                        if (!LayerManager.Instance.showroom)
                         {
                             r.SetActive(true);
                             r.GetComponent<RoomBehavior>().active = true;
@@ -230,7 +222,7 @@ public class RoomSpawner : MonoBehaviour
                     if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
                     {
                         r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                        if (!layerManager.showroom)
+                        if (!LayerManager.Instance.showroom)
                         {
                             r.SetActive(true);
                             r.GetComponent<RoomBehavior>().active = true;
@@ -244,7 +236,7 @@ public class RoomSpawner : MonoBehaviour
                     if (r.GetComponent<RoomBehavior>().x == roomBehavior.x + 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
                     {
                         r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                        if (!layerManager.showroom)
+                        if (!LayerManager.Instance.showroom)
                         {
                             r.SetActive(true);
                             r.GetComponent<RoomBehavior>().active = true;
@@ -258,7 +250,7 @@ public class RoomSpawner : MonoBehaviour
                     if (r.GetComponent<RoomBehavior>().x == roomBehavior.x - 1 && r.GetComponent<RoomBehavior>().y == roomBehavior.y)
                     {
                         r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                        if (!layerManager.showroom)
+                        if (!LayerManager.Instance.showroom)
                         {
                             r.SetActive(true);
                             r.GetComponent<RoomBehavior>().active = true;
@@ -275,7 +267,7 @@ public class RoomSpawner : MonoBehaviour
                         if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y - 1)
                         {
                             r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                            if (!layerManager.showroom)
+                            if (!LayerManager.Instance.showroom)
                             {
                                 r.SetActive(true);
                                 r.GetComponent<RoomBehavior>().active = true;
@@ -289,7 +281,7 @@ public class RoomSpawner : MonoBehaviour
                         if (r.GetComponent<RoomBehavior>().x == roomBehavior.x && r.GetComponent<RoomBehavior>().y == roomBehavior.y + 1)
                         {
                             r.GetComponent<RoomBehavior>().backDoor.SetActive(false);
-                            if (!layerManager.showroom)
+                            if (!LayerManager.Instance.showroom)
                             {
                                 r.SetActive(true);
                                 r.GetComponent<RoomBehavior>().active = true;
@@ -448,7 +440,7 @@ public class RoomSpawner : MonoBehaviour
     {
         if (door != null)
         {
-            if (roomBehavior.x == roomBehavior.boardSize.x && roomBehavior.y == roomBehavior.boardSize.y && !layerManager.showroom)
+            if (roomBehavior.x == roomBehavior.boardSize.x && roomBehavior.y == roomBehavior.boardSize.y && !LayerManager.Instance.showroom)
             {
                 foreach(GameObject l in roomBehavior.lights)
                 {
@@ -458,7 +450,7 @@ public class RoomSpawner : MonoBehaviour
                 return;
             }
 
-            GameObject[] rooms = layerManager.rooms;
+            GameObject[] rooms = LayerManager.Instance.rooms;
 
             foreach (GameObject r in rooms)
             {

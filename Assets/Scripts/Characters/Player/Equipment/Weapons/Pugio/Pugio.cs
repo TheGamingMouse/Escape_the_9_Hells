@@ -25,8 +25,7 @@ public class Pugio : MonoBehaviour
     [Header("Components")]
     BasicEnemyAction enemyAction;
     public Weapon weapon;
-    SFXAudioManager sfxManager;
-    public ParticleSystem PS;
+    public ParticleSystem particleSystem;
 
     #endregion
 
@@ -35,11 +34,10 @@ public class Pugio : MonoBehaviour
     void Start()
     {
         enemyAction = GetComponentInParent<BasicEnemyAction>();
-        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
 
-        if (PS)
+        if (particleSystem)
         {
-            PS.Stop();
+            particleSystem.Stop();
         }
     }
 
@@ -66,16 +64,18 @@ public class Pugio : MonoBehaviour
 
     IEnumerator BossSlamRoutine()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         bossSlamming = true;
-        PS.Play();
+        particleSystem.Play();
 
         yield return new WaitForSeconds(1f);
 
-        sfxManager.PlayClip(sfxManager.cainAttack, sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod / 1.5f, true, "none", gameObject, 0.6f);
+        sfxManager.PlayClip(sfxManager.cainAttack, MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod / 1.5f, true, "none", gameObject, 0.6f);
 
         yield return new WaitForSeconds(0.8f);
 
-        PS.Stop();
+        particleSystem.Stop();
         bossSlamming = false;
     }
 
@@ -156,6 +156,8 @@ public class Pugio : MonoBehaviour
 
     public IEnumerator PlayNormalAudio(bool isPlayer = false)
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         if (!canPlayAudio)
         {
             yield return null;
@@ -163,11 +165,11 @@ public class Pugio : MonoBehaviour
 
         if (isPlayer)
         {
-            sfxManager.PlayClip(sfxManager.pugio, sfxManager.masterManager.sBlend2D, sfxManager.weaponVolumeMod, true, "low");
+            sfxManager.PlayClip(sfxManager.pugio, MasterAudioManager.Instance.sBlend2D, sfxManager.weaponVolumeMod, true, "low");
         }
         else
         {
-            sfxManager.PlayClip(sfxManager.pugio, sfxManager.masterManager.sBlend2D, sfxManager.weaponVolumeMod / 2, true, "low");
+            sfxManager.PlayClip(sfxManager.pugio, MasterAudioManager.Instance.sBlend2D, sfxManager.weaponVolumeMod / 2, true, "low");
         }
 
         canPlayAudio = false;
@@ -179,9 +181,11 @@ public class Pugio : MonoBehaviour
 
     public IEnumerator PlaySpecialAudio()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         for (int i = 0; i < weapon.pugSpecialClip.length * 9; i++)
         {
-            sfxManager.PlayClip(sfxManager.pugio, sfxManager.masterManager.sBlend2D, sfxManager.weaponVolumeMod, true, "low");
+            sfxManager.PlayClip(sfxManager.pugio, MasterAudioManager.Instance.sBlend2D, sfxManager.weaponVolumeMod, true, "low");
 
             yield return new WaitForSeconds(0.1f);
         }

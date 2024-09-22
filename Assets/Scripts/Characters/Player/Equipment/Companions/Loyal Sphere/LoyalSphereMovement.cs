@@ -11,8 +11,8 @@ public class SphereCompanionMovement : MonoBehaviour
     readonly float speed = 15f;
     readonly float angle = 1f;
 
-    [Header("GameObjects")]
-    GameObject player;
+    [Header("Transforms")]
+    Transform player;
 
     [Header("Components")]
     LoyalSphereSight sight;
@@ -24,23 +24,23 @@ public class SphereCompanionMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player");
+        player = PlayerComponents.Instance.player;
         sight = GetComponent<LoyalSphereSight>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.RotateAround(player.transform.position, new Vector3(0f, 1f, 0f), angle);
+        transform.RotateAround(player.position, new Vector3(0f, 1f, 0f), angle);
 
-        if (Vector3.Distance(player.transform.position, transform.position) > 2.25f)
+        if (Vector3.Distance(player.position, transform.position) > 2.25f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
             transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         }
-        else if (Vector3.Distance(player.transform.position, transform.position) < 1.75f)
+        else if (Vector3.Distance(player.position, transform.position) < 1.75f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, -player.transform.position, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, -player.position, speed * Time.deltaTime);
             transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         }
 

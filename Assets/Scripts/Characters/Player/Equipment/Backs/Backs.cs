@@ -27,7 +27,6 @@ public class Backs : MonoBehaviour
     public AngelWings angelWings;
     public SteelWings steelWings;
     public Backpack backpack;
-    PlayerLoadout playerLoadout;
     public CapeOWind capeOWind;
     public SeedBag seedBag;
 
@@ -38,8 +37,6 @@ public class Backs : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerLoadout = GameObject.FindWithTag("Player").GetComponent<PlayerLoadout>();
-
         angelWingsObj = angelWings.gameObject;
         steelWingsObj = steelWings.gameObject;
         backpackObj = backpack.gameObject;
@@ -130,7 +127,7 @@ public class Backs : MonoBehaviour
             backpackObj.SetActive(true);
         }
 
-        playerLoadout.backpackActive = true;
+        PlayerComponents.Instance.playerLoadout.backpackActive = true;
     }
 
     public void SwitchToCapeOWind()
@@ -156,7 +153,7 @@ public class Backs : MonoBehaviour
             seedBagObj.SetActive(true);
         }
 
-        playerLoadout.seedBagActive = true;
+        PlayerComponents.Instance.playerLoadout.seedBagActive = true;
     }
 
     void DisableElements()
@@ -167,8 +164,8 @@ public class Backs : MonoBehaviour
         }
         angelWings.active = false;
         steelWings.active = false;
-        playerLoadout.backpackActive = false;
-        playerLoadout.seedBagActive = false;
+        PlayerComponents.Instance.playerLoadout.backpackActive = false;
+        PlayerComponents.Instance.playerLoadout.seedBagActive = false;
     }
 
     #endregion

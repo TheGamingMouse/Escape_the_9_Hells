@@ -30,8 +30,6 @@ public class Armor : MonoBehaviour
     public HideArmor hide;
     public RingMailArmor ringMail;
     public PlateArmor plate;
-    PlayerMovement playerMovement;
-    PlayerHealth playerHealth;
 
     #endregion
 
@@ -40,9 +38,6 @@ public class Armor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
-        playerHealth = GameObject.FindWithTag("Player").GetComponent<PlayerHealth>();
-
         leatherObj = leather.gameObject;
         hideObj = hide.gameObject;
         ringMailObj = ringMail.gameObject;
@@ -94,8 +89,8 @@ public class Armor : MonoBehaviour
             armorObj.SetActive(false);
         }
 
-        playerHealth.resistanceMultiplier -= currentResistanceMod;
-        playerMovement.speedMultiplier -= currentSpeedMod;
+        PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
+        PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
 
         currentResistanceMod = 0f;
         currentSpeedMod = 0f;
@@ -116,11 +111,11 @@ public class Armor : MonoBehaviour
             newResistanceMod = leather.resistanceMod;
             newSpeedMod = leather.speedMod;
 
-            playerHealth.resistanceMultiplier -= currentResistanceMod;
-            playerHealth.resistanceMultiplier += newResistanceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
             
-            playerMovement.speedMultiplier -= currentSpeedMod;
-            playerMovement.speedMultiplier += newSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
 
             currentResistanceMod = newResistanceMod;
             currentSpeedMod = newSpeedMod;
@@ -142,11 +137,11 @@ public class Armor : MonoBehaviour
             newResistanceMod = hide.resistanceMod;
             newSpeedMod = hide.speedMod;
 
-            playerHealth.resistanceMultiplier -= currentResistanceMod;
-            playerHealth.resistanceMultiplier += newResistanceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
             
-            playerMovement.speedMultiplier -= currentSpeedMod;
-            playerMovement.speedMultiplier += newSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
 
             currentResistanceMod = newResistanceMod;
             currentSpeedMod = newSpeedMod;
@@ -168,11 +163,11 @@ public class Armor : MonoBehaviour
             newResistanceMod = ringMail.resistanceMod;
             newSpeedMod = ringMail.speedMod;
 
-            playerHealth.resistanceMultiplier -= currentResistanceMod;
-            playerHealth.resistanceMultiplier += newResistanceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
             
-            playerMovement.speedMultiplier -= currentSpeedMod;
-            playerMovement.speedMultiplier += newSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
 
             currentResistanceMod = newResistanceMod;
             currentSpeedMod = newSpeedMod;
@@ -194,11 +189,11 @@ public class Armor : MonoBehaviour
             newResistanceMod = plate.resistanceMod;
             newSpeedMod = plate.speedMod;
 
-            playerHealth.resistanceMultiplier -= currentResistanceMod;
-            playerHealth.resistanceMultiplier += newResistanceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
             
-            playerMovement.speedMultiplier -= currentSpeedMod;
-            playerMovement.speedMultiplier += newSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
 
             currentResistanceMod = newResistanceMod;
             currentSpeedMod = newSpeedMod;

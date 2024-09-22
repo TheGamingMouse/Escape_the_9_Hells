@@ -6,6 +6,9 @@ public class MinionSpawner : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static MinionSpawner Instance;
+
     [Header("Floats")]
     readonly float spawnrate = 6.5f;
 
@@ -24,17 +27,18 @@ public class MinionSpawner : MonoBehaviour
     [Header("Arrays")]
     public Transform[] spawnPositions;
 
-    [Header("Components")]
-    BossGenerator bossGenerator;
-
     #endregion
 
     #region StartUpdate Methods
 
+    void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
-        bossGenerator = GameObject.FindWithTag("BossRoom").GetComponent<BossGenerator>();
-        minionsList = bossGenerator.transform.Find("Minions");
+        minionsList = BossGenerator.Instance.transform.Find("Minions");
     }
 
     void Update()
@@ -45,10 +49,8 @@ public class MinionSpawner : MonoBehaviour
 
             var newMinion = Instantiate(minion, spawnPositions[i].position, Quaternion.identity, minionsList);
             newMinion.GetComponent<EnemySight>().minion = true;
-            newMinion.GetComponent<EnemySight>().bossGenerator = bossGenerator;
             newMinion.transform.position += new Vector3(0f, 0.125f, 0f);
 
-            newMinion.GetComponent<ImpHealth>().minionSpawner = this;
             newMinion.GetComponent<ImpHealth>().minion = true;
             minions.Add(newMinion);
 

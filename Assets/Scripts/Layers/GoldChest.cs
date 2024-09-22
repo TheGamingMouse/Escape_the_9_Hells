@@ -20,9 +20,6 @@ public class GoldChest : MonoBehaviour
 
     [Header("Components")]
     Animator animator;
-    PlayerLevel playerLevel;
-    LayerManager layerManager;
-    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -31,22 +28,17 @@ public class GoldChest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
-        layerManager = managers.GetComponent<LayerManager>();
-
-        if (!layerManager.showroom)
+       if (!LayerManager.Instance.showroom)
         {
             animator = GetComponentInChildren<Animator>();
-            player = GameObject.FindWithTag("Player").transform;
-            playerLevel = player.GetComponent<PlayerLevel>();
-            sfxManager = managers.GetComponent<SFXAudioManager>();
+            player = PlayerComponents.Instance.player;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!layerManager.showroom && Vector3.Distance(player.position, transform.position) < 2 && !chestOpened)
+        if (!LayerManager.Instance.showroom && Vector3.Distance(player.position, transform.position) < 2 && !chestOpened)
         {
             animator.SetTrigger("OpenChest");
 
@@ -54,31 +46,36 @@ public class GoldChest : MonoBehaviour
 
             if (rType == RewardType.Exp)
             {
-                if (luckCheck <= playerLevel.luck)
+                if (luckCheck <= PlayerComponents.Instance.playerLevel.luck)
                 {
-                    playerLevel.AddExperience(exp * 2, false, "none");
-                    sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+                    var sfxManager = SFXAudioManager.Instance;
+
+                    PlayerComponents.Instance.playerLevel.AddExperience(exp * 2, false, "none");
+                    sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
                 }
                 else
                 {
-                    playerLevel.AddExperience(exp, false, "none");
+                    PlayerComponents.Instance.playerLevel.AddExperience(exp, false, "none");
                 }
             }
             else if (rType == RewardType.Level)
             {
+                var playerLevel = PlayerComponents.Instance.playerLevel;
+                var sfxManager = SFXAudioManager.Instance;
+                
                 if (luckCheck <= playerLevel.luck)
                 {
                     playerLevel.LevelUp(false, true);
                     playerLevel.LevelUp(false, true);
 
-                    sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
-                    sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+                    sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
+                    sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
                 }
                 else
                 {
                     playerLevel.LevelUp(false, true);
 
-                    sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+                    sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
                 }
             }
 

@@ -33,11 +33,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Components")]
     public Rigidbody rb;
     public Weapon weapon;
-    public BossGenerator bossGenerator;
     public RoomSpawner roomSpawner;
-    UIManager uiManager;
     Backs backs;
-    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -46,12 +43,8 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
-
         rb = GetComponent<Rigidbody>();
-        uiManager = managers.GetComponent<UIManager>();
         backs = GetComponentInChildren<Backs>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         dashSpeed = baseSpeed * 1.5f;
         currentSpeed = baseSpeed;
@@ -145,12 +138,14 @@ public class PlayerMovement : MonoBehaviour
 
     void LookAtMouse()
     {
-        transform.forward = uiManager.cursorObj.transform.position - new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        transform.forward = UIManager.Instance.cursorObj.transform.position - new Vector3(transform.position.x, transform.position.y, transform.position.z);
         transform.rotation = new Quaternion(0f, transform.rotation.y, 0f, transform.rotation.w);
     }
 
     IEnumerator Dash()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         isDashing = true;
         walking = false;
         currentSpeed = dashSpeed;
@@ -176,14 +171,14 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(backs.angelWings.BonusDash(dashCooldownTime));
             GetComponent<MeshRenderer>().material.SetColor("_Color", normalColor);
 
-            sfxManager.PlayClip(sfxManager.angelWingsActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true);
+            sfxManager.PlayClip(sfxManager.angelWingsActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod, true);
         }
         else if (backs.steelWings.active && backs.bActive == Backs.BackActive.SteelWings)
         {
             StartCoroutine(backs.steelWings.SteelDash(dashCooldownTime));
             StartCoroutine(DashCooldown());
 
-            sfxManager.PlayClip(sfxManager.angelWingsActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true, "none", null, 0.5f);
+            sfxManager.PlayClip(sfxManager.angelWingsActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod, true, "none", null, 0.5f);
         }
         else
         {
@@ -203,9 +198,11 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator PlayWalkingAudio()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         for (int i = 0; i < sfxManager.playerWalking.Count; i++)
         {
-            sfxManager.PlayClip(sfxManager.playerWalking[i], sfxManager.masterManager.sBlend2D, sfxManager.playerVolumeMod);
+            sfxManager.PlayClip(sfxManager.playerWalking[i], MasterAudioManager.Instance.sBlend2D, sfxManager.playerVolumeMod);
             
             yield return new WaitForSeconds(sfxManager.playerWalking[i].length);
             
@@ -227,10 +224,6 @@ public class PlayerMovement : MonoBehaviour
         if (coll.transform.CompareTag("LayerRoom"))
         {
             roomSpawner = coll.GetComponent<RoomSpawner>();
-        }
-        else if (coll.transform.CompareTag("BossRoom"))
-        {
-            bossGenerator = coll.GetComponent<BossGenerator>();
         }
     }
 

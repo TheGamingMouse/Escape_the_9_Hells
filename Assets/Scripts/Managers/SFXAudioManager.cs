@@ -9,6 +9,9 @@ public class SFXAudioManager : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static SFXAudioManager Instance;
+
     [Header("Floats")]
     public float uiVolumeMod;
     public float enemyVolumeMod;
@@ -94,16 +97,14 @@ public class SFXAudioManager : MonoBehaviour
     [Header("AudioSources")]
     public AudioSource dialogueSource;
 
-    [Header("Components")]
-    public MasterAudioManager masterManager;
-    SettingsManager settingsManager;
-
     #endregion
 
     #region StartUpdate Methods
 
     void Awake()
     {
+        Instance = this;
+
         Button[] buttons = FindObjectsOfType<Button>();
 	
         foreach (var b in buttons)
@@ -117,18 +118,16 @@ public class SFXAudioManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        settingsManager = masterManager.settingsManager;
-
         dialogueSource.clip = dialogue;
-        dialogueSource.outputAudioMixerGroup = masterManager.sfxMixer;
+        dialogueSource.outputAudioMixerGroup = MasterAudioManager.Instance.sfxMixer;
         dialogueSource.volume = CalculateVolume(uiVolumeMod);
-        dialogueSource.spatialBlend = masterManager.sBlend2D;
+        dialogueSource.spatialBlend = MasterAudioManager.Instance.sBlend2D;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (settingsManager.sfxVolume == -30 || settingsManager.masterVolume == -30)
+        if (SettingsManager.Instance.sfxVolume == -30 || SettingsManager.Instance.masterVolume == -30)
         {
             foreach (var source in audioSourcePool)
             {
@@ -152,17 +151,19 @@ public class SFXAudioManager : MonoBehaviour
 
     public void PressButton()
     {
-        PlayClip(onButtonPress, masterManager.sBlend2D, uiVolumeMod);
+        PlayClip(onButtonPress, MasterAudioManager.Instance.sBlend2D, uiVolumeMod);
     }
 
     public void PlayReRoll()
     {
         var randReRoll = Random.Range(0, reRollSFX.Count);
-        PlayClip(reRollSFX[randReRoll], masterManager.sBlend2D, effectsVolumeMod);
+        PlayClip(reRollSFX[randReRoll], MasterAudioManager.Instance.sBlend2D, effectsVolumeMod);
     }
 
     public void PlayAlexanderVO(bool isGreeting)
     {
+        var masterManager = MasterAudioManager.Instance;
+
         List<List<AudioClip>> clipList = new()
         {
             alexanderGreetings,
@@ -183,7 +184,8 @@ public class SFXAudioManager : MonoBehaviour
 
     public void PlayBarbaraVO(bool isGreeting)
     {
-        
+        var masterManager = MasterAudioManager.Instance;
+
         List<List<AudioClip>> clipList = new()
         {
             barbaraGreetings,
@@ -204,6 +206,8 @@ public class SFXAudioManager : MonoBehaviour
 
     public void PlayRickyVO(bool isGreeting)
     {
+        var masterManager = MasterAudioManager.Instance;
+
         List<List<AudioClip>> clipList = new()
         {
             rickyGreetings,
@@ -233,6 +237,8 @@ public class SFXAudioManager : MonoBehaviour
 
     float CalculateVolume(float volumeOverride = 0.15f)
     {
+        var masterManager = MasterAudioManager.Instance;
+
         masterManager.audioMixer.GetFloat("sfxVolume", out float dBSFX);
         float sfxVolume = Mathf.Pow(10.0f, dBSFX / 20.0f);
 
@@ -284,7 +290,7 @@ public class SFXAudioManager : MonoBehaviour
 
         newSource.playOnAwake = false;
         newSource.spatialBlend = blend;
-        if (settingsManager.sfxVolume == -30 || settingsManager.masterVolume == -30)
+        if (SettingsManager.Instance.sfxVolume == -30 || SettingsManager.Instance.masterVolume == -30)
         {
             newSource.volume = 0f;
         }
@@ -293,7 +299,7 @@ public class SFXAudioManager : MonoBehaviour
             newSource.volume = CalculateVolume(volumeOverride);
         }
         newSource.pitch = pitchOverride;
-        newSource.outputAudioMixerGroup = masterManager.sfxMixer;
+        newSource.outputAudioMixerGroup = MasterAudioManager.Instance.sfxMixer;
         audioSourcePool.Add(newSource);
         return newSource;
     }
@@ -375,7 +381,7 @@ public class SFXAudioManager : MonoBehaviour
             return;
         }
 
-        if (settingsManager.sfxVolume == -30 || settingsManager.masterVolume == -30)
+        if (SettingsManager.Instance.sfxVolume == -30 || SettingsManager.Instance.masterVolume == -30)
         {
             source.volume = 0f;
         }
@@ -411,6 +417,8 @@ public class SFXAudioManager : MonoBehaviour
 
     void PopulateAudioSourcePool()
     {
+        var masterManager = MasterAudioManager.Instance;
+
         for (int i = 0; i < 15; i++)
         {
             AudioSource newSource = gameObject.AddComponent<AudioSource>();

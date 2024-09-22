@@ -27,7 +27,6 @@ public class Ricky : MonoBehaviour, IInteractable
     bool damageable = true;
     bool dialogue2;
     bool openedDoor;
-    bool dialogue3;
     public bool dialogueStartComplete;
     public bool secondPosition;
     public bool talking;
@@ -63,15 +62,8 @@ public class Ricky : MonoBehaviour, IInteractable
     public Sprite npcSprite;
 
     [Header("Components")]
-    Dialogue dialogue;
-    UIManager uiManager;
     Rigidbody rb;
     Camera cam;
-    PlayerMovement playerMovement;
-    SaveLoadManager saveLoadManager;
-    public NPCSpawner npcSpawner;
-    SFXAudioManager sfxManager;
-    PlayerSouls playerSouls;
 
     #endregion
 
@@ -79,12 +71,11 @@ public class Ricky : MonoBehaviour, IInteractable
 
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
-        var findPlayer = GameObject.FindWithTag("Player");
+        var npcSpawner = NPCSpawner.Instance;
+
+        var findPlayer = PlayerComponents.Instance.player;;
         var terrain = GameObject.FindWithTag("Terrain");
 
-        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
-        uiManager = managers.GetComponent<UIManager>();
         rb = GetComponent<Rigidbody>();
         player = findPlayer.transform;
         healthImage = transform.Find("HealthBarCanvas/Health Bar Fill").GetComponent<Image>();
@@ -92,11 +83,7 @@ public class Ricky : MonoBehaviour, IInteractable
         cam = Camera.main;
         mainDoor = terrain.transform.Find("ExitDoor/DoorHinge").gameObject;
         entrance = terrain.transform.Find("ExitDoor/Wall_Entrance").gameObject;
-        playerMovement = findPlayer.GetComponent<PlayerMovement>();
-        saveLoadManager = managers.GetComponent<SaveLoadManager>();
         weapon = player.GetComponentInChildren<Weapon>().gameObject;
-        sfxManager = managers.GetComponent<SFXAudioManager>();
-        playerSouls = player.GetComponent<PlayerSouls>();
 
         linesList.Add(npcSpawner.rickyMessages.lines1.ToArray());
         linesList.Add(npcSpawner.rickyMessages.lines2.ToArray());
@@ -106,11 +93,13 @@ public class Ricky : MonoBehaviour, IInteractable
 
         health = maxHealth;
 
-        dialogueStartComplete = saveLoadManager.rickyStartComp;
-        returnedTo = saveLoadManager.returnedToRicky;
+        var NpcData = SaveSystem.loadedNpcData;
+        
+        dialogueStartComplete = NpcData.rickyStartComp;
+        returnedTo = NpcData.returnedToRicky;
 
-        dialogue.dialogueDone = false;
-        uiManager.npcsActive = true;
+        Dialogue.Instance.dialogueDone = false;
+        UIManager.Instance.npcsActive = true;
         npcSpawner.rickyStart = dialogueStartComplete;
         
         if (dialogueStartComplete)
@@ -120,13 +109,19 @@ public class Ricky : MonoBehaviour, IInteractable
             daggerGiven = true;
         }
 
-        playerSouls.ricky = this;
-        uiManager.ricky = this;
+        PlayerComponents.Instance.playerSouls.ricky = this;
+        UIManager.Instance.ricky = this;
         weapon.SetActive(daggerGiven);
     }
 
     void Update()
     {
+        var uiManager = UIManager.Instance;
+        var dialogue = Dialogue.Instance;
+        var playerMovement = PlayerComponents.Instance.playerMovement;
+        var npcSpawner = NPCSpawner.Instance;
+        var sfxManager = SFXAudioManager.Instance;
+
         if (dialogueStartComplete && !gameStart)
         {
             gameStart = true;
@@ -212,11 +207,17 @@ public class Ricky : MonoBehaviour, IInteractable
                         }
                         playerMovement.startBool = true;
                         dialogueStartComplete = true;
-                        saveLoadManager.rickyStartComp = dialogueStartComplete;
+
+                        var NpcData = SaveSystem.loadedNpcData;
+                        NpcData.rickyStartComp = dialogueStartComplete;
+
+                        SaveSystem.Instance.Save(NpcData, SaveSystem.npcDataPath);
+
+
 
                         if (!doorOpenedAudio)
                         {
-                            sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+                            sfxManager.PlayClip(sfxManager.doorOpen, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod, true);
                             doorOpenedAudio = true;
                         }
                     }
@@ -236,7 +237,7 @@ public class Ricky : MonoBehaviour, IInteractable
 
                 if (!doorOpenedAudio)
                 {
-                    sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+                    sfxManager.PlayClip(sfxManager.doorOpen, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod, true);
                     doorOpenedAudio = true;
                 }
             }
@@ -248,7 +249,11 @@ public class Ricky : MonoBehaviour, IInteractable
             BeginNewDialogue(false);
             beginDialogue = false;
             returnedTo = true;
-            saveLoadManager.returnedToRicky = true;
+
+            var NpcData = SaveSystem.loadedNpcData;
+            NpcData.returnedToRicky = true;
+
+            SaveSystem.Instance.Save(NpcData, SaveSystem.npcDataPath);
         }
 
         if (beginDialogue && returnedTo && uiManager.dialogueBox.activeInHierarchy)
@@ -307,7 +312,7 @@ public class Ricky : MonoBehaviour, IInteractable
         
         healthbar.SetActive(true);
         isDashing = false;
-        playerMovement.startBool = true;
+        PlayerComponents.Instance.playerMovement.startBool = true;
     }
 
     void Move()
@@ -351,6 +356,8 @@ public class Ricky : MonoBehaviour, IInteractable
 
     void InitializeDialogue()
     {
+        var dialogue = Dialogue.Instance;
+
         dialogue.lines = linesList[listIndex];
         dialogue.nameString = npcName;
         dialogue.npcSprite = npcSprite;
@@ -358,11 +365,13 @@ public class Ricky : MonoBehaviour, IInteractable
 
     void BeginNewDialogue(bool advice)
     {
-        playerMovement.startBool = false;
+        var dialogue = Dialogue.Instance;
+
+        PlayerComponents.Instance.playerMovement.startBool = false;
 
         if (advice)
         {
-            dialogue.lines = npcSpawner.rickyMessages.dLines.ToArray();
+            dialogue.lines = NPCSpawner.Instance.rickyMessages.dLines.ToArray();
         }
         else
         {
@@ -387,9 +396,9 @@ public class Ricky : MonoBehaviour, IInteractable
     public bool InteractE(Interactor interactor)
     {
         talking = true;
-        uiManager.rickyTalking = true;
+        UIManager.Instance.rickyTalking = true;
 
-        sfxManager.PlayRickyVO(true);
+        SFXAudioManager.Instance.PlayRickyVO(true);
         
         return true;
     }
@@ -398,11 +407,11 @@ public class Ricky : MonoBehaviour, IInteractable
         talking = true;
         talkingOver = false;
 
-        dialogue.dialogueDone = false;
-        uiManager.dialogueStart = true;
+        Dialogue.Instance.dialogueDone = false;
+        UIManager.Instance.dialogueStart = true;
         beginDialogue = true;
 
-        sfxManager.PlayRickyVO(true);
+        SFXAudioManager.Instance.PlayRickyVO(true);
         
         return true;
     }

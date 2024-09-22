@@ -10,6 +10,9 @@ public class UIManager : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static UIManager Instance;
+
     [Header("Ints")]
     int _soulsCounterValue;
     public int SoulsCounterValue
@@ -101,21 +104,15 @@ public class UIManager : MonoBehaviour
     public LayerMask groundMask;
 
     [Header("Components")]
-    Dialogue dialogue;
     ExpProgressBar progressBarExp;
     ExpProgressBar progressBarHealth;
-    PlayerLevel playerLevel;
-    PlayerHealth playerHealth;
     DevTools devTools;
-    PlayerMovement playerMovement;
     public Ricky ricky;
     SoulsMenu rickyConvo;
     LoadoutMenu barbaraConvo;
-    NPCSpawner npcSpawner;
     EquipmentMenu alexanderConvo;
-    public BossGenerator bossGenerator;
-    SaveLoadManager saveLoadManager;
     UpgradeMenu jensConvo;
+    
     #endregion
 
     #region Subscriptions
@@ -140,6 +137,11 @@ public class UIManager : MonoBehaviour
 
     #region StartUpdate Methods
 
+    void Awake()
+    {
+        Instance = this;
+    }
+
     void FixedUpdate()
     {
         UpdateCursorPosition();
@@ -154,7 +156,7 @@ public class UIManager : MonoBehaviour
             FindTextElements();
             DisableObjects();
 
-            soulsText.text = $"{playerLevel.souls}";
+            soulsText.text = $"{PlayerComponents.Instance.playerLevel.souls}";
 
             previousHealth = health;
 
@@ -187,7 +189,7 @@ public class UIManager : MonoBehaviour
             StartGame();
         }
 
-        if (dialogue.dialogueDone)
+        if (Dialogue.Instance.dialogueDone)
         {
             dialogueBox.SetActive(false);
         }
@@ -196,7 +198,7 @@ public class UIManager : MonoBehaviour
             dialogueBox.SetActive(true);
         }
 
-        if (perkMenu.GetComponent<PerkMenu>().menuClosing && !playerHealth.playerDead && !isPaused)
+        if (perkMenu.GetComponent<PerkMenu>().menuClosing && !PlayerComponents.Instance.playerHealth.playerDead && !isPaused)
         {
             perkMenu.SetActive(false);
             Time.timeScale = 1f;
@@ -306,18 +308,13 @@ public class UIManager : MonoBehaviour
         menus = canvas.Find("Menus");
         
         dialogueBox = canvas.Find("DialogueBox").gameObject;
-        dialogue = dialogueBox.GetComponentInChildren<Dialogue>();
-
+        
         progressBarExp = canvas.Find("Vertical Progress Bar").GetComponent<ExpProgressBar>();
         progressBarHealth = canvas.Find("Vertical Progress Bar (1)").GetComponent<ExpProgressBar>();
 
-        player = GameObject.FindWithTag("Player");
-        playerLevel = player.GetComponent<PlayerLevel>();
-        playerHealth = player.GetComponent<PlayerHealth>();
+        player = PlayerComponents.Instance.player.gameObject;
         devTools = player.GetComponent<DevTools>();
-        playerMovement = player.GetComponent<PlayerMovement>();
-        saveLoadManager = GetComponent<SaveLoadManager>();
-
+        
         damageOverlay = canvas.Find("DamageIndicator").gameObject;
         perkMenu = menus.Find("PerkMenu").gameObject;
         godModeObj = canvas.Find("GodModeText (TMP)").gameObject;
@@ -327,7 +324,7 @@ public class UIManager : MonoBehaviour
         GameObject pauseMenuCurrentSouls = pauseMenu.transform.Find("Souls").gameObject;
         GameObject pauseMenuTotalSouls = pauseMenu.transform.Find("TotalSouls").gameObject;
 
-        if (saveLoadManager.lState == SaveLoadManager.LayerState.Hub)
+        if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.Hub)
         {
             pauseMenuCurrentSouls.SetActive(false);
             pauseMenuTotalSouls.transform.position += new Vector3(0, 113, 0);
@@ -345,7 +342,7 @@ public class UIManager : MonoBehaviour
         canvas = GameObject.FindWithTag("Canvas").transform;
 
         levelText = canvas.Find("uf_level_elite/LevelText (TMP)").GetComponent<TextMeshProUGUI>();
-        if (saveLoadManager.lState == SaveLoadManager.LayerState.Hub)
+        if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.Hub)
         {
             soulsText = canvas.Find("HubSouls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
             disableSoulsText = canvas.Find("Souls").gameObject;
@@ -376,12 +373,10 @@ public class UIManager : MonoBehaviour
     {
         if (npcsActive)
         {
-            npcs = GameObject.FindWithTag("NPC").transform;
-            npcSpawner = npcs.GetComponent<NPCSpawner>();
-            rickyConvo = menus.Find("npcConversations/Ricky").GetComponent<SoulsMenu>();
-            barbaraConvo = menus.Find("npcConversations/Barbara").GetComponent<LoadoutMenu>();
-            alexanderConvo = menus.Find("npcConversations/Alexander").GetComponent<EquipmentMenu>();
-            jensConvo = menus.Find("npcConversations/Jens").GetComponent<UpgradeMenu>();
+            rickyConvo = SoulsMenu.Instance;
+            barbaraConvo = LoadoutMenu.Instance;
+            alexanderConvo = EquipmentMenu.Instance;
+            jensConvo = UpgradeMenu.Instance;
 
             npcMenuesFound = true;
         }
@@ -397,7 +392,7 @@ public class UIManager : MonoBehaviour
         bossObj.SetActive(false);
         disableSoulsText.SetActive(false);
 
-        playerMovement.startBool = false;
+        PlayerComponents.Instance.playerMovement.startBool = false;
     }
 
     void StartGame()
@@ -409,7 +404,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            playerMovement.startBool = true;
+            PlayerComponents.Instance.playerMovement.startBool = true;
             gameStart = true;
         }
     }
@@ -442,7 +437,7 @@ public class UIManager : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        if (playerLevel.timesLeveledUp > 0)
+        if (PlayerComponents.Instance.playerLevel.timesLeveledUp > 0)
         {
             HandleLevelUp();
         }
@@ -454,13 +449,13 @@ public class UIManager : MonoBehaviour
 
     void UpdateExp()
     {
-        exp = playerLevel.exp;
+        exp = PlayerComponents.Instance.playerLevel.exp;
         progressBarExp.SetProgress(exp);
     }
 
     void UpdateHealth()
     {
-        health = playerHealth.health / 100;
+        health = PlayerComponents.Instance.playerHealth.health / 100;
         progressBarHealth.SetProgress(health);
 
         if (previousHealth > health)
@@ -476,7 +471,7 @@ public class UIManager : MonoBehaviour
 
     void UpdateLevel()
     {
-        levelText.text = $"{playerLevel.level}";
+        levelText.text = $"{PlayerComponents.Instance.playerLevel.level}";
     }
 
     void UpdateSouls(int newValue)
@@ -625,13 +620,15 @@ public class UIManager : MonoBehaviour
 
     void UpdateTotalSouls()
     {
-        if (saveLoadManager.lState == SaveLoadManager.LayerState.InLayers)
+        var playerData = SaveSystem.loadedPlayerData;
+
+        if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.InLayers)
         {
-            totalSouls = saveLoadManager.currentSouls + _soulsCounterValue;
+            totalSouls = playerData.currentSouls + _soulsCounterValue;
         }
         else
         {
-            totalSouls = saveLoadManager.currentSouls;
+            totalSouls = playerData.currentSouls;
         }
 
         totalSoulsText.text = totalSouls.ToString();
@@ -647,7 +644,7 @@ public class UIManager : MonoBehaviour
         pauseMenu.SetActive(true);
 
         Time.timeScale = 0f;
-        playerMovement.startBool = false;
+        PlayerComponents.Instance.playerMovement.startBool = false;
         Cursor.visible = true;
     }
 
@@ -659,7 +656,7 @@ public class UIManager : MonoBehaviour
         pauseMenu.SetActive(false);
 
         Time.timeScale = 1f;
-        playerMovement.startBool = true;
+        PlayerComponents.Instance.playerMovement.startBool = true;
         Cursor.visible = false;
     }
 
@@ -690,6 +687,8 @@ public class UIManager : MonoBehaviour
 
     void HandlePlayerDeath()
     {
+        var playerLevel = PlayerComponents.Instance.playerLevel;
+
         Time.timeScale = 0f;
         deathMenu.SetActive(true);
 
@@ -705,7 +704,7 @@ public class UIManager : MonoBehaviour
         dmLevelsGained.text = $"You have gained {levelsGained} levels";
         dmSoulsGained.text = $"You have gained {soulsGained} souls";
 
-        playerMovement.startBool = false;
+        PlayerComponents.Instance.playerMovement.startBool = false;
         Cursor.visible = true;
     }
 

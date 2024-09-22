@@ -20,12 +20,8 @@ public class SeedBag : MonoBehaviour
     LoadoutItemsSO secondaryCompanion;
 
     [Header("Components")]
-    PlayerUpgrades playerUpgrades;
-    PlayerLoadout playerLoadout;
     Companion companion;
-    SaveLoadManager slManager;
-    Backs playerBacks;
-    SFXAudioManager sfxManager;
+    Backs back;
 
     #endregion
 
@@ -34,29 +30,27 @@ public class SeedBag : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var player = GameObject.FindWithTag("Player");
-        var managers = GameObject.FindWithTag("Managers");
-
-        playerUpgrades = player.GetComponent<PlayerUpgrades>();
-        playerLoadout = player.GetComponent<PlayerLoadout>();
+        var player = PlayerComponents.Instance.player;
+        
         companion = GameObject.FindWithTag("Companions").GetComponent<Companion>();
-        playerBacks = player.GetComponentInChildren<Backs>();
+        back = player.GetComponentInChildren<Backs>();
 
-        slManager = managers.GetComponent<SaveLoadManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
+        var equipmentData = SaveSystem.loadedEquipmentData;
 
-        primaryCompanion = slManager.primaryCompanion;
-        secondaryCompanion = slManager.secondaryCompanion;
+        primaryCompanion = equipmentData.companionData.primaryCompanion;
+        secondaryCompanion = equipmentData.companionData.secondaryCompanion;
 
         canSwitch = true;
-        primary = slManager.seedBagPrimary;
+        primary = equipmentData.backData.seedBagPrimary;
         secondary = !primary;
     }
 
     // Update is called once per frame
     void Update()
     {
-        cooldown = baseCooldown / playerBacks.abilityCooldownMultiplier;
+        var playerLoadout = PlayerComponents.Instance.playerLoadout;
+
+        cooldown = baseCooldown / back.abilityCooldownMultiplier;
 
         if (playerLoadout.backpackActive)
         {
@@ -90,6 +84,8 @@ public class SeedBag : MonoBehaviour
 
     void SwitchToPrimary()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         if (primaryCompanion.title == "Loyal Sphere")
         {
             companion.SwitchToLoyalSphere();
@@ -99,14 +95,16 @@ public class SeedBag : MonoBehaviour
             companion.SwitchToAttackSquare();
         }
 
-        playerLoadout.selectedCompanion = primaryCompanion;
-        playerUpgrades.companionUpdated = false;
+        PlayerComponents.Instance.playerLoadout.selectedCompanion = primaryCompanion;
+        PlayerComponents.Instance.playerUpgrades.companionUpdated = false;
 
-        sfxManager.PlayClip(sfxManager.backpackActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true);
+        sfxManager.PlayClip(sfxManager.backpackActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod, true);
     }
 
     void SwitchToSecondary()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         if (secondaryCompanion.title == "Loyal Sphere")
         {
             companion.SwitchToLoyalSphere();
@@ -116,10 +114,10 @@ public class SeedBag : MonoBehaviour
             companion.SwitchToAttackSquare();
         }
 
-        playerLoadout.selectedCompanion = secondaryCompanion;
-        playerUpgrades.companionUpdated = false;
+        PlayerComponents.Instance.playerLoadout.selectedCompanion = secondaryCompanion;
+        PlayerComponents.Instance.playerUpgrades.companionUpdated = false;
 
-        sfxManager.PlayClip(sfxManager.backpackActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true);
+        sfxManager.PlayClip(sfxManager.backpackActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod, true);
     }
 
     IEnumerator CooldownRoutine()

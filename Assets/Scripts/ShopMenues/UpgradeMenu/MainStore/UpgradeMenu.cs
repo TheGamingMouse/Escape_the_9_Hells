@@ -9,6 +9,9 @@ public class UpgradeMenu : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static UpgradeMenu Instance;
+
     [Header("Floats")]
     public float souls;
 
@@ -42,8 +45,6 @@ public class UpgradeMenu : MonoBehaviour
 
     [Header("Components")]
     Jens jens;
-    UIManager uiManager;
-    NPCSpawner npcSpawner;
     public WeaponUpgradesMenu weaponsMenu;
     public CompanionUpgradesMenu companionMenu;
     public ArmorUpgradesMenu armorMenu;
@@ -54,6 +55,11 @@ public class UpgradeMenu : MonoBehaviour
 
     #region StartUpdate Methods
 
+    void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
         menuCanOpen = true;
@@ -62,16 +68,13 @@ public class UpgradeMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
-        interactor = GameObject.FindWithTag("Player").GetComponent<Interactor>();
+        interactor = PlayerComponents.Instance.player.GetComponent<Interactor>();
 
-        if (uiManager.npcsActive)
+        if (UIManager.Instance.npcsActive)
         {
-            npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
-
-            if (npcSpawner.jensSpawned)
+            if (NPCSpawner.Instance.jensSpawned)
             {
-                jens = npcSpawner.jens;
+                jens = NPCSpawner.Instance.jens;
             }
         }
 
@@ -131,7 +134,7 @@ public class UpgradeMenu : MonoBehaviour
         menuOpen = false;
         menuCanClose = false;
         menuCanOpen = true;
-        uiManager.jensTalking = false;
+        UIManager.Instance.jensTalking = false;
         jens.talking = false;
     }
 

@@ -51,21 +51,9 @@ public class ArmorUpgradesMenu : MonoBehaviour
     public Button[] ButtonsArmors2;
     public GameObject[] armors;
 
-    [Header("Components")]
-    PlayerEquipment playerEquipment;
-    UpgradeMenu upgradeMenu;
-    PlayerUpgrades playerUpgrades;
-
     #endregion
 
     #region StartUpdate Methods
-
-    void Start()
-    {
-        playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
-        playerUpgrades = GameObject.FindWithTag("Player").GetComponent<PlayerUpgrades>();
-        upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
-    }
 
     void Update()
     {
@@ -73,9 +61,9 @@ public class ArmorUpgradesMenu : MonoBehaviour
         {
             for (int i = 0; i < armors.Length; i++)
             {
-                for (int j = 0; j < playerEquipment.boughtArmors.Count; j++)
+                for (int j = 0; j < PlayerComponents.Instance.playerEquipment.boughtArmors.Count; j++)
                 {
-                    if (playerEquipment.boughtArmors[j].title.ToLower().Contains(armors[i].name.ToLower()))
+                    if (PlayerComponents.Instance.playerEquipment.boughtArmors[j].title.ToLower().Contains(armors[i].name.ToLower()))
                     {
                         armors[i].SetActive(true);
                     }
@@ -150,6 +138,8 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
     void LoadUpgradePannels()
     {
+        var playerUpgrades = PlayerComponents.Instance.playerUpgrades;
+        
         // Leather
         for (int i = 0; i < itemsSO.Length; i++)
         {
@@ -245,6 +235,9 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
     void CheckUpgradesPurchaseable()
     {
+        var upgradeMenu = UpgradeMenu.Instance;
+        var playerUpgrades = PlayerComponents.Instance.playerUpgrades;
+        
         // Leather
         for (int i = 0; i < itemsSO.Length; i++)
         {
@@ -326,72 +319,72 @@ public class ArmorUpgradesMenu : MonoBehaviour
 
     public void PurchaseUpgradesLeather(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddLeatherUpgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddLeatherUpgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
 
     public void PurchaseUpgradesHide(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddHideUpgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddHideUpgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
 
     public void PurchaseUpgradesRingMail(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddRingMailUpgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddRingMailUpgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
     
     public void PurchaseUpgradesPlate(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddPlateUpgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddPlateUpgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
     
     public void PurchaseUpgradesArmor1(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddArmor1Upgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddArmor1Upgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
     
     public void PurchaseUpgradesArmor2(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddArmor2Upgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddArmor2Upgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }

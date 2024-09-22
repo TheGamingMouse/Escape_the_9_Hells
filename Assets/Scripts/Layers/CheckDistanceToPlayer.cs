@@ -28,9 +28,9 @@ public class CheckDistanceToPlayer : MonoBehaviour
             nameUpdated = true;
         }
 
-        if (GameObject.FindWithTag("Player") && room.GetComponentInChildren<RoomBehavior>().active)
+        if (PlayerComponents.Instance.player && room.GetComponentInChildren<RoomBehavior>().active)
         {
-            distToPlayer = Vector3.Distance(GameObject.FindWithTag("Player").transform.position, transform.position);
+            distToPlayer = Vector3.Distance(PlayerComponents.Instance.player.position, transform.position);
             if (distToPlayer <= maxDist)
             {
                 room.SetActive(true);

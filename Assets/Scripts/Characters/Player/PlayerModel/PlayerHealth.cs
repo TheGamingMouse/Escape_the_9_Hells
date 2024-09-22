@@ -28,9 +28,7 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Components")]
     CapeOWind capeOWind;
-    SaveLoadManager slManager;
     public Shield shield;
-    SFXAudioManager sfxManager;
     public ParticleSystem capeOWindPS;
 
     #endregion
@@ -40,17 +38,16 @@ public class PlayerHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
-
         capeOWind = transform.GetComponentInChildren<Backs>().capeOWind;
-        slManager = managers.GetComponent<SaveLoadManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         health = maxHealth;
 
-        if (slManager.lState == SaveLoadManager.LayerState.InLayers)
+        var layerData = SaveSystem.loadedLayerData;
+        var persistentData = SaveSystem.loadedPersistentData;
+
+        if (layerData.lState == SaveClasses.LayerData.LayerState.InLayers)
         {
-            health = slManager.healthInLayer;
+            health = persistentData.healthInLayer;
         }
     }
 
@@ -61,11 +58,13 @@ public class PlayerHealth : MonoBehaviour
         {
             if (capeOWind.active && capeOWind.canSave)
             {
+                var sfxManager = SFXAudioManager.Instance;
+
                 health = maxHealth;
                 StartCoroutine(capeOWind.Save());
                 StartCoroutine(CapeSave());
 
-                sfxManager.PlayClip(sfxManager.capeOWindActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod / 2, false, "high");
+                sfxManager.PlayClip(sfxManager.capeOWindActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod / 2, false, "high");
 
                 return;
             }
@@ -84,10 +83,12 @@ public class PlayerHealth : MonoBehaviour
         {
             if ((health - damage) >= 0)
             {
+                var sfxManager = SFXAudioManager.Instance;
+                
                 health -= damage / resistanceMultiplier;
 
                 int i = UnityEngine.Random.Range(0, sfxManager.playerDamage.Count);
-                sfxManager.PlayClip(sfxManager.playerDamage[i], sfxManager.masterManager.sBlend2D, sfxManager.playerVolumeMod);
+                sfxManager.PlayClip(sfxManager.playerDamage[i], MasterAudioManager.Instance.sBlend2D, sfxManager.playerVolumeMod);
             }
             else if ((health - damage) < 0)
             {

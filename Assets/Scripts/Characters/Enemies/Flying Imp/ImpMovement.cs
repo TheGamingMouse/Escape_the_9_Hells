@@ -36,7 +36,7 @@ public class ImpMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player").transform;
+        player = PlayerComponents.Instance.player;
 
         boss = enemyHealth.boss;
         if (boss)

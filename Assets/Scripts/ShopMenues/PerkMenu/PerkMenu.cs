@@ -8,6 +8,9 @@ public class PerkMenu : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static PerkMenu Instance;
+
     [Header("Ints")]
     public int reRolls;
     public int reRollsSpent;
@@ -34,22 +37,18 @@ public class PerkMenu : MonoBehaviour
     [Header("ScrollBars")]
     public Scrollbar scrollbar;
 
-    [Header("Components")]
-    PlayerMovement playerMovement;
-    PlayerPerks playerPerks;
-    PlayerLevel playerLevel;
-
     #endregion
 
     #region StartUpdate Methods
 
+    void Awake()
+    {
+        Instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
-        playerPerks = GameObject.FindWithTag("Player").GetComponent<PlayerPerks>();
-        playerLevel = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>();
-
         perksSelected = new bool[perkItemsSO.Length];
     }
 
@@ -63,14 +62,14 @@ public class PerkMenu : MonoBehaviour
 
         if (menuOpen)
         {
-            playerMovement.startBool = false;
+            PlayerComponents.Instance.playerMovement.startBool = false;
             menuClosing = false;
             Cursor.visible = true;
         }
         else
         {
-            playerLevel.timesLeveledUp--;
-            playerMovement.startBool = true;
+            PlayerComponents.Instance.playerLevel.timesLeveledUp--;
+            PlayerComponents.Instance.playerMovement.startBool = true;
             menuClosing = true;
             Cursor.visible = false;
         }
@@ -134,7 +133,7 @@ public class PerkMenu : MonoBehaviour
 
     public void SelectedPerk(int btnNo)
     {
-        playerPerks.AddPerk(selectedPerks[btnNo]);
+        PlayerComponents.Instance.playerPerks.AddPerk(selectedPerks[btnNo]);
 
         menuOpen = false;
     }

@@ -51,21 +51,9 @@ public class CompanionUpgradesMenu : MonoBehaviour
     public Button[] ButtonsCompanions4;
     public GameObject[] companions;
 
-    [Header("Components")]
-    PlayerEquipment playerEquipment;
-    UpgradeMenu upgradeMenu;
-    PlayerUpgrades playerUpgrades;
-
     #endregion
 
     #region StartUpdate Methods
-
-    void Start()
-    {
-        playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
-        playerUpgrades = GameObject.FindWithTag("Player").GetComponent<PlayerUpgrades>();
-        upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
-    }
 
     void Update()
     {
@@ -73,9 +61,9 @@ public class CompanionUpgradesMenu : MonoBehaviour
         {
             for (int i = 0; i < companions.Length; i++)
             {
-                for (int j = 0; j < playerEquipment.boughtCompanions.Count; j++)
+                for (int j = 0; j < PlayerComponents.Instance.playerEquipment.boughtCompanions.Count; j++)
                 {
-                    if (playerEquipment.boughtCompanions[j].title.ToLower().Contains(companions[i].name.ToLower()))
+                    if (PlayerComponents.Instance.playerEquipment.boughtCompanions[j].title.ToLower().Contains(companions[i].name.ToLower()))
                     {
                         companions[i].SetActive(true);
                     }
@@ -150,6 +138,8 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
     void LoadUpgradePannels()
     {
+        var playerUpgrades = PlayerComponents.Instance.playerUpgrades;
+
         // LoyalSphere
         for (int i = 0; i < itemsSO.Length; i++)
         {
@@ -245,6 +235,9 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
     void CheckUpgradesPurchaseable()
     {
+        var upgradeMenu = UpgradeMenu.Instance;
+        var playerUpgrades = PlayerComponents.Instance.playerUpgrades;
+
         // LoyalSphere
         for (int i = 0; i < itemsSO.Length; i++)
         {
@@ -326,72 +319,72 @@ public class CompanionUpgradesMenu : MonoBehaviour
 
     public void PurchaseUpgradesLoyalSphere(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddLoyalSphereUpgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddLoyalSphereUpgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
 
     public void PurchaseUpgradesAttackSquare(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddAttackSquareUpgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddAttackSquareUpgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
 
     public void PurchaseUpgradesCompanion1(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddCompanion1Upgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddCompanion1Upgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
     
     public void PurchaseUpgradesCompanion2(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddCompanion2Upgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddCompanion2Upgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
     
     public void PurchaseUpgradesCompanion3(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddCompanion3Upgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddCompanion3Upgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }
     
     public void PurchaseUpgradesCompanion4(int btnNo)
     {
-        if (upgradeMenu.souls >= itemsSO[btnNo].price)
+        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
-            playerUpgrades.AddCompanion4Upgrade(itemsSO[btnNo]);
+            PlayerComponents.Instance.playerUpgrades.AddCompanion4Upgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }

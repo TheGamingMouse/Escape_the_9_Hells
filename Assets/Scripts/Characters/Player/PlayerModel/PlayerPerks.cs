@@ -39,15 +39,10 @@ public class PlayerPerks : MonoBehaviour
     public List<PerkItemsSO> iceAuraPerks = new();
 
     [Header("Components")]
-    PlayerHealth health;
     Weapon weapon;
-    PlayerMovement movement;
-    SaveLoadManager slManager;
-    PlayerLevel level;
     public FireAura fireAura;
     public Shield shield;
     public IceAura iceAura;
-    SFXAudioManager sfxManager;
     ParticleSystem iAuraPS;
     ParticleSystem fAuraPS;
     ParticleSystem shieldPS;
@@ -60,17 +55,10 @@ public class PlayerPerks : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var player = GameObject.FindWithTag("Player");
-        var managers = GameObject.FindWithTag("Managers");
+        var player = PlayerComponents.Instance.player;
         var canvas = GameObject.FindWithTag("Canvas").transform;
 
-        health = player.GetComponent<PlayerHealth>();
         weapon = player.GetComponentInChildren<Weapon>();
-        movement = player.GetComponent<PlayerMovement>();
-        level = player.GetComponent<PlayerLevel>();
-
-        slManager = managers.GetComponent<SaveLoadManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
         
         viewPerksMenu = canvas.Find("Menus/PauseMenu/ViewPerksMenu").GetComponent<ViewPerksMenu>();
 
@@ -78,21 +66,24 @@ public class PlayerPerks : MonoBehaviour
         fAuraPS = fireAura.GetComponent<ParticleSystem>();
         shieldPS = shield.GetComponent<ParticleSystem>();
 
-        if (slManager.lState == SaveLoadManager.LayerState.InLayers)
-        {
-            defencePerks = slManager.defencePerks;
-            attackSpeedPerks = slManager.attackSpeedPerks;
-            damagePerks = slManager.damagePerks;
-            moveSpeedPerks = slManager.moveSpeedPerks;
-            luckPerks = slManager.luckPerks;
-            fireAuraPerks = slManager.fireAuraPerks;
-            iceAuraPerks = slManager.iceAuraPerks;
+        var layerData = SaveSystem.loadedLayerData;
+        var perkData = SaveSystem.loadedPerkData;
 
-            health.resistanceMultiplier += defencePerks.Count * defenceMod;
+        if (layerData.lState == SaveClasses.LayerData.LayerState.InLayers)
+        {
+            defencePerks = perkData.defencePerks;
+            attackSpeedPerks = perkData.attackSpeedPerks;
+            damagePerks = perkData.damagePerks;
+            moveSpeedPerks = perkData.moveSpeedPerks;
+            luckPerks = perkData.luckPerks;
+            fireAuraPerks = perkData.fireAuraPerks;
+            iceAuraPerks = perkData.iceAuraPerks;
+
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += defencePerks.Count * defenceMod;
             weapon.attackSpeedMultiplier += attackSpeedPerks.Count * attackSpeedMod;
             weapon.damageMultiplier += damagePerks.Count * damageMod;
-            movement.speedMultiplier += moveSpeedPerks.Count * moveSpeedMod;
-            level.luck += luckPerks.Count * luckMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier += moveSpeedPerks.Count * moveSpeedMod;
+            PlayerComponents.Instance.playerLevel.luck += luckPerks.Count * luckMod;
             fireAura.damage += fireAuraPerks.Count * fireAuraMod;
             shield.protection += shieldPerks.Count * shieldMod;
             iceAura.damage += iceAuraPerks.Count * iceAuraDamageMod;
@@ -109,14 +100,14 @@ public class PlayerPerks : MonoBehaviour
             shieldPerks.Clear();
             iceAuraPerks.Clear();
 
-            slManager.defencePerks.Clear();
-            slManager.attackSpeedPerks.Clear();
-            slManager.damagePerks.Clear();
-            slManager.moveSpeedPerks.Clear();
-            slManager.luckPerks.Clear();
-            slManager.fireAuraPerks.Clear();
-            slManager.shieldPerks.Clear();
-            slManager.iceAuraPerks.Clear();
+            perkData.defencePerks.Clear();
+            perkData.attackSpeedPerks.Clear();
+            perkData.damagePerks.Clear();
+            perkData.moveSpeedPerks.Clear();
+            perkData.luckPerks.Clear();
+            perkData.fireAuraPerks.Clear();
+            perkData.shieldPerks.Clear();
+            perkData.iceAuraPerks.Clear();
         }
 
         if (fireAuraPerks.Count > 0 && !fAuraActive)
@@ -225,6 +216,8 @@ public class PlayerPerks : MonoBehaviour
 
     public void AddPerk(PerkItemsSO perk)
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         if (perk.title == "Template Perk")
         {
             templatePerks.Add(perk);
@@ -233,37 +226,37 @@ public class PlayerPerks : MonoBehaviour
         else if (perk.title == "Defence Perk")
         {
             defencePerks.Add(perk);
-            health.resistanceMultiplier += defenceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += defenceMod;
 
-            sfxManager.PlayClip(sfxManager.defencePerk, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
+            sfxManager.PlayClip(sfxManager.defencePerk, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Attack Speed Perk")
         {
             attackSpeedPerks.Add(perk);
             weapon.attackSpeedMultiplier += attackSpeedMod;
 
-            sfxManager.PlayClip(sfxManager.attSpeedPerk, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
+            sfxManager.PlayClip(sfxManager.attSpeedPerk, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Damage Perk")
         {
             damagePerks.Add(perk);
             weapon.damageMultiplier += damageMod;
 
-            sfxManager.PlayClip(sfxManager.damagePerk, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
+            sfxManager.PlayClip(sfxManager.damagePerk, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Movement Speed Perk")
         {
             moveSpeedPerks.Add(perk);
-            movement.speedMultiplier += moveSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier += moveSpeedMod;
 
-            sfxManager.PlayClip(sfxManager.moveSpeedPerk, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
+            sfxManager.PlayClip(sfxManager.moveSpeedPerk, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Luck Perk")
         {
             luckPerks.Add(perk);
-            level.luck += luckMod;
+            PlayerComponents.Instance.playerLevel.luck += luckMod;
 
-            sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
+            sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Fire Aura Perk")
         {
@@ -303,7 +296,9 @@ public class PlayerPerks : MonoBehaviour
 
     void PlayIceAuraAudio()
     {
-        sfxManager.PlayClip(sfxManager.activeIceAura, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod);
+        var sfxManager = SFXAudioManager.Instance;
+
+        sfxManager.PlayClip(sfxManager.activeIceAura, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
     }
 
     IEnumerator FireAuraActivateCooldown()
@@ -317,7 +312,9 @@ public class PlayerPerks : MonoBehaviour
 
     void PlayFireAuraAudio()
     {
-        sfxManager.PlayClip(sfxManager.activeFireAura, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod/2);
+        var sfxManager = SFXAudioManager.Instance;
+
+        sfxManager.PlayClip(sfxManager.activeFireAura, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod/2);
     }
 
     IEnumerator ShieldActivateCooldown()
@@ -331,7 +328,9 @@ public class PlayerPerks : MonoBehaviour
 
     void PlayShieldAudio()
     {
-        sfxManager.PlayClip(sfxManager.activeShield, sfxManager.masterManager.sBlend2D, sfxManager.perkEffectsVolumeMod*2);
+        var sfxManager = SFXAudioManager.Instance;
+        
+        sfxManager.PlayClip(sfxManager.activeShield, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod*2);
     }
 
     #endregion

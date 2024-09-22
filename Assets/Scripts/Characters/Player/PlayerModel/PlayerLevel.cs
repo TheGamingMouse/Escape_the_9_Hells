@@ -42,13 +42,6 @@ public class PlayerLevel : MonoBehaviour
     ParticleSystem levelUpEffect;
     ParticleSystem gainSoulsEffect;
 
-    [Header("Components")]
-    PlayerHealth playerHealth;
-    UIManager uiManager;
-    ExpSoulsManager expSoulsManager;
-    SaveLoadManager slManager;
-    SFXAudioManager sfxManager;
-
     #endregion
 
     #region Subscription Methods
@@ -72,22 +65,17 @@ public class PlayerLevel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
+        var layerData = SaveSystem.loadedLayerData;
+        var persistentData = SaveSystem.loadedPersistentData;
 
-        playerHealth = GetComponent<PlayerHealth>();
-        uiManager = managers.GetComponent<UIManager>();
-        expSoulsManager = managers.GetComponent<ExpSoulsManager>();
-        slManager = managers.GetComponent<SaveLoadManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
-
-        if (slManager.lState == SaveLoadManager.LayerState.InLayers)
+        if (layerData.lState == SaveClasses.LayerData.LayerState.InLayers)
         {
-            level = slManager.levelsGainedInLayer;
-            exp = slManager.expGainedInLayer;
-            expMultiplier = slManager.expMultiplierInLayer;
-            souls = slManager.soulsCollectedInLayer;
-            demonsKilled = slManager.demonsKilledInLayer;
-            devilsKilled = slManager.devilsKilledInLayer;
+            level = persistentData.levelsGainedInLayer;
+            exp = persistentData.expGainedInLayer;
+            expMultiplier = persistentData.expMultiplierInLayer;
+            souls = persistentData.soulsCollectedInLayer;
+            demonsKilled = persistentData.demonsKilledInLayer;
+            devilsKilled = persistentData.devilsKilledInLayer;
         }
 
         levelUpEffect = levelUpEffectObj.GetComponent<ParticleSystem>();
@@ -110,7 +98,9 @@ public class PlayerLevel : MonoBehaviour
         {
             timesLeveledUp = 0;
         }
-        if (slManager.lState == SaveLoadManager.LayerState.InLayers && uiManager.componentsFound)
+
+        var layerData = SaveSystem.loadedLayerData;
+        if (layerData.lState == SaveClasses.LayerData.LayerState.InLayers && UIManager.Instance.componentsFound)
         {
             if (level == 0)
             {
@@ -125,11 +115,11 @@ public class PlayerLevel : MonoBehaviour
 
         if (previousSouls != souls)
         {
-            uiManager.SoulsCounterValue = souls;
+            UIManager.Instance.SoulsCounterValue = souls;
             previousSouls = souls;
         }
 
-        int i = slManager.CheckLayer();
+        int i = SaveSystem.Instance.CheckLayer();
         
         if (i > 0)
         {
@@ -149,7 +139,7 @@ public class PlayerLevel : MonoBehaviour
     {
         timesLeveledUp++;
 
-        playerHealth.health = playerHealth.maxHealth;
+        PlayerComponents.Instance.playerHealth.health = PlayerComponents.Instance.playerHealth.maxHealth;
         level++;
         if (expLoss)
         {
@@ -161,7 +151,7 @@ public class PlayerLevel : MonoBehaviour
 
         if (midLayer)
         {
-            expSoulsManager.AddSouls(2 * level, true);
+            ExpSoulsManager.Instance.AddSouls(2 * level, true);
             expMultiplier *= 1.65f;
         }
 
@@ -175,6 +165,8 @@ public class PlayerLevel : MonoBehaviour
 
     public void AddExperience(float expPercent, bool wasEnemy, string enemyType)
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         if (expPercent >= 100f)
         {
             int expOverflow = (int)expPercent / 100;
@@ -185,7 +177,7 @@ public class PlayerLevel : MonoBehaviour
                 LevelUp(false, true);
                 expOverflow--;
 
-                sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod / 2);
+                sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod / 2);
             }
         }
         
@@ -196,7 +188,7 @@ public class PlayerLevel : MonoBehaviour
             {
                 LevelUp(true, true);
 
-                sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod / 2);
+                sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod / 2);
             }
         }
 
@@ -219,11 +211,13 @@ public class PlayerLevel : MonoBehaviour
 
     void HandleExpChange(int newExp, string enemyType)
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         int luckCheck = Random.Range(1, 501);
         if (luckCheck <= luck)
         {
             exp += newExp / expMultiplier * expLayerMultiplier * 2;
-            sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod / 2);
+            sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod / 2);
         }
         else
         {
@@ -232,7 +226,7 @@ public class PlayerLevel : MonoBehaviour
 
         if (exp >= 1f)
         {
-            sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod / 2);
+            sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod / 2);
 
             while (exp >= 1f)
             {
@@ -248,6 +242,8 @@ public class PlayerLevel : MonoBehaviour
 
     void HandleSoulsChange(int newSouls, bool fromLevel)
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         souls += newSouls;
 
         if (!fromLevel)
@@ -255,7 +251,7 @@ public class PlayerLevel : MonoBehaviour
             gainSoulsEffectObj.SetActive(true);
             gainSoulsEffect.Play();
 
-            sfxManager.PlayClip(sfxManager.gainSouls, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+            sfxManager.PlayClip(sfxManager.gainSouls, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod, true);
         }
     }
 

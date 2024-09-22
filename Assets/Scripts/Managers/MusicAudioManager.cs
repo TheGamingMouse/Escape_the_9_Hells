@@ -7,6 +7,9 @@ public class MusicAudioManager : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static MusicAudioManager Instance;
+
     [Header("Floats")]
     public float musicTime;
     public float bgVolumeMod;
@@ -28,10 +31,6 @@ public class MusicAudioManager : MonoBehaviour
     public AudioSource bossSource;
     AudioSource currentAudio;
 
-    [Header("Components")]
-    public MasterAudioManager masterManager;
-    SettingsManager settingsManager;
-
     #endregion
 
     #region StartUpdate Methods
@@ -42,10 +41,13 @@ public class MusicAudioManager : MonoBehaviour
         onStartUp = true;
     }
 
+    void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
-        settingsManager = masterManager.settingsManager;
-
         PrepareMusicTracks();
         CheckMusicTrack();
     }
@@ -54,7 +56,7 @@ public class MusicAudioManager : MonoBehaviour
     {
         musicTime = backgroundSource.time;
 
-        if (settingsManager.musicVolume == -30 || settingsManager.masterVolume == -30)
+        if (SettingsManager.Instance.musicVolume == -30 || SettingsManager.Instance.masterVolume == -30)
         {
             backgroundSource.volume = 0f;
             bossSource.volume = 0f;
@@ -79,7 +81,7 @@ public class MusicAudioManager : MonoBehaviour
     public void CheckMusicTrack()
     {
         StopSource(currentAudio);
-        int layer = masterManager.slManager.CheckLayer();
+        int layer = SaveSystem.Instance.CheckLayer();
 
         if (layer == 0 || layer == -1)
         {
@@ -90,7 +92,7 @@ public class MusicAudioManager : MonoBehaviour
             }
             else
             {
-                PlaySource(backgroundSource, masterManager.slManager.musicTime);
+                PlaySource(backgroundSource, SaveSystem.loadedPersistentData.musicTime);
             }
         }
         else if (layer > 0)
@@ -119,7 +121,7 @@ public class MusicAudioManager : MonoBehaviour
         source.clip = clip;
         source.volume = volumeOverride;
         source.loop = loop;
-        source.outputAudioMixerGroup = masterManager.musicMixer;
+        source.outputAudioMixerGroup = MasterAudioManager.Instance.musicMixer;
     }
 
     void PlaySource(AudioSource source, float time = 0f)

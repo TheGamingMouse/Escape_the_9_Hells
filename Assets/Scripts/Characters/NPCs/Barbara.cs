@@ -23,13 +23,6 @@ public class Barbara : MonoBehaviour, IInteractable
 
     [Header("Sprites")]
     public Sprite npcSprite;
-
-    [Header("Components")]
-    UIManager uiManager;
-    Dialogue dialogue;
-    PlayerMovement playerMovement;
-    SFXAudioManager sfxManager;
-    public NPCSpawner npcSpawner;
     
     #endregion
 
@@ -38,6 +31,8 @@ public class Barbara : MonoBehaviour, IInteractable
     // Start is called before the first frame update
     void Start()
     {
+        var npcSpawner = NPCSpawner.Instance;
+
         if (npcSpawner)
         {
             defaultLines = npcSpawner.barbaraMessages.ToArray();
@@ -46,28 +41,21 @@ public class Barbara : MonoBehaviour, IInteractable
         {
             Debug.LogError("npcSpawner was not found");
         }
-
-        var managers = GameObject.FindWithTag("Managers");
-
-        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
-        uiManager = managers.GetComponent<UIManager>();
-        playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (beginDialogue && uiManager.dialogueBox.activeInHierarchy)
+        if (beginDialogue && UIManager.Instance.dialogueBox.activeInHierarchy)
         {
             BeginNewDialogue(true);
             beginDialogue = false;
         }
-        else if (dialogue.dialogueDone && !talkingOver)
+        else if (Dialogue.Instance.dialogueDone && !talkingOver)
         {
-            playerMovement.startBool = true;
+            PlayerComponents.Instance.playerMovement.startBool = true;
             talking = false;
-            uiManager.dialogueStart = false;
+            UIManager.Instance.dialogueStart = false;
 
             talkingOver = true;
         }
@@ -79,7 +67,9 @@ public class Barbara : MonoBehaviour, IInteractable
 
     void BeginNewDialogue(bool advice)
     {
-        playerMovement.startBool = false;
+        var dialogue = Dialogue.Instance;
+
+        PlayerComponents.Instance.playerMovement.startBool = false;
 
         if (advice)
         {
@@ -108,9 +98,9 @@ public class Barbara : MonoBehaviour, IInteractable
     public bool InteractE(Interactor interactor)
     {
         talking = true;
-        uiManager.barbaraTalking = true;
+        UIManager.Instance.barbaraTalking = true;
 
-        sfxManager.PlayBarbaraVO(true);
+        SFXAudioManager.Instance.PlayBarbaraVO(true);
 
         return true;
     }
@@ -119,11 +109,11 @@ public class Barbara : MonoBehaviour, IInteractable
         talking = true;
         talkingOver = false;
 
-        dialogue.dialogueDone = false;
-        uiManager.dialogueStart = true;
+        Dialogue.Instance.dialogueDone = false;
+        UIManager.Instance.dialogueStart = true;
         beginDialogue = true;
 
-        sfxManager.PlayBarbaraVO(true);
+        SFXAudioManager.Instance.PlayBarbaraVO(true);
         
         return true;
     }

@@ -31,15 +31,7 @@ public class ImpHealth : MonoBehaviour
     [Header("Components")]
     [HideInInspector]
     public RoomSpawner roomSpawner;
-    ExpSoulsManager expSoulsManager;
     EnemySight enemySight;
-    [HideInInspector]
-    public BossGenerator bossGenerator;
-    PlayerLevel playerLevel;
-    [HideInInspector]
-    public MinionSpawner minionSpawner;
-    UIManager uiManager;
-    SFXAudioManager sfxManager;
     ImpAction impAction;
 
     #endregion
@@ -49,13 +41,7 @@ public class ImpHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
-        
-        expSoulsManager = managers.GetComponent<ExpSoulsManager>();
         enemySight = GetComponent<EnemySight>();
-        playerLevel = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>();
-        uiManager = managers.GetComponent<UIManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         if (!boss)
         {
@@ -65,7 +51,7 @@ public class ImpHealth : MonoBehaviour
         else
         {
             healthImage = GameObject.FindWithTag("Canvas").transform.Find("Boss/BossHealthBar/Health Bar Fill").GetComponent<Image>();
-            uiManager.bossNameString = bossName;
+            UIManager.Instance.bossNameString = bossName;
         }
         impAction = GetComponent<ImpAction>();
         
@@ -105,6 +91,10 @@ public class ImpHealth : MonoBehaviour
             
             if (health <= 0)
             {
+                var expSoulsManager = ExpSoulsManager.Instance;
+                var sfxManager = SFXAudioManager.Instance;
+                var playerLevel = PlayerComponents.Instance.playerLevel;
+
                 if (!boss)
                 {
                     if (!minion)
@@ -113,7 +103,7 @@ public class ImpHealth : MonoBehaviour
                     }
                     else
                     {
-                        minionSpawner.minions.Remove(gameObject);
+                        MinionSpawner.Instance.minions.Remove(gameObject);
                     }
                     expSoulsManager.AddExperience(expAmount, "demon");
                 }
@@ -122,8 +112,8 @@ public class ImpHealth : MonoBehaviour
                     int luckCheck = Random.Range(1, 10001);
                     if (luckCheck <= playerLevel.luck)
                     {
-                        sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
-                        sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+                        sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
+                        sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
 
                         int i = 0;
                         while (i < 3)
@@ -134,13 +124,13 @@ public class ImpHealth : MonoBehaviour
                     }
                     else
                     {
-                        sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+                        sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
 
                         playerLevel.LevelUp(false, true, true);
                     }
                     
                     expSoulsManager.AddSouls(soulAmount, true);
-                    bossGenerator.isBossDead = true;
+                    BossGenerator.Instance.isBossDead = true;
                 }
                 foreach (var source in gameObject.GetComponents<AudioSource>())
                 {
@@ -170,31 +160,35 @@ public class ImpHealth : MonoBehaviour
 
     void EnemyDeath()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         int randDeath;
         if (impAction.male)
         {
             randDeath = Random.Range(0, sfxManager.enemyDeathMale.Count);
-            sfxManager.PlayClip(sfxManager.enemyDeathMale[randDeath], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod);
+            sfxManager.PlayClip(sfxManager.enemyDeathMale[randDeath], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod);
         }
         else
         {
             randDeath = Random.Range(0, sfxManager.enemyDeathFemale.Count);
-            sfxManager.PlayClip(sfxManager.enemyDeathFemale[randDeath], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod);
+            sfxManager.PlayClip(sfxManager.enemyDeathFemale[randDeath], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod);
         }
     }
 
     void EnemyDamage()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         int randDamage;
         if (impAction.male)
         {
             randDamage = Random.Range(0, sfxManager.enemyDamageMale.Count);
-            sfxManager.PlayClip(sfxManager.enemyDamageMale[randDamage], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.enemyDamageMale[randDamage], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
         else
         {
             randDamage = Random.Range(0, sfxManager.enemyDamageFemale.Count);
-            sfxManager.PlayClip(sfxManager.enemyDamageFemale[randDamage], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.enemyDamageFemale[randDamage], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
     }
 

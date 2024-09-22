@@ -20,7 +20,6 @@ public class CapeOWind : MonoBehaviour
 
     [Header("Components")]
     Backs backs;
-    SaveLoadManager slManager;
 
     #endregion
 
@@ -29,18 +28,20 @@ public class CapeOWind : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        backs = GameObject.FindWithTag("Player").GetComponentInChildren<Backs>();
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
+        backs = PlayerComponents.Instance.player.GetComponentInChildren<Backs>();
 
         readyColor = new Color(1f, 0f, 0.8666668f, 1f);
 
-        if (slManager.lState == SaveLoadManager.LayerState.Hub)
+        var layerData = SaveSystem.loadedLayerData;
+        var equipmentData = SaveSystem.loadedEquipmentData;
+
+        if (layerData.lState == SaveClasses.LayerData.LayerState.Hub)
         {
             cooldown = baseCooldown / backs.abilityCooldownMultiplier;
         }
         else
         {
-            cooldown = slManager.capeOWindCooldown;
+            cooldown = equipmentData.backData.capeOWindCooldown;
         }
         canSave = true;
     }

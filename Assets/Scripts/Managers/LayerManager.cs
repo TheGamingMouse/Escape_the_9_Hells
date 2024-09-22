@@ -7,6 +7,9 @@ public class LayerManager : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static LayerManager Instance;
+
     [Header("Bools")]
     bool layerGenerated;
     bool roomsDeactivated;
@@ -15,36 +18,26 @@ public class LayerManager : MonoBehaviour
 
     [Header("Arrays")]
     public GameObject[] rooms;
-    public GameObject bossRoom;
-
-    [Header("Components")]
-    LayerGenerator generator;
 
     #endregion
 
     #region StartUpdate Methods
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        generator = GameObject.FindWithTag("Generator").GetComponent<LayerGenerator>();
-        if (!showroom)
-        {
-            bossRoom = GameObject.FindWithTag("BossRoom");
-        }
+        Instance = this;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (bossRoom && bossRoom.GetComponent<BossGenerator>().ready && !ready)
+        if (BossGenerator.Instance && BossGenerator.Instance.ready && !ready)
         {
-            bossRoom.SetActive(false);
+            BossGenerator.Instance.gameObject.SetActive(false);
             
             ready = true;
         }
 
-        layerGenerated = generator.layerGenerated;
+        layerGenerated = LayerGenerator.Instance.layerGenerated;
 
         if (layerGenerated && !roomsDeactivated)
         {

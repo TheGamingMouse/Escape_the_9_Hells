@@ -15,9 +15,6 @@ public class Follow : MonoBehaviour
     [Header("Vector3s")]
     public Vector3 offset;
 
-    [Header("Components")]
-    SaveLoadManager slManager;
-
     #endregion
 
     #region StartUpdate Methods
@@ -26,7 +23,6 @@ public class Follow : MonoBehaviour
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
     }
 
     // Update is called once per frame
@@ -34,7 +30,7 @@ public class Follow : MonoBehaviour
     {
         if (fState == FollowState.Player)
         {
-            if (slManager.lState == SaveLoadManager.LayerState.Hub)
+            if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.Hub)
             {
                 transform.position = new Vector3(Mathf.Clamp(player.position.x + offset.x, -11f, 11f), player.position.y + offset.y, Mathf.Clamp(player.position.z + offset.z, -6.5f, 2.5f));
             }

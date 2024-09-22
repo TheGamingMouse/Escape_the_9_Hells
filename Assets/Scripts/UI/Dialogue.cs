@@ -9,6 +9,9 @@ public class Dialogue : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static Dialogue Instance;
+
     [Header("Ints")]
     int index;
 
@@ -37,16 +40,7 @@ public class Dialogue : MonoBehaviour
     [Header("Sprites")]
     public Sprite npcSprite;
 
-    [Header("Components")]
-    SFXAudioManager sfxManager;
-
     #endregion
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
-    }
 
     // Update is called once per frame
     void Update()
@@ -98,7 +92,7 @@ public class Dialogue : MonoBehaviour
         foreach (char c in lines[index].ToCharArray())
         {
             dialogue.text += c;
-            sfxManager.dialogueSource.Play();
+            SFXAudioManager.Instance.dialogueSource.Play();
             yield return new WaitForSeconds(speed);
         }
     }

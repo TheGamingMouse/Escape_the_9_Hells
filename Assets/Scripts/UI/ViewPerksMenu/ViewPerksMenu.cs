@@ -26,9 +26,6 @@ public class ViewPerksMenu : MonoBehaviour
     public ViewPerkTemplate[] perkPannels;
     public GameObject[] perkPannelsSO;
 
-    [Header("Components")]
-    PlayerPerks playerPerks;
-
     #endregion
 
     #region StartUpdate Methods
@@ -36,8 +33,6 @@ public class ViewPerksMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerPerks = GameObject.FindWithTag("Player").GetComponent<PlayerPerks>();
-        
         for (int i = 0; i < perksSO.Length; i++)
         {
             perksSO[i].active = false;
@@ -49,6 +44,8 @@ public class ViewPerksMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        var playerPerks = PlayerComponents.Instance.playerPerks;
+        
         if (perksAquired > 0)
         {
             for (int i = perksCollected; i < perksSO.Length; i++)

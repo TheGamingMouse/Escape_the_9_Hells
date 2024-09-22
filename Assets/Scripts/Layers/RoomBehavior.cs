@@ -36,17 +36,9 @@ public class RoomBehavior : MonoBehaviour
     [Header("Colors")]
     Color mainPathColor = new(0f, 0.5686275f, 1f);
 
-    [Header("Components")]
-    LayerManager layerManager;
-
     #endregion
 
     #region StartUpdate Methods
-
-    void Start()
-    {
-        layerManager = GameObject.FindWithTag("Managers").GetComponent<LayerManager>();
-    }
 
     void Update()
     {
@@ -119,7 +111,7 @@ public class RoomBehavior : MonoBehaviour
 
         string errorMsg = "Not all rooms were complete at: " + x + "-" + y;
 
-        if (door && layerManager.showroom)
+        if (door && LayerManager.Instance.showroom)
         {
             if (!door.GetComponentInChildren<FrontEntranceChecker>().active || 
             !door.GetComponentInChildren<BackEntranceChecker>().active)

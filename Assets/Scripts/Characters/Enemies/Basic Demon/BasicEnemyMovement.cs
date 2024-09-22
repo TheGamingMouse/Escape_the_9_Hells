@@ -34,7 +34,7 @@ public class BasicEnemyMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player").transform;
+        player = PlayerComponents.Instance.player;
         rb = GetComponent<Rigidbody>();
         enemySight = GetComponent<EnemySight>();
         enemyAction = GetComponent<BasicEnemyAction>();

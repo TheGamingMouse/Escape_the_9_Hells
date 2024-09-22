@@ -20,16 +20,10 @@ public class Ulfberht : MonoBehaviour
 
     [Header("Components")]
     public Weapon weapon;
-    SFXAudioManager sfxManager;
 
     #endregion
 
     #region StartUpdate Methods
-
-    void Start()
-    {
-        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
-    }
 
     void Update()
     {
@@ -47,6 +41,8 @@ public class Ulfberht : MonoBehaviour
 
     public IEnumerator PlayNormalAudio(bool isPlayer = false)
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         if (!canPlayAudio)
         {
             yield return null;
@@ -54,11 +50,11 @@ public class Ulfberht : MonoBehaviour
 
         if (isPlayer)
         {
-            sfxManager.PlayClip(sfxManager.ulfberht, sfxManager.masterManager.sBlend2D, sfxManager.weaponVolumeMod / 3, true, "low");
+            sfxManager.PlayClip(sfxManager.ulfberht, MasterAudioManager.Instance.sBlend2D, sfxManager.weaponVolumeMod / 3, true, "low");
         }
         else
         {
-            sfxManager.PlayClip(sfxManager.ulfberht, sfxManager.masterManager.sBlend2D, sfxManager.weaponVolumeMod / 6, true, "low");
+            sfxManager.PlayClip(sfxManager.ulfberht, MasterAudioManager.Instance.sBlend2D, sfxManager.weaponVolumeMod / 6, true, "low");
         }
 
         canPlayAudio = false;
@@ -70,9 +66,11 @@ public class Ulfberht : MonoBehaviour
 
     public IEnumerator PlaySpecialAudio()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         for (int i = 0; i < 5; i++)
         {
-            sfxManager.PlayClip(sfxManager.ulfberht, sfxManager.masterManager.sBlend2D, sfxManager.weaponVolumeMod / 3, true, "low");
+            sfxManager.PlayClip(sfxManager.ulfberht, MasterAudioManager.Instance.sBlend2D, sfxManager.weaponVolumeMod / 3, true, "low");
 
             yield return new WaitForSeconds(0.1f);
         }

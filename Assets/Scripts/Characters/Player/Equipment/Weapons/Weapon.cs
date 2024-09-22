@@ -54,7 +54,7 @@ public class Weapon : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player").transform;
+        player = PlayerComponents.Instance.player;
 
         ulfberhtObj = ulfberht.gameObject;
         pugioObj = pugio.gameObject;

@@ -14,6 +14,9 @@ public class BossGenerator : MonoBehaviour
 
     #region Variables
 
+    [Header("Instance")]
+    public static BossGenerator Instance;
+
     [Header("Ints")]
     [Range(1, 25)]
     public int obstacleAmount;
@@ -26,7 +29,6 @@ public class BossGenerator : MonoBehaviour
     public bool ready;
     [HideInInspector]
     public bool inArea;
-    bool bossSpawned;
     public bool doRandomObstacles;
     bool canTriggerMusic = true;
 
@@ -48,21 +50,18 @@ public class BossGenerator : MonoBehaviour
     [Header("Components")]
     RoomBehavior room;
     TreasureRoom treasure;
-    UIManager uiManager;
-    LayerManager layerManager;
-    MusicAudioManager musicManager;
     
     #endregion
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
-
         room = GetComponent<RoomBehavior>();
-        uiManager = managers.GetComponent<UIManager>();
-        layerManager = managers.GetComponent<LayerManager>();
-        musicManager = managers.GetComponent<MusicAudioManager>();
         
         GenerateExit();
 
@@ -102,9 +101,8 @@ public class BossGenerator : MonoBehaviour
             GenerateObstacles();
         }
 
-        if (layerManager.showroom)
+        if (LayerManager.Instance.showroom)
         {
-            bossSpawned = true;
             isBossDead = true;
         }
     }
@@ -125,16 +123,6 @@ public class BossGenerator : MonoBehaviour
             }
 
             ready = true;
-        }
-
-        if (!bossSpawned)
-        {
-            var newBoss = Instantiate(boss, bossSpawn.position, Quaternion.identity, transform).GetComponent<EnemySight>();
-            newBoss.bossGenerator = this;
-            
-            uiManager.bossGenerator = this;
-            
-            bossSpawned = true;
         }
 
         if (isBossDead)
@@ -267,6 +255,8 @@ public class BossGenerator : MonoBehaviour
 
     void OnTriggerEnter(Collider coll)
     {
+        var musicManager = MusicAudioManager.Instance;
+
         if (coll.transform.CompareTag("Player"))
         {
             inArea = true;
@@ -282,6 +272,8 @@ public class BossGenerator : MonoBehaviour
     }
     void OnTriggerExit(Collider coll)
     {
+        var musicManager = MusicAudioManager.Instance;
+        
         if (coll.transform.CompareTag("Player"))
         {
             inArea = false;

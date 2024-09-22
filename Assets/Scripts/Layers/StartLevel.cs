@@ -7,6 +7,9 @@ public class StartLevel : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static StartLevel Instance;
+
     [Header("Bools")]
     bool doorOpening;
     bool doorOpened;
@@ -28,44 +31,29 @@ public class StartLevel : MonoBehaviour
     [Header("Colors")]
     Color mainPathColor = new(0f, 0.5686275f, 1f);
 
-    [Header("Components")]
-    LayerManager layerManager;
-    SaveLoadManager slManager;
-    LayerGenerator layerGenerator;
-    SFXAudioManager sfxManager;
-
     #endregion
     
     #region StartUpdate Methods
 
-    void Start()
+    void Awake()
     {
-        var managers = GameObject.FindWithTag("Managers");
-
-        layerManager = managers.GetComponent<LayerManager>();
-        slManager = managers.GetComponent<SaveLoadManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
-        
-        if (slManager.lState == SaveLoadManager.LayerState.InLayers)
-        {
-            layerGenerator = GameObject.FindWithTag("Generator").GetComponent<LayerGenerator>();
-        }
+        Instance = this;
     }
 
     void Update()
     {
-        if (layerGenerator && layerGenerator.layerGenerated && layerGenerator.playerPathfinder)
+        if (LayerGenerator.Instance && LayerGenerator.Instance.layerGenerated && LayerGenerator.Instance.playerPathfinder)
         {
             startLight.GetComponentInChildren<Light>().color = mainPathColor;
             startLight.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
         }
         
-        if (doorOpening || layerManager.showroom)
+        if (doorOpening || LayerManager.Instance.showroom)
         {
             OpenDoor();
             if (!firstRoomLoaded)
             {
-                rooms = layerManager.rooms;
+                rooms = LayerManager.Instance.rooms;
                 
                 if (rooms.Length == 0)
                 {
@@ -74,7 +62,7 @@ public class StartLevel : MonoBehaviour
 
                 foreach (GameObject r in rooms)
                 {
-                    if (r.GetComponent<RoomBehavior>().index == layerGenerator.startPos)
+                    if (r.GetComponent<RoomBehavior>().index == LayerGenerator.Instance.startPos)
                     {
                         r.SetActive(true);
                         r.GetComponent<RoomBehavior>().active = true;
@@ -113,7 +101,9 @@ public class StartLevel : MonoBehaviour
 
         if (!doorOpenedAudio)
         {
-            sfxManager.PlayClip(sfxManager.doorOpen, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod, true);
+            var sfxManager = SFXAudioManager.Instance;
+
+            sfxManager.PlayClip(sfxManager.doorOpen, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod, true);
             doorOpenedAudio = true;
         }
     }

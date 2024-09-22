@@ -4,13 +4,6 @@ using UnityEngine;
 
 public class CheckObstacles : MonoBehaviour
 {
-    #region Variables
-
-    [Header("Components")]
-    public BossGenerator bossGenerator;
-
-    #endregion
-    
     #region Methods
 
     void OnTriggerEnter(Collider coll)
@@ -18,7 +11,7 @@ public class CheckObstacles : MonoBehaviour
         if (coll.transform.CompareTag("ObstacleWall"))
         {
             Destroy(coll.gameObject);
-            bossGenerator.obstaclesSpawned--;
+            BossGenerator.Instance.obstaclesSpawned--;
         }
     }
 

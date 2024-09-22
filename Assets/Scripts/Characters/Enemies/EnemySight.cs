@@ -27,8 +27,6 @@ public class EnemySight : MonoBehaviour
     [Header("Components")]
     [HideInInspector]
     public RoomSpawner roomSpawner;
-    [HideInInspector]
-    public BossGenerator bossGenerator;
 
     #endregion
 
@@ -37,22 +35,7 @@ public class EnemySight : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player").transform;
-        
-        if (eType == EnemyType.basicEnemy)
-        {
-            BasicEnemyHealth health = GetComponent<BasicEnemyHealth>();
-            
-            health.bossGenerator = bossGenerator;
-            boss = health.boss;
-        }
-        else if (eType == EnemyType.imp)
-        {
-            ImpHealth health = GetComponent<ImpHealth>();
-            
-            health.bossGenerator = bossGenerator;
-            boss = health.boss;
-        }
+        player = PlayerComponents.Instance.player;
     }
 
     // Update is called once per frame
@@ -80,7 +63,7 @@ public class EnemySight : MonoBehaviour
     {
         if (boss || minion)
         {
-            return bossGenerator.inArea;
+            return BossGenerator.Instance.inArea;
         }
         else
         {

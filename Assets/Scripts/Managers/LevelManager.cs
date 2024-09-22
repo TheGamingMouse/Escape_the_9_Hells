@@ -5,6 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
+    #region Variables
+
+    [Header("Instance")]
+    public static LevelManager Instance;
+
+    [Header("Enums")]
+    public SaveClasses.LayerData.LayerState lState;
+
+    #endregion
+
     #region Subscribtions
 
     void OnEnable()
@@ -20,6 +30,11 @@ public class LevelManager : MonoBehaviour
     #endregion
 
     #region StartUpdate Methods
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Update()
     {

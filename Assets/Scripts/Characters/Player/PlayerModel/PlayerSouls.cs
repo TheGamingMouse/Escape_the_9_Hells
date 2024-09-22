@@ -31,13 +31,8 @@ public class PlayerSouls : MonoBehaviour
     public List<SoulsItemsSO> reRollSouls = new();
 
     [Header("Components")]
-    SaveLoadManager slManager;
-    PlayerHealth health;
     Weapon weapon;
-    PlayerMovement movement;
     public Ricky ricky;
-    PlayerLevel level;
-    PerkMenu perkMenu;
 
     #endregion
 
@@ -46,24 +41,22 @@ public class PlayerSouls : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var player = GameObject.FindWithTag("Player");
+        var player = PlayerComponents.Instance.player;
 
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
-        health = player.GetComponent<PlayerHealth>();
         weapon = player.GetComponentInChildren<Weapon>();
-        movement = player.GetComponent<PlayerMovement>();
-        level = player.GetComponent<PlayerLevel>();
-        perkMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/PerkMenu").GetComponent<PerkMenu>();
 
-        attackSpeedSouls = slManager.attackSpeedSoulsBought;
-        damageSouls = slManager.damageSoulsBought;
-        defenceSouls = slManager.defenceSoulsBought;
-        movementSpeedSouls = slManager.movementSpeedSoulsBought;
-        luckSouls = slManager.luckSoulsBought;
-        startLevelSouls = slManager.startLevelSoulsBought;
-        reRollSouls = slManager.reRollSoulsBought;
-        reRolls = slManager.reRolls;
-        playerPathfinder = slManager.pathFinderSoulsBought.Count == 1;
+        var soulData = SaveSystem.loadedSoulData;
+        var persistentData = SaveSystem.loadedPersistentData;
+
+        attackSpeedSouls = soulData.attackSpeedSoulsBought;
+        damageSouls = soulData.damageSoulsBought;
+        defenceSouls = soulData.defenceSoulsBought;
+        movementSpeedSouls = soulData.movementSpeedSoulsBought;
+        luckSouls = soulData.luckSoulsBought;
+        startLevelSouls = soulData.startLevelSoulsBought;
+        reRollSouls = soulData.reRollSoulsBought;
+        reRolls = persistentData.reRolls;
+        playerPathfinder = soulData.pathFinderSoulsBought.Count == 1;
     }
 
     // Update is called once per frame
@@ -71,20 +64,18 @@ public class PlayerSouls : MonoBehaviour
     {
         if (ricky && ricky.daggerGiven)
         {
-            health = GameObject.FindWithTag("Player").GetComponent<PlayerHealth>();
             weapon = GameObject.FindWithTag("Player").GetComponentInChildren<Weapon>();
-            movement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
         }
 
         if (!soulsUpdated && weapon)
         {
             weapon.attackSpeedMultiplier += attackSpeedSouls.Count * attackSpeedMod;
             weapon.damageMultiplier += damageSouls.Count * damageMod;
-            health.resistanceMultiplier += defenceSouls.Count * defenceMod;
-            movement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
-            level.luck += luckSouls.Count * luckMod;
-            level.startLevel = startLevelSouls.Count + 1;
-            perkMenu.reRolls = reRolls;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += defenceSouls.Count * defenceMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
+            PlayerComponents.Instance.playerLevel.luck += luckSouls.Count * luckMod;
+            PlayerComponents.Instance.playerLevel.startLevel = startLevelSouls.Count + 1;
+            PerkMenu.Instance.reRolls = reRolls;
 
             soulsUpdated = true;
         }
@@ -117,34 +108,34 @@ public class PlayerSouls : MonoBehaviour
         }
         else if (soul.title == "Defence Soul")
         {
-            health.resistanceMultiplier -= defenceSouls.Count * defenceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= defenceSouls.Count * defenceMod;
 
             defenceSouls.Add(soul);
-            health.resistanceMultiplier += defenceSouls.Count * defenceMod;
+            PlayerComponents.Instance.playerHealth.resistanceMultiplier += defenceSouls.Count * defenceMod;
         }
         else if (soul.title == "Movement Speed Soul")
         {
-            movement.speedMultiplier -= movementSpeedSouls.Count * moveSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier -= movementSpeedSouls.Count * moveSpeedMod;
 
             movementSpeedSouls.Add(soul);
-            movement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
+            PlayerComponents.Instance.playerMovement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
         }
         else if (soul.title == "Luck Soul")
         {
-            level.luck -= luckSouls.Count * luckMod;
+            PlayerComponents.Instance.playerLevel.luck -= luckSouls.Count * luckMod;
 
             luckSouls.Add(soul);
-            level.luck += luckSouls.Count * luckMod;
+            PlayerComponents.Instance.playerLevel.luck += luckSouls.Count * luckMod;
         }
         else if (soul.title == "Start Level Soul")
         {
             startLevelSouls.Add(soul);
-            level.startLevel = startLevelSouls.Count + 1;
+            PlayerComponents.Instance.playerLevel.startLevel = startLevelSouls.Count + 1;
         }
         else if (soul.title == "Re Roll Soul")
         {
             reRollSouls.Add(soul);
-            perkMenu.reRolls = reRolls;
+            PerkMenu.Instance.reRolls = reRolls;
         }
         else if (soul.title == "Path Finder Soul")
         {

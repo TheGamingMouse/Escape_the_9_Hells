@@ -37,7 +37,6 @@ public class ImpAction : MonoBehaviour
     ImpMovement enemyMovement;
     ImpHealth enemyHealth;
     EnemySight enemySight;
-    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -49,8 +48,6 @@ public class ImpAction : MonoBehaviour
         enemyMovement = GetComponent<ImpMovement>();
         enemyHealth = GetComponent<ImpHealth>();
         enemySight = GetComponent<EnemySight>();
-
-        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
         
         boss = enemyHealth.boss;
 
@@ -111,7 +108,6 @@ public class ImpAction : MonoBehaviour
         newProjectile.GetComponent<Firebolt>().explostionScale = 0.75f;
         newProjectile.GetComponent<Firebolt>().canDamagePlayer = true;
         newProjectile.GetComponent<Firebolt>().canDamageEnemies = false;
-        newProjectile.GetComponent<Firebolt>().sfxManager = sfxManager;
 
         Destroy(newProjectile, 10f);
 
@@ -133,7 +129,6 @@ public class ImpAction : MonoBehaviour
         newProjectile.GetComponent<Firebolt>().explostionScale = 3.5f;
         newProjectile.GetComponent<Firebolt>().canDamagePlayer = true;
         newProjectile.GetComponent<Firebolt>().canDamageEnemies = false;
-        newProjectile.GetComponent<Firebolt>().sfxManager = sfxManager;
 
         Destroy(newProjectile, 10f);
 
@@ -176,49 +171,55 @@ public class ImpAction : MonoBehaviour
 
     void EnemyLaugh()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         int randLaugh;
         if (male)
         {
             randLaugh = Random.Range(0, sfxManager.enemyLaughMale.Count);
-            sfxManager.PlayClip(sfxManager.enemyLaughMale[randLaugh], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.enemyLaughMale[randLaugh], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
         else
         {
             randLaugh = Random.Range(0, sfxManager.enemyLaughFemale.Count);
-            sfxManager.PlayClip(sfxManager.enemyLaughFemale[randLaugh], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.enemyLaughFemale[randLaugh], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
     }
 
     void TargetingAudio()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         int randTarget;
         if (male)
         {
             randTarget = Random.Range(0, sfxManager.impTargetingMale.Count);
-            sfxManager.PlayClip(sfxManager.impTargetingMale[randTarget], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod * 2, gameObject);
+            sfxManager.PlayClip(sfxManager.impTargetingMale[randTarget], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod * 2, gameObject);
         }
         else
         {
             randTarget = Random.Range(0, sfxManager.impTargetingFemale.Count);
-            sfxManager.PlayClip(sfxManager.impTargetingFemale[randTarget], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod * 2, gameObject);
+            sfxManager.PlayClip(sfxManager.impTargetingFemale[randTarget], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod * 2, gameObject);
         }
     }
 
     void AttackAudio()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         int randAttack;
         if (male)
         {
             randAttack = Random.Range(0, sfxManager.impAttackMale.Count);
-            sfxManager.PlayClip(sfxManager.impAttackMale[randAttack], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject);
+            sfxManager.PlayClip(sfxManager.impAttackMale[randAttack], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject);
         }
         else
         {
             randAttack = Random.Range(0, sfxManager.impAttackFemale.Count);
-            sfxManager.PlayClip(sfxManager.impAttackFemale[randAttack], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject);
+            sfxManager.PlayClip(sfxManager.impAttackFemale[randAttack], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject);
         }
 
-        sfxManager.PlayClip(sfxManager.firebolt, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject);
+        sfxManager.PlayClip(sfxManager.firebolt, MasterAudioManager.Instance.sBlend3D, sfxManager.effectsVolumeMod, gameObject);
     }
 
     #endregion

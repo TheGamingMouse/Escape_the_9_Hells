@@ -22,28 +22,20 @@ public class PlayerEquipment : MonoBehaviour
     public LoadoutItemsSO defaultArmor;
     public LoadoutItemsSO defaultBacks;
 
-    [Header("Components")]
-    SaveLoadManager saveLoadManager;
-
     #endregion
 
     #region StartUpdate Methods
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        saveLoadManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
-    }
-
-    // Update is called once per frame
     void Update()
     {
         if (!equipmentLoaded)
         {
-            boughtWeapons = saveLoadManager.boughtWeapons;
-            boughtCompanions = saveLoadManager.boughtCompanions;
-            boughtArmors = saveLoadManager.boughtArmors;
-            boughtBacks = saveLoadManager.boughtBacks;
+            var equipmentData = SaveSystem.loadedEquipmentData;
+
+            boughtWeapons = equipmentData.weaponData.boughtWeapons;
+            boughtCompanions = equipmentData.companionData.boughtCompanions;
+            boughtArmors = equipmentData.armorData.boughtArmors;
+            boughtBacks = equipmentData.backData.boughtBacks;
 
             // Weapons
             int countWeapons = 0;
@@ -156,21 +148,41 @@ public class PlayerEquipment : MonoBehaviour
     public void PurchaseWeapon(LoadoutItemsSO weapon)
     {
         boughtWeapons.Add(weapon);
+
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.weaponData.boughtWeapons.Add(weapon);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
     }
     
     public void PurchaseCompanion(LoadoutItemsSO companion)
     {
         boughtCompanions.Add(companion);
+
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.companionData.boughtCompanions.Add(companion);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
     }
     
     public void PurchaseArmor(LoadoutItemsSO armor)
     {
         boughtArmors.Add(armor);
+
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.armorData.boughtArmors.Add(armor);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
     }
     
     public void PurchaseBack(LoadoutItemsSO back)
     {
         boughtBacks.Add(back);
+
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.backData.boughtBacks.Add(back);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
     }
 
     #endregion

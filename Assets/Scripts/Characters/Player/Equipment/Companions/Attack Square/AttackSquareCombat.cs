@@ -19,16 +19,10 @@ public class AttackSquareCombat : MonoBehaviour
 
     [Header("Components")]
     public Companion companion;
-    SFXAudioManager sfxManager;
 
     #endregion
 
     #region StartUpdate Methods
-
-    void Start()
-    {
-        sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
-    }
 
     void Update()
     {
@@ -45,18 +39,20 @@ public class AttackSquareCombat : MonoBehaviour
 
     void OnCollisionStay(Collision coll)
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         if (coll.transform.TryGetComponent(out BasicEnemyHealth eComp) && canAttack)
         {
             eComp.TakeDamage(damage, false);
             StartCoroutine(DamageRoutine());
 
-            sfxManager.PlayClip(sfxManager.attackSquareHit, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.attackSquareHit, MasterAudioManager.Instance.sBlend3D, sfxManager.effectsVolumeMod, gameObject, "low");
         }
         else if (coll.transform.TryGetComponent(out ImpHealth iComp) && canAttack)
         {
             iComp.TakeDamage(damage, false);
 
-            sfxManager.PlayClip(sfxManager.attackSquareHit, sfxManager.masterManager.sBlend3D, sfxManager.effectsVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.attackSquareHit, MasterAudioManager.Instance.sBlend3D, sfxManager.effectsVolumeMod, gameObject, "low");
         }
     }
 

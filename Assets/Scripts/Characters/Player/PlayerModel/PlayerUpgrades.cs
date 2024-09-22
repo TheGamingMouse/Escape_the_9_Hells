@@ -77,8 +77,6 @@ public class PlayerUpgrades : MonoBehaviour
     Companion companion;
     Armor armor;
     Backs backs;
-    PlayerLoadout loadout;
-    SaveLoadManager slManager;
 
     #endregion
 
@@ -93,37 +91,37 @@ public class PlayerUpgrades : MonoBehaviour
         {
             companion = GameObject.FindWithTag("Companions").GetComponent<Companion>();
         }
-
-        loadout = GetComponent<PlayerLoadout>();
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
     }
 
     void Update()
     {
+        var loadout = PlayerComponents.Instance.playerLoadout;
         if (loadout.start)
         {
             if (!loaded)
             {
+                var equipmentData = SaveSystem.loadedEquipmentData;
+
                 // Weapons
-                upgradesPugio = slManager.pugioUpgrades;
-                upgradesUlfberht = slManager.ulfberhtUpgrades;
+                upgradesPugio = equipmentData.weaponData.pugioUpgrades;
+                upgradesUlfberht = equipmentData.weaponData.ulfberhtUpgrades;
 
                 // Companions
-                upgradesLoyalSphere = slManager.loyalSphereUpgrades;
-                upgradesAttackSquare = slManager.attackSquareUpgrades;
+                upgradesLoyalSphere = equipmentData.companionData.loyalSphereUpgrades;
+                upgradesAttackSquare = equipmentData.companionData.attackSquareUpgrades;
 
                 // Armors
-                upgradesLeather = slManager.leatherUpgrades;
-                upgradesHide = slManager.hideUpgrades;
-                upgradesRingMail = slManager.ringMailUpgrades;
-                upgradesPlate = slManager.plateUpgrades;
+                upgradesLeather = equipmentData.armorData.leatherUpgrades;
+                upgradesHide = equipmentData.armorData.hideUpgrades;
+                upgradesRingMail = equipmentData.armorData.ringMailUpgrades;
+                upgradesPlate = equipmentData.armorData.plateUpgrades;
 
                 // Backs
-                upgradesAngelWings = slManager.angelWingsUpgrades;
-                upgradesSteelWings = slManager.steelWingsUpgrades;
-                upgradesBackpacks = slManager.backpackUpgrades;
-                upgradesCapeOWinds = slManager.capeOWindUpgrades;
-                upgradesSeedBag = slManager.seedBagUpgrades;
+                upgradesAngelWings = equipmentData.backData.angelWingsUpgrades;
+                upgradesSteelWings = equipmentData.backData.steelWingsUpgrades;
+                upgradesBackpacks = equipmentData.backData.backpackUpgrades;
+                upgradesCapeOWinds = equipmentData.backData.capeOWindUpgrades;
+                upgradesSeedBag = equipmentData.backData.seedBagUpgrades;
 
                 loaded = true;
             }

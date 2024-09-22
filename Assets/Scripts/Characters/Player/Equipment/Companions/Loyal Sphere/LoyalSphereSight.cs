@@ -15,9 +15,7 @@ public class LoyalSphereSight : MonoBehaviour
     public LayerMask obstructionMask;
 
     [Header("Components")]
-    BossGenerator bossGenerator;
     RoomSpawner roomSpawner;
-    PlayerMovement playerMovement;
 
     #endregion
 
@@ -26,17 +24,14 @@ public class LoyalSphereSight : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameObject.FindWithTag("Player").transform;
-        playerMovement = player.GetComponent<PlayerMovement>();
+        player = PlayerComponents.Instance.player;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (playerMovement.bossGenerator)
-        {
-            bossGenerator = playerMovement.bossGenerator;
-        }
+        var playerMovement = PlayerComponents.Instance.playerMovement;
+        
         if (playerMovement.roomSpawner)
         {
             roomSpawner = playerMovement.roomSpawner;
@@ -74,6 +69,8 @@ public class LoyalSphereSight : MonoBehaviour
 
     bool PlayerInArea()
     {
+        var bossGenerator = BossGenerator.Instance;
+
         if (bossGenerator)
         {
             if (bossGenerator.TryGetComponent(out BasicEnemyHealth beComp) && beComp.boss)

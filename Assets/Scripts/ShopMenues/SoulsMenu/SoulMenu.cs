@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class SoulsMenu : MonoBehaviour
 {
+    [Header("Instance")]
+    public static SoulsMenu Instance;
+
     [Header("Ints")]
     readonly int soulsMax = 6;
     int soulsCount;
@@ -37,25 +40,22 @@ public class SoulsMenu : MonoBehaviour
     public Transform soulContents;
 
     [Header("Components")]
-    UIManager uiManager;
     Ricky ricky;
-    PlayerSouls playerSouls;
-    SaveLoadManager slManager;
-    SFXAudioManager sfxManager;
-    NPCSpawner npcSpawner;
     Interactor interactor;
 
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
-
         menuCanOpen = true;
     }
 
     void Update()
     {
-        if (slManager.lState == SaveLoadManager.LayerState.Hub)
+        if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.Hub)
         {
             if (!pannelsActivated)
             {
@@ -66,12 +66,8 @@ public class SoulsMenu : MonoBehaviour
 
                 soulContents.transform.position = new Vector3(10000f, soulContents.transform.position.y, soulContents.transform.position.z);
 
-                var managers = GameObject.FindWithTag("Managers");
-                var player = GameObject.FindWithTag("Player");
+                var player = PlayerComponents.Instance.player;
 
-                uiManager = managers.GetComponent<UIManager>();
-                playerSouls = player.GetComponent<PlayerSouls>();
-                sfxManager = managers.GetComponent<SFXAudioManager>();
                 interactor = player.GetComponent<Interactor>();
 
                 CheckSoulsPurchaseable();
@@ -81,13 +77,11 @@ public class SoulsMenu : MonoBehaviour
 
             if (!ricky)
             {
-                if (uiManager.npcsActive)
+                if (UIManager.Instance.npcsActive)
                 {
-                    npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
-
-                    if (npcSpawner.rickySpawned)
+                    if (NPCSpawner.Instance.rickySpawned)
                     {
-                        ricky = npcSpawner.ricky;
+                        ricky = NPCSpawner.Instance.ricky;
                     }
                 }
             }
@@ -125,6 +119,8 @@ public class SoulsMenu : MonoBehaviour
 
     private void LoadSoulsPannels()
     {
+        var playerSouls = PlayerComponents.Instance.playerSouls;
+
         for (int i = 0; i < soulsItemsSO.Length; i++)
         {
             soulsPannels[i].titleText.text = soulsItemsSO[i].title;
@@ -231,6 +227,8 @@ public class SoulsMenu : MonoBehaviour
 
     private void CheckSoulsPurchaseable()
     {
+        var playerSouls = PlayerComponents.Instance.playerSouls;
+
         soulsText.text = $"{souls}";
 
         for (int i = 0; i < soulsItemsSO.Length; i++)
@@ -280,7 +278,7 @@ public class SoulsMenu : MonoBehaviour
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
 
             //Unlock purchased item.
-            playerSouls.AddSouls(soulsItemsSO[btnNo]);
+            PlayerComponents.Instance.playerSouls.AddSouls(soulsItemsSO[btnNo]);
 
             pannelsLoaded = false;
         }
@@ -301,9 +299,9 @@ public class SoulsMenu : MonoBehaviour
         menuOpen = false;
         menuCanClose = false;
         menuCanOpen = true;
-        uiManager.rickyTalking = false;
+        UIManager.Instance.rickyTalking = false;
         ricky.talking = false;
 
-        sfxManager.PlayRickyVO(false);
+        SFXAudioManager.Instance.PlayRickyVO(false);
     }
 }

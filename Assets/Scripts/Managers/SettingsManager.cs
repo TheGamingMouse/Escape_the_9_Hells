@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Palmmedia.ReportGenerator.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -8,6 +9,9 @@ using UnityEngine.UI;
 public class SettingsManager : MonoBehaviour
 {
     #region Variables
+
+    [Header("Instance")]
+    public static SettingsManager Instance;
 
     [Header("Ints")]
     public int screenMode;
@@ -39,22 +43,27 @@ public class SettingsManager : MonoBehaviour
 
     [Header("Components")]
     public AudioMixer audioMixer;
-    SaveLoadManager slManager;
 
     #endregion
 
     #region StartUpdate Methods
+
+    void Awake()
+    {
+        Instance = this;
+    }
     
     // Start is called before the first frame update
     void Start()
     {
-        FindComponents();
         FindElements();
 
-        masterVolume = slManager.masterVolume;
-        musicVolume = slManager.musicVolume;
-        sfxVolume = slManager.sfxVolume;
-        screenMode = slManager.screenMode;
+        var settingsData = SaveSystem.loadedSettingsData;
+
+        masterVolume = settingsData.masterVolume;
+        musicVolume = settingsData.musicVolume;
+        sfxVolume = settingsData.sfxVolume;
+        screenMode = settingsData.screenMode;
 
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
@@ -89,11 +98,6 @@ public class SettingsManager : MonoBehaviour
     #endregion
 
     #region General Methods
-
-    void FindComponents()
-    {
-        slManager = GameObject.FindWithTag("Managers").GetComponent<SaveLoadManager>();
-    }
 
     void FindElements()
     {

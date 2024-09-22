@@ -28,6 +28,9 @@ public class NPCSpawner : MonoBehaviour
 
     #region Variables
 
+    [Header("Instance")]
+    public static NPCSpawner Instance;
+
     [Header("Bools")]
     public bool rickyStart;
     public bool rickySpawned;
@@ -76,13 +79,11 @@ public class NPCSpawner : MonoBehaviour
             {
                 ricky = Instantiate(rickyObj, rickyPos.startPos.First(), Quaternion.identity, transform).GetComponent<Ricky>();
                 rickySpawned = true;
-                ricky.npcSpawner = this;
             }
             else
             {
                 ricky = Instantiate(rickyObj, rickyPos.rickyDefaultPos.First(), Quaternion.identity, transform).GetComponent<Ricky>();
                 rickySpawned = true;
-                ricky.npcSpawner = this;
             }
         }
 
@@ -92,21 +93,18 @@ public class NPCSpawner : MonoBehaviour
             {
                 barbara = Instantiate(barbaraObj, barbPos, Quaternion.identity, transform).GetComponent<Barbara>();
                 barbSpawned = true;
-                barbara.npcSpawner = this;
             }
 
             if (!alexSpawned)
             {
                 alexander = Instantiate(alexanderObj, alexPos, Quaternion.identity, transform).GetComponent<Alexander>();
                 alexSpawned = true;
-                alexander.npcSpawner = this;
             }
 
             if (!jensSpawned)
             {
                 jens = Instantiate(jensObj, jensPos, Quaternion.identity, transform).GetComponent<Jens>();
                 jensSpawned = true;
-                jens.npcSpawner = this;
             }
         }
     }

@@ -7,6 +7,9 @@ public class MasterAudioManager : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static MasterAudioManager Instance;
+
     [Header("Floats")]
     public float sBlend2D;
     public float sBlend3D;
@@ -23,8 +26,6 @@ public class MasterAudioManager : MonoBehaviour
     public AudioMixerGroup masterMixer;
     public AudioMixerGroup musicMixer;
     public AudioMixerGroup sfxMixer;
-    public SaveLoadManager slManager;
-    public SettingsManager settingsManager;
 
     #endregion
 
@@ -33,14 +34,7 @@ public class MasterAudioManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        slManager = GetComponent<SaveLoadManager>();
-        settingsManager = GetComponent<SettingsManager>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Instance = this;
     }
 
     #endregion

@@ -27,6 +27,9 @@ public class LayerGenerator : MonoBehaviour
 
     #region Variables
 
+    [Header("Instance")]
+    public static LayerGenerator Instance;
+
     [Header("Generation Options")]
     public InteriorChoice iChoice;
     [Range(0, 20)]
@@ -63,32 +66,23 @@ public class LayerGenerator : MonoBehaviour
     [Header("Vector2s")]
     public Vector2 offset;
 
-    [Header("Components")]
-    LayerManager layerManager;
-    [SerializeField] PlayerSouls playerSouls;
-    SaveLoadManager slManager;
-
 
     #endregion
 
     #region StartUpdate Methods
 
-    void Start()
+    void Awake()
     {
-        var managers = GameObject.FindWithTag("Managers");
-
-        layerManager = managers.GetComponent<LayerManager>();
-        slManager = managers.GetComponent<SaveLoadManager>();
+        Instance = this;
     }
 
     void Update()
     {
-        if (slManager.ready && !layerGenerated)
+        if (SaveSystem.loadedNpcData.ready && !layerGenerated)
         {
-            if (!layerManager.showroom)
+            if (!LayerManager.Instance.showroom)
             {
-                playerSouls = GameObject.FindWithTag("Player").GetComponent<PlayerSouls>();
-                playerPathfinder = playerSouls.playerPathfinder;
+                playerPathfinder = PlayerComponents.Instance.playerSouls.playerPathfinder;
             }
 
             Generator();
@@ -141,7 +135,7 @@ public class LayerGenerator : MonoBehaviour
                     newRoom.doInterior = doInterior;
                     newRoom.mainPath = currentCell.mainPath;
 
-                    newRoom.playerPathfinder = playerPathfinder || layerManager.showroom;
+                    newRoom.playerPathfinder = playerPathfinder || LayerManager.Instance.showroom;
 
                     if (!doInterior && newRoom.interior != null)
                     {
@@ -198,7 +192,7 @@ public class LayerGenerator : MonoBehaviour
 
             if (currentCell == board.Count - 1  && !fillOut)
             {
-                if (!layerManager.showroom)
+                if (!LayerManager.Instance.showroom)
                 {
                     board[currentCell].status[1] = true;
                     board[currentCell].doors[1] = true;

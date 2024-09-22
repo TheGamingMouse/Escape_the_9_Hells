@@ -23,12 +23,6 @@ public class Jens : MonoBehaviour, IInteractable
 
     [Header("Sprites")]
     public Sprite npcSprite;
-
-    [Header("Components")]
-    UIManager uiManager;
-    Dialogue dialogue;
-    PlayerMovement playerMovement;
-    public NPCSpawner npcSpawner;
     
     #endregion
 
@@ -37,6 +31,8 @@ public class Jens : MonoBehaviour, IInteractable
     // Start is called before the first frame update
     void Start()
     {
+        var npcSpawner = NPCSpawner.Instance;
+
         if (npcSpawner)
         {
             defaultLines = npcSpawner.jensMessages.ToArray();
@@ -45,25 +41,21 @@ public class Jens : MonoBehaviour, IInteractable
         {
             Debug.LogError("npcSpawner was not found");
         }
-
-        dialogue = GameObject.FindWithTag("Canvas").transform.Find("DialogueBox/MainBox").GetComponent<Dialogue>();
-        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
-        playerMovement = GameObject.FindWithTag("Player").GetComponent<PlayerMovement>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (beginDialogue && uiManager.dialogueBox.activeInHierarchy)
+        if (beginDialogue && UIManager.Instance.dialogueBox.activeInHierarchy)
         {
             BeginNewDialogue(true);
             beginDialogue = false;
         }
-        else if (dialogue.dialogueDone && !talkingOver)
+        else if (Dialogue.Instance.dialogueDone && !talkingOver)
         {
-            playerMovement.startBool = true;
+            PlayerComponents.Instance.playerMovement.startBool = true;
             talking = false;
-            uiManager.dialogueStart = false;
+            UIManager.Instance.dialogueStart = false;
 
             talkingOver = true;
         }
@@ -75,7 +67,9 @@ public class Jens : MonoBehaviour, IInteractable
 
     void BeginNewDialogue(bool advice)
     {
-        playerMovement.startBool = false;
+        var dialogue = Dialogue.Instance;
+
+        PlayerComponents.Instance.playerMovement.startBool = false;
 
         if (advice)
         {
@@ -104,7 +98,7 @@ public class Jens : MonoBehaviour, IInteractable
     public bool InteractE(Interactor interactor)
     {
         talking = true;
-        uiManager.jensTalking = true;
+        UIManager.Instance.jensTalking = true;
 
         return true;
     }
@@ -113,8 +107,8 @@ public class Jens : MonoBehaviour, IInteractable
         talking = true;
         talkingOver = false;
 
-        dialogue.dialogueDone = false;
-        uiManager.dialogueStart = true;
+        Dialogue.Instance.dialogueDone = false;
+        UIManager.Instance.dialogueStart = true;
         beginDialogue = true;
         
         return true;

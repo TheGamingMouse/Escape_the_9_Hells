@@ -18,6 +18,9 @@ GameObject:
   - component: {fileID: 7761149050079136329}
   - component: {fileID: 8343283422948362885}
   - component: {fileID: 5752805852752578624}
+  - component: {fileID: 4401038102546650683}
+  - component: {fileID: 6135012171316076795}
+  - component: {fileID: 813797218343947870}
   - component: {fileID: 4394176419727471579}
   - component: {fileID: 5675670475926584728}
   - component: {fileID: 8630090245176340570}
@@ -72,6 +75,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 8
+  ricky: {fileID: 0}
   bossGenerator: {fileID: 0}
 --- !u!114 &2977193531105066700
 MonoBehaviour:
@@ -150,6 +154,7 @@ MonoBehaviour:
   ready: 0
   backpackPrimary: 0
   seedBagPrimary: 0
+  returnedToRicky: 0
   setWeapons:
   - {fileID: 11400000, guid: 067f7c7567c3ada4196836894c382299, type: 2}
   - {fileID: 11400000, guid: 77422232dd891614fbfca09b6b6b99a5, type: 2}
@@ -225,6 +230,7 @@ MonoBehaviour:
   steelWingsUpgrades: []
   backpackUpgrades: []
   capeOWindUpgrades: []
+  seedBagUpgrades: []
   defencePerks: []
   attackSpeedPerks: []
   damagePerks: []
@@ -239,8 +245,8 @@ MonoBehaviour:
   primaryCompanion: {fileID: 0}
   secondaryCompanion: {fileID: 0}
   selectedCompanion: {fileID: 0}
-  armor: {fileID: 0}
-  back: {fileID: 0}
+  selectedArmor: {fileID: 0}
+  selectedBack: {fileID: 0}
   mainMenu: {fileID: 0}
 --- !u!114 &3130922709829439386
 MonoBehaviour:
@@ -593,6 +599,93 @@ MonoBehaviour:
   backgroundSource: {fileID: 5675670475926584728}
   bossSource: {fileID: 8630090245176340570}
   masterManager: {fileID: 7761149050079136329}
+--- !u!114 &4401038102546650683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4395558058935778788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7929bff92a891a4c897083bdddbd7f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6135012171316076795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4395558058935778788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ec29dfa0d85eaf4f9d86f7bedefaf06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &813797218343947870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4395558058935778788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be1d8177260771346ab0c6b4feac520d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  setWeapons:
+  - {fileID: 11400000, guid: 067f7c7567c3ada4196836894c382299, type: 2}
+  - {fileID: 11400000, guid: 77422232dd891614fbfca09b6b6b99a5, type: 2}
+  setCompanions:
+  - {fileID: 11400000, guid: ce6b1822708a0004080f4ba03f3a1fce, type: 2}
+  - {fileID: 11400000, guid: 096240ca71e023d4b9a70f1b4a2f4094, type: 2}
+  - {fileID: 11400000, guid: 4e3793ae7b1f6594888a535e4ed47565, type: 2}
+  setArmors:
+  - {fileID: 11400000, guid: f226a395bfecc4243acedce82ee5ca39, type: 2}
+  - {fileID: 11400000, guid: 7f1297fcbfc6aa44fa063ea18e2c3230, type: 2}
+  - {fileID: 11400000, guid: 43915e49a007de74f8902aa38b6b357e, type: 2}
+  - {fileID: 11400000, guid: e38babcc7d8a1434d80d26ace81a457d, type: 2}
+  - {fileID: 11400000, guid: 9ab23c2251a55db409c14cf768aa545c, type: 2}
+  setBacks:
+  - {fileID: 11400000, guid: a386e74d63302c148b89054f5fe14bba, type: 2}
+  - {fileID: 11400000, guid: 183f49e4b9809eb46bcced7f219eb4d8, type: 2}
+  - {fileID: 11400000, guid: c21e346a0c0769f41b562fc90774051a, type: 2}
+  - {fileID: 11400000, guid: 09802bf7bb552e4458ea5d9826bc4757, type: 2}
+  - {fileID: 11400000, guid: 135484270b290e64cb497ab868ad6f56, type: 2}
+  - {fileID: 11400000, guid: a619de85cf8e1944c8f1e2a8bb251c3c, type: 2}
+  setWeaponUpgrades:
+  - {fileID: 11400000, guid: 509093a7abd372a48bf6b6ef9937ce69, type: 2}
+  - {fileID: 11400000, guid: 9e8094efbb767414fa6096be050a91be, type: 2}
+  - {fileID: 11400000, guid: 52aa9a4fe89bad24d938fe5e2980e857, type: 2}
+  - {fileID: 11400000, guid: da83e544cea4d534982f7b9062b8d550, type: 2}
+  setCompanionUpgrades:
+  - {fileID: 11400000, guid: 43774397c5648f343904d8a0555ca5f4, type: 2}
+  - {fileID: 11400000, guid: eb6979b9cc161f943bb56472a7b90c80, type: 2}
+  setArmorUpgrades:
+  - {fileID: 11400000, guid: 2d5fcab76b109b8468c2ea12e2ac31c2, type: 2}
+  - {fileID: 11400000, guid: be797207df4265645bd60974d942c118, type: 2}
+  setBackUpgrades:
+  - {fileID: 11400000, guid: 135e3ed111a02de4ba0f103ab6d174db, type: 2}
+  setSoulItems:
+  - {fileID: 11400000, guid: d8d6bd8c89195f847b731d67ed9025d8, type: 2}
+  - {fileID: 11400000, guid: 83c2baec7757d6246a77525b1490fca9, type: 2}
+  - {fileID: 11400000, guid: bb1bb040ab343a140969a67f79a6bc6a, type: 2}
+  - {fileID: 11400000, guid: cddb0d303b530834099e76a1557b7a85, type: 2}
+  - {fileID: 11400000, guid: 0fb0b201bd697c94287a6a6c85cc6c25, type: 2}
+  - {fileID: 11400000, guid: 084891f1e6de8b44daab1b0e73c527b2, type: 2}
+  - {fileID: 11400000, guid: 4f5449a7b2ef25048976854413ab2e98, type: 2}
+  - {fileID: 11400000, guid: ddf2a62ac55f7d74d8dde9a95cb2edd6, type: 2}
+  setPerks:
+  - {fileID: 11400000, guid: 3e66b6bba638fe14ca3d827cd0bdf5cb, type: 2}
+  - {fileID: 11400000, guid: c19351c18acb0984685dcd85013cc2aa, type: 2}
+  - {fileID: 11400000, guid: 62371923fe530c24592cb9569ee54a1f, type: 2}
+  - {fileID: 11400000, guid: d7827c2d9724d444784a5e9b651a386f, type: 2}
+  - {fileID: 11400000, guid: d92596d800a5b6143aaaedba011d7c31, type: 2}
+  - {fileID: 11400000, guid: e97ecec6cc54b7e4f90271fbba8cd729, type: 2}
+  - {fileID: 11400000, guid: 6ceb36e78573ac240b7cf496b98a4d1e, type: 2}
+  - {fileID: 11400000, guid: 2d8208d2c8b77d34686e23b8316c9251, type: 2}
 --- !u!82 &4394176419727471579
 AudioSource:
   m_ObjectHideFlags: 0

@@ -9,6 +9,9 @@ public class EquipmentMenu : MonoBehaviour
 {
     #region Variables
 
+    [Header("Instance")]
+    public static EquipmentMenu Instance;
+
     [Header("Floats")]
     public float souls;
 
@@ -60,17 +63,18 @@ public class EquipmentMenu : MonoBehaviour
 
     [Header("Components")]
     Alexander alexander;
-    UIManager uiManager;
-    NPCSpawner npcSpawner;
-    PlayerEquipment playerEquipment;
     LoadoutMenu loadoutMenu;
     UpgradeMenu upgradeMenu;
-    SFXAudioManager sfxManager;
     Interactor interactor;
 
     #endregion
 
     #region StartUpdate Methods
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -80,31 +84,25 @@ public class EquipmentMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var managers = GameObject.FindWithTag("Managers");
-        var player = GameObject.FindWithTag("Player");
+        var player = PlayerComponents.Instance.player;
 
-        uiManager = managers.GetComponent<UIManager>();
-        playerEquipment = player.GetComponent<PlayerEquipment>();
         loadoutMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Barbara").GetComponent<LoadoutMenu>();
         upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
         interactor = player.GetComponent<Interactor>();
 
-        if (uiManager.npcsActive)
+        if (UIManager.Instance.npcsActive)
         {
-            npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
-
-            if (npcSpawner.alexSpawned)
+            if (NPCSpawner.Instance.alexSpawned)
             {
-                alexander = npcSpawner.alexander;
+                alexander = NPCSpawner.Instance.alexander;
             }
         }
         
-        if (!pannelsActivated && playerEquipment.equipmentLoaded)
+        if (!pannelsActivated && PlayerComponents.Instance.playerEquipment.equipmentLoaded)
         {
             for (int i = 0; i < equipmentItemsSOWeapons.Length; i++)
             {
-                if (!playerEquipment.boughtWeapons.Contains(equipmentItemsSOWeapons[i]))
+                if (!PlayerComponents.Instance.playerEquipment.boughtWeapons.Contains(equipmentItemsSOWeapons[i]))
                 {
                     equipmentPannelsSOWeapons[i].SetActive(true);
                     equipmentPannelsWeapons[i].priceObj.SetActive(true);
@@ -116,7 +114,7 @@ public class EquipmentMenu : MonoBehaviour
             }
             for (int i = 0; i < equipmentItemsSOCompanion.Length; i++)
             {
-                if (!playerEquipment.boughtCompanions.Contains(equipmentItemsSOCompanion[i]))
+                if (!PlayerComponents.Instance.playerEquipment.boughtCompanions.Contains(equipmentItemsSOCompanion[i]))
                 {
                     equipmentPannelsSOCompanion[i].SetActive(true);
                     equipmentPannelsCompanion[i].priceObj.SetActive(true);
@@ -128,7 +126,7 @@ public class EquipmentMenu : MonoBehaviour
             }
             for (int i = 0; i < equipmentItemsSOArmor.Length; i++)
             {
-                if (!playerEquipment.boughtArmors.Contains(equipmentItemsSOArmor[i]))
+                if (!PlayerComponents.Instance.playerEquipment.boughtArmors.Contains(equipmentItemsSOArmor[i]))
                 {
                     equipmentPannelsSOArmor[i].SetActive(true);
                     equipmentPannelsArmor[i].priceObj.SetActive(true);
@@ -140,7 +138,7 @@ public class EquipmentMenu : MonoBehaviour
             }
             for (int i = 0; i < equipmentItemsSOBack.Length; i++)
             {
-                if (!playerEquipment.boughtBacks.Contains(equipmentItemsSOBack[i]))
+                if (!PlayerComponents.Instance.playerEquipment.boughtBacks.Contains(equipmentItemsSOBack[i]))
                 {
                     equipmentPannelsSOBack[i].SetActive(true);
                     equipmentPannelsBack[i].priceObj.SetActive(true);
@@ -265,7 +263,7 @@ public class EquipmentMenu : MonoBehaviour
             upgradeMenu.ReloadPannels();
 
             //Unlock purchased item.
-            playerEquipment.PurchaseWeapon(equipmentItemsSOWeapons[btnNo]);
+            PlayerComponents.Instance.playerEquipment.PurchaseWeapon(equipmentItemsSOWeapons[btnNo]);
         }
     }
 
@@ -281,7 +279,7 @@ public class EquipmentMenu : MonoBehaviour
             upgradeMenu.ReloadPannels();
 
             //Unlock purchased item.
-            playerEquipment.PurchaseCompanion(equipmentItemsSOCompanion[btnNo]);
+            PlayerComponents.Instance.playerEquipment.PurchaseCompanion(equipmentItemsSOCompanion[btnNo]);
         }
     }
 
@@ -297,7 +295,7 @@ public class EquipmentMenu : MonoBehaviour
             upgradeMenu.ReloadPannels();
 
             //Unlock purchased item.
-            playerEquipment.PurchaseArmor(equipmentItemsSOArmor[btnNo]);
+            PlayerComponents.Instance.playerEquipment.PurchaseArmor(equipmentItemsSOArmor[btnNo]);
         }
     }
 
@@ -313,7 +311,7 @@ public class EquipmentMenu : MonoBehaviour
             upgradeMenu.ReloadPannels();
 
             //Unlock purchased item.
-            playerEquipment.PurchaseBack(equipmentItemsSOBack[btnNo]);
+            PlayerComponents.Instance.playerEquipment.PurchaseBack(equipmentItemsSOBack[btnNo]);
         }
     }
     
@@ -332,10 +330,10 @@ public class EquipmentMenu : MonoBehaviour
         menuOpen = false;
         menuCanClose = false;
         menuCanOpen = true;
-        uiManager.alexanderTalking = false;
+        UIManager.Instance.alexanderTalking = false;
         alexander.talking = false;
 
-        sfxManager.PlayAlexanderVO(false);
+        SFXAudioManager.Instance.PlayAlexanderVO(false);
     }
 
     #endregion

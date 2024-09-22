@@ -30,13 +30,9 @@ public class BasicEnemyHealth : MonoBehaviour
 
     [Header("Components")]
     public RoomSpawner roomSpawner;
-    ExpSoulsManager expSoulsManager;
-    EnemySight enemySight;
-    public BossGenerator bossGenerator;
-    PlayerLevel playerLevel;
-    UIManager uiManager;
-    SFXAudioManager sfxManager;
     BasicEnemyAction basicEnemyAction;
+    EnemySight enemySight;
+    
 
     #endregion
 
@@ -45,13 +41,7 @@ public class BasicEnemyHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var managers = GameObject.FindWithTag("Managers");
-
-        expSoulsManager = managers.GetComponent<ExpSoulsManager>();
         enemySight = GetComponent<EnemySight>();
-        playerLevel = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>();
-        uiManager = managers.GetComponent<UIManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
         basicEnemyAction = GetComponent<BasicEnemyAction>();
 
         if (!boss)
@@ -62,7 +52,7 @@ public class BasicEnemyHealth : MonoBehaviour
         else
         {
             healthImage = GameObject.FindWithTag("Canvas").transform.Find("Boss/BossHealthBar/Health Bar Fill").GetComponent<Image>();
-            uiManager.bossNameString = bossName;
+            UIManager.Instance.bossNameString = bossName;
         }
         
         health = maxHealth;
@@ -104,36 +94,41 @@ public class BasicEnemyHealth : MonoBehaviour
                 if (!boss)
                 {
                     roomSpawner.enemies.Remove(gameObject);
-                    expSoulsManager.AddExperience(expAmount, "demon");
+                    ExpSoulsManager.Instance.AddExperience(expAmount, "demon");
                 }
                 else
                 {
                     int luckCheck = Random.Range(1, 10001);
-                    if (luckCheck <= playerLevel.luck)
+                    if (luckCheck <= PlayerComponents.Instance.playerLevel.luck)
                     {
-                        sfxManager.PlayClip(sfxManager.activateLucky, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
-                        sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+                        var sfxManager = SFXAudioManager.Instance;
+
+                        sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
+                        sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
 
                         int i = 0;
                         while (i < 3)
                         {
-                            playerLevel.LevelUp(false, true, true);
+                            PlayerComponents.Instance.playerLevel.LevelUp(false, true, true);
                             i++;
                         }
                     }
                     else
                     {
-                        sfxManager.PlayClip(sfxManager.gainLevel, sfxManager.masterManager.sBlend2D, sfxManager.effectsVolumeMod);
+                        var sfxManager = SFXAudioManager.Instance;
+                        sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
 
-                        playerLevel.LevelUp(false, true, true);
+                        PlayerComponents.Instance.playerLevel.LevelUp(false, true, true);
                     }
                     
-                    expSoulsManager.AddSouls(soulAmount, true);
-                    bossGenerator.isBossDead = true;
+                    ExpSoulsManager.Instance.AddSouls(soulAmount, true);
+                    BossGenerator.Instance.isBossDead = true;
                 }
                 
                 foreach (var source in gameObject.GetComponents<AudioSource>())
                 {
+                    var sfxManager = SFXAudioManager.Instance;
+
                     if (sfxManager.audioSourcePool.Contains(source))
                     {
                         sfxManager.audioSourcePool.Remove(source);
@@ -160,31 +155,35 @@ public class BasicEnemyHealth : MonoBehaviour
 
     void EnemyDeath()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         int randDeath;
         if (basicEnemyAction.male)
         {
             randDeath = Random.Range(0, sfxManager.enemyDeathMale.Count);
-            sfxManager.PlayClip(sfxManager.enemyDeathMale[randDeath], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod);
+            sfxManager.PlayClip(sfxManager.enemyDeathMale[randDeath], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod);
         }
         else
         {
             randDeath = Random.Range(0, sfxManager.enemyDeathFemale.Count);
-            sfxManager.PlayClip(sfxManager.enemyDeathFemale[randDeath], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod);
+            sfxManager.PlayClip(sfxManager.enemyDeathFemale[randDeath], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod);
         }
     }
 
     void EnemyDamage()
     {
+        var sfxManager = SFXAudioManager.Instance;
+        
         int randDamage;
         if (basicEnemyAction.male)
         {
             randDamage = Random.Range(0, sfxManager.enemyDamageMale.Count);
-            sfxManager.PlayClip(sfxManager.enemyDamageMale[randDamage], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.enemyDamageMale[randDamage], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
         else
         {
             randDamage = Random.Range(0, sfxManager.enemyDamageFemale.Count);
-            sfxManager.PlayClip(sfxManager.enemyDamageFemale[randDamage], sfxManager.masterManager.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
+            sfxManager.PlayClip(sfxManager.enemyDamageFemale[randDamage], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
     }
 

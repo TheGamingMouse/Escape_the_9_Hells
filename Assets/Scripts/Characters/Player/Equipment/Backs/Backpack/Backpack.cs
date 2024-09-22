@@ -20,12 +20,8 @@ public class Backpack : MonoBehaviour
     LoadoutItemsSO secondaryWeapon;
 
     [Header("Components")]
-    PlayerUpgrades playerUpgrades;
-    PlayerLoadout playerLoadout;
-    Weapon playerWeapon;
-    SaveLoadManager slManager;
-    Backs playerBacks;
-    SFXAudioManager sfxManager;
+    Weapon weapon;
+    Backs back;
 
     #endregion
 
@@ -34,29 +30,27 @@ public class Backpack : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var player = GameObject.FindWithTag("Player");
-        var managers = GameObject.FindWithTag("Managers");
+        var player = PlayerComponents.Instance.player;
 
-        playerUpgrades = player.GetComponent<PlayerUpgrades>();
-        playerLoadout = player.GetComponent<PlayerLoadout>();
-        playerWeapon = player.GetComponentInChildren<Weapon>();
-        playerBacks = player.GetComponentInChildren<Backs>();
+        weapon = player.GetComponentInChildren<Weapon>();
+        back = player.GetComponentInChildren<Backs>();
 
-        slManager = managers.GetComponent<SaveLoadManager>();
-        sfxManager = managers.GetComponent<SFXAudioManager>();
+        var equipmentData = SaveSystem.loadedEquipmentData;
 
-        primaryWeapon = slManager.primaryWeapon;
-        secondaryWeapon = slManager.secondaryWeapon;
+        primaryWeapon = equipmentData.weaponData.primaryWeapon;
+        secondaryWeapon = equipmentData.weaponData.secondaryWeapon;
+        primary = equipmentData.backData.backpackPrimary;
+        secondary = !primary;
 
         canSwitch = true;
-        primary = slManager.backpackPrimary;
-        secondary = !primary;
     }
 
     // Update is called once per frame
     void Update()
     {
-        cooldown = baseCooldown / playerBacks.abilityCooldownMultiplier;
+        var playerLoadout = PlayerComponents.Instance.playerLoadout;
+
+        cooldown = baseCooldown / back.abilityCooldownMultiplier;
 
         if (playerLoadout.backpackActive)
         {
@@ -90,36 +84,40 @@ public class Backpack : MonoBehaviour
 
     void SwitchToPrimary()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         if (primaryWeapon.title == "Ulfberht")
         {
-            playerWeapon.SwitchToUlfberht();
+            weapon.SwitchToUlfberht();
         }
         else if (primaryWeapon.title == "Pugio")
         {
-            playerWeapon.SwitchToPugio();
+            weapon.SwitchToPugio();
         }
 
-        playerLoadout.selectedWeapon = primaryWeapon;
-        playerUpgrades.weaponUpdated = false;
+        PlayerComponents.Instance.playerLoadout.selectedWeapon = primaryWeapon;
+        PlayerComponents.Instance.playerUpgrades.weaponUpdated = false;
 
-        sfxManager.PlayClip(sfxManager.backpackActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true);
+        sfxManager.PlayClip(sfxManager.backpackActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod, true);
     }
 
     void SwitchToSecondary()
     {
+        var sfxManager = SFXAudioManager.Instance;
+
         if (secondaryWeapon.title == "Ulfberht")
         {
-            playerWeapon.SwitchToUlfberht();
+            weapon.SwitchToUlfberht();
         }
         else if (secondaryWeapon.title == "Pugio")
         {
-            playerWeapon.SwitchToPugio();
+            weapon.SwitchToPugio();
         }
 
-        playerLoadout.selectedWeapon = secondaryWeapon;
-        playerUpgrades.weaponUpdated = false;
+        PlayerComponents.Instance.playerLoadout.selectedWeapon = secondaryWeapon;
+        PlayerComponents.Instance.playerUpgrades.weaponUpdated = false;
 
-        sfxManager.PlayClip(sfxManager.backpackActivate, sfxManager.masterManager.sBlend2D, sfxManager.backVolumeMod, true);
+        sfxManager.PlayClip(sfxManager.backpackActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod, true);
     }
 
     IEnumerator CooldownRoutine()
