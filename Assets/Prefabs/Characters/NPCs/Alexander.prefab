@@ -121,5 +121,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   talking: 0
-  npcSprite: {fileID: 21300000, guid: b12c8237b040bd043ac90b2ee3df1541, type: 3}
-  npcSpawner: {fileID: 0}
+  npcSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}

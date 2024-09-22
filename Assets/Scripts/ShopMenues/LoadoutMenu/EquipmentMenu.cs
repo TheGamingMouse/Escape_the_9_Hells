@@ -65,7 +65,7 @@ public class EquipmentMenu : MonoBehaviour
     Alexander alexander;
     LoadoutMenu loadoutMenu;
     UpgradeMenu upgradeMenu;
-    Interactor interactor;
+    SFXAudioManager sfxManager;
 
     #endregion
 
@@ -84,18 +84,17 @@ public class EquipmentMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var player = PlayerComponents.Instance.player;
+        var managers = GameObject.FindWithTag("Managers");
 
+        uiManager = managers.GetComponent<UIManager>();
+        playerEquipment = GameObject.FindWithTag("Player").GetComponent<PlayerEquipment>();
         loadoutMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Barbara").GetComponent<LoadoutMenu>();
         upgradeMenu = GameObject.FindWithTag("Canvas").transform.Find("Menus/npcConversations/Jens").GetComponent<UpgradeMenu>();
-        interactor = player.GetComponent<Interactor>();
+        sfxManager = managers.GetComponent<SFXAudioManager>();
 
         if (UIManager.Instance.npcsActive)
         {
-            if (NPCSpawner.Instance.alexSpawned)
-            {
-                alexander = NPCSpawner.Instance.alexander;
-            }
+            npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
         }
         
         if (!pannelsActivated && PlayerComponents.Instance.playerEquipment.equipmentLoaded)
@@ -157,6 +156,11 @@ public class EquipmentMenu : MonoBehaviour
             CheckEquipmentPurchaseable();
 
             pannelsActivated = true;
+        }
+
+        if (uiManager.npcsActive && npcSpawner.alexSpawned)
+        {
+            alexander = GameObject.FindWithTag("NPC").GetComponentInChildren<Alexander>();
         }
         
         if (!pannelsLoaded)
@@ -314,26 +318,50 @@ public class EquipmentMenu : MonoBehaviour
             PlayerComponents.Instance.playerEquipment.PurchaseBack(equipmentItemsSOBack[btnNo]);
         }
     }
+
+    IEnumerator SetMenuCanClose()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanClose = true;
+    }
+
+    IEnumerator SetMenuCanOpen()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanOpen = true;
+    }
+
+    IEnumerator SetMenuCanClose()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanClose = true;
+    }
+
+    IEnumerator SetMenuCanOpen()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanOpen = true;
+    }
     
     public void OpenStore()
     {
-        if (!interactor.interacting)
-        {
-            menuCanOpen = false;
-            menuOpen = true;
-            menuCanClose = true;
-        }
+        menuCanOpen = false;
+        menuOpen = true;
+        StartCoroutine(SetMenuCanClose());
     }
 
     public void CloseStore()
     {
-        menuOpen = false;
-        menuCanClose = false;
-        menuCanOpen = true;
-        UIManager.Instance.alexanderTalking = false;
-        alexander.talking = false;
+        if (alexander)
+        {
+            menuOpen = false;
+            menuCanClose = false;
+            uiManager.alexanderTalking = false;
+            alexander.talking = false;
+            StartCoroutine(SetMenuCanOpen());
 
-        SFXAudioManager.Instance.PlayAlexanderVO(false);
+            sfxManager.PlayAlexanderVO(false);
+        }
     }
 
     #endregion

@@ -49,7 +49,6 @@ public class UpgradeMenu : MonoBehaviour
     public CompanionUpgradesMenu companionMenu;
     public ArmorUpgradesMenu armorMenu;
     public BackUpgradesMenu backMenu;
-    Interactor interactor;
 
     #endregion
 
@@ -68,14 +67,16 @@ public class UpgradeMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        interactor = PlayerComponents.Instance.player.GetComponent<Interactor>();
+        uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
 
         if (UIManager.Instance.npcsActive)
         {
-            if (NPCSpawner.Instance.jensSpawned)
-            {
-                jens = NPCSpawner.Instance.jens;
-            }
+            npcSpawner = GameObject.FindWithTag("NPC").GetComponent<NPCSpawner>();
+        }
+
+        if (uiManager.npcsActive && npcSpawner.jensSpawned)
+        {
+            jens = GameObject.FindWithTag("NPC").GetComponentInChildren<Jens>();
         }
 
         if (!headerUpdated)
@@ -113,29 +114,41 @@ public class UpgradeMenu : MonoBehaviour
 
     #region General Methods
 
+    IEnumerator SetMenuCanClose()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanClose = true;
+    }
+
+    IEnumerator SetMenuCanOpen()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanOpen = true;
+    }
+
     public void OpenStore()
     {
-        if (!interactor.interacting)
-        {
-            menuCanOpen = false;
-            menuOpen = true;
-            menuCanClose = true;
-        }
+        menuCanOpen = false;
+        menuOpen = true;
+        StartCoroutine(SetMenuCanClose());
     }
 
     public void CloseStore()
     {
-        upgradeSelection.SetActive(true);
-        weaponUpgrades.SetActive(false);
-        companionUpgrades.SetActive(false);
-        armorUpgrades.SetActive(false);
-        backUpgrades.SetActive(false);
+        if (jens)
+        {
+            upgradeSelection.SetActive(true);
+            weaponUpgrades.SetActive(false);
+            companionUpgrades.SetActive(false);
+            armorUpgrades.SetActive(false);
+            backUpgrades.SetActive(false);
 
-        menuOpen = false;
-        menuCanClose = false;
-        menuCanOpen = true;
-        UIManager.Instance.jensTalking = false;
-        jens.talking = false;
+            menuOpen = false;
+            menuCanClose = false;
+            uiManager.jensTalking = false;
+            jens.talking = false;
+            StartCoroutine(SetMenuCanOpen());
+        }
     }
 
     public void ReloadPannels()

@@ -41,12 +41,9 @@ public class SoulsMenu : MonoBehaviour
 
     [Header("Components")]
     Ricky ricky;
-    Interactor interactor;
-
-    void Awake()
-    {
-        Instance = this;
-    }
+    PlayerSouls playerSouls;
+    SaveLoadManager slManager;
+    SFXAudioManager sfxManager;
 
     void Start()
     {
@@ -66,24 +63,18 @@ public class SoulsMenu : MonoBehaviour
 
                 soulContents.transform.position = new Vector3(10000f, soulContents.transform.position.y, soulContents.transform.position.z);
 
-                var player = PlayerComponents.Instance.player;
+                uiManager = GameObject.FindWithTag("Managers").GetComponent<UIManager>();
+                playerSouls = GameObject.FindWithTag("Player").GetComponent<PlayerSouls>();
+                sfxManager = GameObject.FindWithTag("Managers").GetComponent<SFXAudioManager>();
 
-                interactor = player.GetComponent<Interactor>();
+                if (uiManager.npcsActive)
+                {
+                    ricky = GameObject.FindWithTag("NPC").GetComponentInChildren<Ricky>();
+                }
 
                 CheckSoulsPurchaseable();
 
                 pannelsActivated = true;
-            }
-
-            if (!ricky)
-            {
-                if (UIManager.Instance.npcsActive)
-                {
-                    if (NPCSpawner.Instance.rickySpawned)
-                    {
-                        ricky = NPCSpawner.Instance.ricky;
-                    }
-                }
             }
             
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
@@ -284,24 +275,36 @@ public class SoulsMenu : MonoBehaviour
         }
     }
 
+    IEnumerator SetMenuCanClose()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanClose = true;
+    }
+
+    IEnumerator SetMenuCanOpen()
+    {
+        yield return new WaitForSeconds(0.1f);
+        menuCanOpen = true;
+    }
+
     public void OpenStore()
     {
-        if (!interactor.interacting)
-        {
-            menuCanOpen = false;
-            menuOpen = true;
-            menuCanClose = true;
-        }
+        menuCanOpen = false;
+        menuOpen = true;
+        StartCoroutine(SetMenuCanClose());
     }
 
     public void CloseStore()
     {
-        menuOpen = false;
-        menuCanClose = false;
-        menuCanOpen = true;
-        UIManager.Instance.rickyTalking = false;
-        ricky.talking = false;
+        if (ricky)
+        {
+            menuOpen = false;
+            menuCanClose = false;
+            uiManager.rickyTalking = false;
+            ricky.talking = false;
+            StartCoroutine(SetMenuCanOpen());
 
-        SFXAudioManager.Instance.PlayRickyVO(false);
+            sfxManager.PlayRickyVO(false);
+        }
     }
 }
