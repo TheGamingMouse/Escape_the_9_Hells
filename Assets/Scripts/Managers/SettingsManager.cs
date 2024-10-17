@@ -53,7 +53,6 @@ public class SettingsManager : MonoBehaviour
         Instance = this;
     }
     
-    // Start is called before the first frame update
     void Start()
     {
         FindElements();
@@ -131,6 +130,11 @@ public class SettingsManager : MonoBehaviour
         
         masterVolume = volume;
 
+        var settingsData = SaveSystem.loadedSettingsData;
+        settingsData.masterVolume = volume;
+
+        SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
+
         if (!started)
         {
             masterVolumeSlider.value = volume;
@@ -146,6 +150,11 @@ public class SettingsManager : MonoBehaviour
         
         musicVolume = volume;
 
+        var settingsData = SaveSystem.loadedSettingsData;
+        settingsData.musicVolume = volume;
+
+        SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
+
         if (!started)
         {
             musicVolumeSlider.value = volume;
@@ -160,6 +169,11 @@ public class SettingsManager : MonoBehaviour
         sfxVolumeText.text = $"{volumePercent}%";
         
         sfxVolume = volume;
+
+        var settingsData = SaveSystem.loadedSettingsData;
+        settingsData.sfxVolume = volume;
+
+        SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
         if (!started)
         {
@@ -197,6 +211,11 @@ public class SettingsManager : MonoBehaviour
                 screenMode = 2;
                 break;
         }
+
+        var settingsData = SaveSystem.loadedSettingsData;
+        settingsData.screenMode = mode;
+
+        SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
         if (!started)
         {

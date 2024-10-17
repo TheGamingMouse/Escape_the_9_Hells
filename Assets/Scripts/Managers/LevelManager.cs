@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static SaveSystemSpace.SaveClasses;
 
 public class LevelManager : MonoBehaviour
 {
@@ -11,7 +10,7 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance;
 
     [Header("Enums")]
-    public SaveClasses.LayerData.LayerState lState;
+    public LayerData.LayerState lState;
 
     #endregion
 
@@ -34,6 +33,14 @@ public class LevelManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+    }
+
+    void Start()
+    {
+        var layerData = SaveSystem.loadedLayerData;
+        layerData.lState = lState;
+
+        SaveSystem.Instance.Save(layerData, SaveSystem.layerDataPath);
     }
 
     void Update()

@@ -57,6 +57,7 @@ GameObject:
   - component: {fileID: 5337425809499855676}
   - component: {fileID: 6855400228520188379}
   - component: {fileID: 7251090782454266124}
+  - component: {fileID: 862136867418967543}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -204,7 +205,6 @@ MonoBehaviour:
     m_Bits: 8
   rb: {fileID: 0}
   weapon: {fileID: 904703759980282549}
-  bossGenerator: {fileID: 0}
   roomSpawner: {fileID: 0}
 --- !u!114 &7877418249753882365
 MonoBehaviour:
@@ -223,7 +223,7 @@ MonoBehaviour:
   playerDead: 0
   isInvinsible: 0
   shield: {fileID: 7537612569808091516}
-  capeOWindPS: {fileID: 2532246416109722698}
+  capeOWindParticleSystem: {fileID: 0}
 --- !u!114 &1551798212819196407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,12 +261,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c82e5291da2a1c949a9296f693691dbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fAuraActive: 0
-  fAuraPSActive: 0
-  iAuraActive: 0
-  iAuraPSActive: 0
-  shieldActive: 0
-  shieldPSActive: 0
   templatePerks: []
   defencePerks: []
   attackSpeedPerks: []
@@ -291,6 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d137f0443c90f1848b3960530cb8e01b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPathfinder: 0
   templateSouls: []
   attackSpeedSouls: []
   damageSouls: []
@@ -299,6 +294,7 @@ MonoBehaviour:
   luckSouls: []
   startLevelSouls: []
   reRollSouls: []
+  ricky: {fileID: 0}
 --- !u!114 &6118601133543605768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,10 +309,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   start: 0
   backpackActive: 0
+  seedBagActive: 0
   selectedWeapon: {fileID: 0}
   selectedPrimaryWeapon: {fileID: 0}
   selectedSecondaryWeapon: {fileID: 0}
   selectedCompanion: {fileID: 0}
+  selectedPrimaryCompanion: {fileID: 0}
+  selectedSecondaryCompanion: {fileID: 0}
   selectedArmor: {fileID: 0}
   selectedBack: {fileID: 0}
   defaultWeapon: {fileID: 11400000, guid: 067f7c7567c3ada4196836894c382299, type: 2}
@@ -350,8 +349,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd5716f607f4fd746b5fa6933aa0b327, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numFound: 0
   promtFound: 0
+  interacting: 0
   interactableMask:
     serializedVersion: 2
     m_Bits: 256
@@ -414,8 +413,29 @@ MonoBehaviour:
   upgradesSteelWings: []
   upgradesBackpacks: []
   upgradesCapeOWinds: []
-  upgradesBacks1: []
+  upgradesSeedBag: []
   upgradesBacks2: []
+--- !u!114 &862136867418967543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206445994175384301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b71158e65780c54ebe7b77a61a754b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMovement: {fileID: 7411566162740162557}
+  playerHealth: {fileID: 7877418249753882365}
+  playerLevel: {fileID: 1551798212819196407}
+  playerPerks: {fileID: 936047884750885551}
+  playerSouls: {fileID: 2338862017887286171}
+  playerLoadout: {fileID: 6118601133543605768}
+  playerEquipment: {fileID: 6855400228520188379}
+  playerUpgrades: {fileID: 7251090782454266124}
+  player: {fileID: 8118087325354686036}
 --- !u!1 &4180603138063181090
 GameObject:
   m_ObjectHideFlags: 0
@@ -899,6 +919,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8118087325354686036}
     m_Modifications:
+    - target: {fileID: 5192178585571911158, guid: 111df861aafa1ad45b9fba317fb57ed7, type: 3}
+      propertyPath: m_Name
+      value: SeedBag
+      objectReference: {fileID: 0}
     - target: {fileID: 5420385718269380227, guid: 111df861aafa1ad45b9fba317fb57ed7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1365,11 +1389,6 @@ PrefabInstance:
 --- !u!4 &1354107104079774115 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8029142899459995171, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
-  m_PrefabInstance: {fileID: 9054486852650383232}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &2532246416109722698 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 6810471105834413002, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
   m_PrefabInstance: {fileID: 9054486852650383232}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9148644146672641315

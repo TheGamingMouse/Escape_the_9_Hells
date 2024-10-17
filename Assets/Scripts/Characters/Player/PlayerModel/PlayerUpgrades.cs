@@ -96,6 +96,7 @@ public class PlayerUpgrades : MonoBehaviour
     void Update()
     {
         var loadout = PlayerComponents.Instance.playerLoadout;
+
         if (loadout.start)
         {
             if (!loaded)
@@ -567,42 +568,20 @@ public class PlayerUpgrades : MonoBehaviour
 
     public void AddPugioUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesPugio.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.weaponData.pugioUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
         weaponUpdated = false;
     }
 
     public void AddUlfberhtUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesUlfberht.Add(upgrade);
-
-        weaponUpdated = false;
-    }
-    
-    public void AddWeapon1Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesWeapon1.Add(upgrade);
-
-        weaponUpdated = false;
-    }
-    
-    public void AddWeapon2Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesWeapon2.Add(upgrade);
-
-        weaponUpdated = false;
-    }
-    
-    public void AddWeapon3Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesWeapon3.Add(upgrade);
-
-        weaponUpdated = false;
-    }
-    
-    public void AddWeapon4Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesWeapon4.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.weaponData.ulfberhtUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
         weaponUpdated = false;
     }
@@ -613,44 +592,22 @@ public class PlayerUpgrades : MonoBehaviour
 
     public void AddLoyalSphereUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesLoyalSphere.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.companionData.loyalSphereUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        companionUpdated = false;
+        weaponUpdated = false;
     }
 
     public void AddAttackSquareUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesAttackSquare.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.companionData.attackSquareUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        companionUpdated = false;
-    }
-
-    public void AddCompanion1Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesCompanion1.Add(upgrade);
-
-        companionUpdated = false;
-    }
-
-    public void AddCompanion2Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesCompanion2.Add(upgrade);
-
-        companionUpdated = false;
-    }
-
-    public void AddCompanion3Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesCompanion3.Add(upgrade);
-
-        companionUpdated = false;
-    }
-
-    public void AddCompanion4Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesCompanion4.Add(upgrade);
-
-        companionUpdated = false;
+        weaponUpdated = false;
     }
 
     #endregion
@@ -659,44 +616,42 @@ public class PlayerUpgrades : MonoBehaviour
 
     public void AddLeatherUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesLeather.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.armorData.leatherUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        armorUpdated = false;
+        weaponUpdated = false;
     }
 
     public void AddHideUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesHide.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.armorData.hideUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        armorUpdated = false;
+        weaponUpdated = false;
     }
 
     public void AddRingMailUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesRingMail.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.armorData.ringMailUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        armorUpdated = false;
+        weaponUpdated = false;
     }
 
     public void AddPlateUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesPlate.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.armorData.plateUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        armorUpdated = false;
-    }
-
-    public void AddArmor1Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesArmor1.Add(upgrade);
-
-        armorUpdated = false;
-    }
-
-    public void AddArmor2Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesArmor2.Add(upgrade);
-
-        armorUpdated = false;
+        weaponUpdated = false;
     }
 
     #endregion
@@ -705,44 +660,52 @@ public class PlayerUpgrades : MonoBehaviour
 
     public void AddAngelWingsUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesAngelWings.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.backData.angelWingsUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        backUpdated = false;
+        weaponUpdated = false;
     }
 
     public void AddSteelWingsUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesSteelWings.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.backData.steelWingsUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        backUpdated = false;
+        weaponUpdated = false;
     }
 
     public void AddBackpackUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesBackpacks.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.backData.backpackUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        backUpdated = false;
+        weaponUpdated = false;
     }
 
     public void AddCapeOWindUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesCapeOWinds.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.backData.capeOWindUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        backUpdated = false;
+        weaponUpdated = false;
     }
 
     public void AddSeedBagUpgrade(UpgradeItemsSO upgrade)
     {
-        upgradesSeedBag.Add(upgrade);
+        var equipmentData = SaveSystem.loadedEquipmentData;
+        equipmentData.backData.seedBagUpgrades.Add(upgrade);
+        
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
 
-        backUpdated = false;
-    }
-
-    public void AddBack2Upgrade(UpgradeItemsSO upgrade)
-    {
-        upgradesBacks2.Add(upgrade);
-
-        backUpdated = false;
+        weaponUpdated = false;
     }
 
     #endregion

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static SaveSystemSpace.SaveClasses;
 
 public class Follow : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class Follow : MonoBehaviour
     {
         if (fState == FollowState.Player)
         {
-            if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.Hub)
+            if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
             {
                 transform.position = new Vector3(Mathf.Clamp(player.position.x + offset.x, -11f, 11f), player.position.y + offset.y, Mathf.Clamp(player.position.z + offset.z, -6.5f, 2.5f));
             }

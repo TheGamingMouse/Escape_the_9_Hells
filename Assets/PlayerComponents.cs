@@ -16,15 +16,6 @@ public class PlayerComponents : MonoBehaviour
 
     void Awake()
     {
-        playerMovement = GetComponent<PlayerMovement>();
-        playerHealth = GetComponent<PlayerHealth>();
-        playerLevel = GetComponent<PlayerLevel>();
-        playerPerks = GetComponent<PlayerPerks>();
-        playerSouls = GetComponent<PlayerSouls>();
-        playerLoadout = GetComponent<PlayerLoadout>();
-        playerEquipment = GetComponent<PlayerEquipment>();
-        playerUpgrades = GetComponent<PlayerUpgrades>();
-
-        player = GameObject.FindWithTag("Player").transform;
+        Instance = this;
     }
 }

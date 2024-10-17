@@ -39,7 +39,7 @@ public class PlayerEquipment : MonoBehaviour
 
             // Weapons
             int countWeapons = 0;
-            foreach (var weapon in boughtWeapons)
+            foreach (var weapon in boughtWeapons.ToList())
             {
                 if (!weapon || weapon.equipmentType.ToLower() != "weapon")
                 {
@@ -64,7 +64,7 @@ public class PlayerEquipment : MonoBehaviour
 
             // Companions
             int countCompanions = 0;
-            foreach (var companion in boughtCompanions)
+            foreach (var companion in boughtCompanions.ToList())
             {
                 if (!companion || companion.equipmentType.ToLower() != "companion")
                 {
@@ -89,7 +89,7 @@ public class PlayerEquipment : MonoBehaviour
 
             // Armors
             int countArmors = 0;
-            foreach (var armor in boughtArmors)
+            foreach (var armor in boughtArmors.ToList())
             {
                 if (!armor || armor.equipmentType.ToLower() != "armor")
                 {
@@ -114,7 +114,7 @@ public class PlayerEquipment : MonoBehaviour
 
             // Backs
             int countBacks = 0;
-            foreach (var back in boughtBacks)
+            foreach (var back in boughtBacks.ToList())
             {
                 if (!back || back.equipmentType.ToLower() != "back")
                 {

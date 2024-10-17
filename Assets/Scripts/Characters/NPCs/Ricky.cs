@@ -93,10 +93,10 @@ public class Ricky : MonoBehaviour, IInteractable
 
         health = maxHealth;
 
-        var NpcData = SaveSystem.loadedNpcData;
+        var npcData = SaveSystem.loadedNpcData;
         
-        dialogueStartComplete = NpcData.rickyStartComp;
-        returnedTo = NpcData.returnedToRicky;
+        dialogueStartComplete = npcData.rickyStartComp;
+        returnedTo = npcData.returnedToRicky;
 
         Dialogue.Instance.dialogueDone = false;
         UIManager.Instance.npcsActive = true;
@@ -208,12 +208,14 @@ public class Ricky : MonoBehaviour, IInteractable
                         playerMovement.startBool = true;
                         dialogueStartComplete = true;
 
-                        var NpcData = SaveSystem.loadedNpcData;
-                        NpcData.rickyStartComp = dialogueStartComplete;
+                        var npcData = SaveSystem.loadedNpcData;
+                        var palyerData = SaveSystem.loadedPlayerData;
+                        
+                        npcData.rickyStartComp = dialogueStartComplete;
+                        palyerData.newGame = false;
 
-                        SaveSystem.Instance.Save(NpcData, SaveSystem.npcDataPath);
-
-
+                        SaveSystem.Instance.Save(npcData, SaveSystem.npcDataPath);
+                        SaveSystem.Instance.Save(palyerData, SaveSystem.playerDataPath);
 
                         if (!doorOpenedAudio)
                         {
@@ -250,10 +252,10 @@ public class Ricky : MonoBehaviour, IInteractable
             beginDialogue = false;
             returnedTo = true;
 
-            var NpcData = SaveSystem.loadedNpcData;
-            NpcData.returnedToRicky = true;
+            var npcData = SaveSystem.loadedNpcData;
+            npcData.returnedToRicky = true;
 
-            SaveSystem.Instance.Save(NpcData, SaveSystem.npcDataPath);
+            SaveSystem.Instance.Save(npcData, SaveSystem.npcDataPath);
         }
 
         if (beginDialogue && returnedTo && uiManager.dialogueBox.activeInHierarchy)

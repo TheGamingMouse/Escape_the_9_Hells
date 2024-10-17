@@ -1,7 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
+using SaveSystemSpace;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static SaveSystemSpace.SaveClasses;
 
 public class SaveSystem : MonoBehaviour
 {
@@ -18,14 +21,14 @@ public class SaveSystem : MonoBehaviour
     public static readonly string npcDataPath = "Npc Data";
     public static readonly string persistentDataPath = "Persistant Data";
 
-    public static SaveClasses.LayerData loadedLayerData;
-    public static SaveClasses.PersistentData loadedPersistentData;
-    public static SaveClasses.PlayerData loadedPlayerData;
-    public static SaveClasses.EquipmentData loadedEquipmentData;
-    public static SaveClasses.SoulData loadedSoulData;
-    public static SaveClasses.PerkData loadedPerkData;
-    public static SaveClasses.SettingsData loadedSettingsData;
-    public static SaveClasses.NpcData loadedNpcData;
+    public static LayerData loadedLayerData;
+    public static PersistentData loadedPersistentData;
+    public static PlayerData loadedPlayerData;
+    public static EquipmentData loadedEquipmentData;
+    public static SoulData loadedSoulData;
+    public static PerkData loadedPerkData;
+    public static SettingsData loadedSettingsData;
+    public static NpcData loadedNpcData;
 
     #endregion
 
@@ -35,31 +38,54 @@ public class SaveSystem : MonoBehaviour
     {
         Instance = this;
 
-        LoadData();
+        UpdateLoadedData();
+
+        loadedLayerData.layerReached = CheckLayer();
+        if (loadedLayerData.layerReached > loadedLayerData.highestLayerReached)
+        {
+            loadedLayerData.highestLayerReached = loadedLayerData.layerReached;
+        }
+        Save(loadedLayerData, layerDataPath);
+
+        if (loadedLayerData.lState != LayerData.LayerState.InLayers)
+        {
+            float musicTime = loadedPersistentData.musicTime;
+
+            loadedPersistentData = new PersistentData
+            {
+                musicTime = musicTime
+            };
+        }
+        else
+        {
+            loadedPersistentData.musicTime = 0f;
+        }
+        loadedPersistentData.reRolls = loadedSoulData.reRollSoulsBought.Count;
+        Save(loadedPersistentData, persistentDataPath);
     }
 
     public void Save(object saveData, string dataPath)
     {
         var updateData = saveData;
 
-        if (saveData.GetType() == typeof(SaveClasses.LayerData))
+        if (saveData.GetType() == typeof(LayerData))
         {
-            saveData = FriendlifyLayerData((SaveClasses.LayerData)saveData);
+            saveData = FriendlifyLayerData((LayerData)saveData);
         }
         
-        else if (saveData.GetType() == typeof(SaveClasses.EquipmentData))
+        else if (saveData.GetType() == typeof(EquipmentData))
         {
-            saveData = FriendlifyEquipmentData((SaveClasses.EquipmentData)saveData);
+            saveData = FriendlifyEquipmentData((EquipmentData)saveData);
         }
         
-        else if (saveData.GetType() == typeof(SaveClasses.SoulData))
+        else if (saveData.GetType() == typeof(SoulData))
         {
-            saveData = FriendlifySoulsData((SaveClasses.SoulData)saveData);
+            saveData = FriendlifySoulsData((SoulData)saveData);
         }
         
-        else if (saveData.GetType() == typeof(SaveClasses.PerkData))
+        else if (saveData.GetType() == typeof(PerkData))
         {
-            saveData = FriendlifyPerksData((SaveClasses.PerkData)saveData);
+            saveData = FriendlifyPerksData((PerkData)saveData);
         }
 
         string fullPath = Application.persistentDataPath + "/Saved Files/" + dataPath + ".Json";
@@ -85,7 +111,6 @@ public class SaveSystem : MonoBehaviour
 
     public object Load(string dataPath)
     {
-        print("loading " + dataPath);
         var fullPath = $"{Application.persistentDataPath}/Saved Files/{dataPath}.Json";
 
         if (!File.Exists(fullPath))
@@ -96,38 +121,61 @@ public class SaveSystem : MonoBehaviour
 
         try
         {
-            object friendlyObject = JsonUtility.FromJson<object>(File.ReadAllText(fullPath));
-            
-            if (friendlyObject.GetType() == typeof(SaveClasses.FriendlyLayerData))
+            if (dataPath == layerDataPath)
             {
-                var unfriendlyObject = UnfriendlifyLayerData((SaveClasses.FriendlyLayerData)friendlyObject);
+                var friendlyObject = JsonUtility.FromJson<FriendlyLayerData>(File.ReadAllText(fullPath));
+
+                var unfriendlyObject = UnfriendlifyLayerData(friendlyObject);
                 return unfriendlyObject;
             }
             
-            else if (friendlyObject.GetType() == typeof(SaveClasses.FriendlyEquipmentData))
+            else if (dataPath == equipmentDataPath)
             {
-                print("Unfriendlifying equipment data");
-                var unfriendlyObject = UnfriendlifyEquipmentData((SaveClasses.FriendlyEquipmentData)friendlyObject);
-                print(unfriendlyObject);
+                var friendlyObject = JsonUtility.FromJson<FriendlyEquipmentData>(File.ReadAllText(fullPath));
+
+                var unfriendlyObject = UnfriendlifyEquipmentData(friendlyObject);
                 return unfriendlyObject;
             }
             
-            else if (friendlyObject.GetType() == typeof(SaveClasses.FriendlySoulData))
+            else if (dataPath == soulsDataPath)
             {
-                var unfriendlyObject = UnfriendlifySoulsData((SaveClasses.FriendlySoulData)friendlyObject);
+                var friendlyObject = JsonUtility.FromJson<FriendlySoulData>(File.ReadAllText(fullPath));
+
+                var unfriendlyObject = UnfriendlifySoulsData(friendlyObject);
                 return unfriendlyObject;
             }
             
-            else if (friendlyObject.GetType() == typeof(SaveClasses.FriendlyPerkData))
+            else if (dataPath == perksDataPath)
             {
-                var unfriendlyObject = UnfriendlifyPerksData((SaveClasses.FriendlyPerkData)friendlyObject);
+                var friendlyObject = JsonUtility.FromJson<FriendlyPerkData>(File.ReadAllText(fullPath));
+
+                var unfriendlyObject = UnfriendlifyPerksData(friendlyObject);
                 return unfriendlyObject;
+            }
+            
+            else if (dataPath == persistentDataPath)
+            {
+                return JsonUtility.FromJson<PersistentData>(File.ReadAllText(fullPath));
+            }
+            
+            else if (dataPath == playerDataPath)
+            {
+                return JsonUtility.FromJson<PlayerData>(File.ReadAllText(fullPath));
+            }
+            
+            else if (dataPath == settingsDataPath)
+            {
+                return JsonUtility.FromJson<SettingsData>(File.ReadAllText(fullPath));
+            }
+            
+            else if (dataPath == npcDataPath)
+            {
+                return JsonUtility.FromJson<NpcData>(File.ReadAllText(fullPath));
             }
 
             else
             {
-                print("Returning friendly object");
-                return friendlyObject;
+                return new ArgumentException();
             }
         }
         catch (Exception e)
@@ -137,6 +185,18 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
+    public void StartNewGame()
+    {
+        Save(loadedLayerData = new LayerData(), layerDataPath);
+        Save(loadedPersistentData = new PersistentData(), persistentDataPath);
+        Save(loadedPlayerData = new PlayerData(), playerDataPath);
+        Save(loadedEquipmentData = new EquipmentData(), equipmentDataPath);
+        Save(loadedSoulData = new SoulData(), soulsDataPath);
+        Save(loadedPerkData = new PerkData(), perksDataPath);
+        Save(loadedSettingsData = new SettingsData(), settingsDataPath);
+        Save(loadedNpcData = new NpcData(), npcDataPath);
+    }
+
     public int CheckLayer()
     {
         int layer = SceneManager.GetActiveScene().buildIndex;
@@ -144,73 +204,114 @@ public class SaveSystem : MonoBehaviour
         return layer - 1;
     }
 
-    void LoadData()
+    void UpdateLoadedData()
     {
-        loadedLayerData = (SaveClasses.LayerData)Load(layerDataPath);
-        loadedPersistentData = (SaveClasses.PersistentData)Load(persistentDataPath);
-        loadedPlayerData = (SaveClasses.PlayerData)Load(playerDataPath);
-        loadedEquipmentData = (SaveClasses.EquipmentData)Load(equipmentDataPath);
-        loadedSoulData = (SaveClasses.SoulData)Load(soulsDataPath);
-        loadedPerkData = (SaveClasses.PerkData)Load(perksDataPath);
-        loadedSettingsData = (SaveClasses.SettingsData)Load(settingsDataPath);
-        loadedNpcData = (SaveClasses.NpcData)Load(npcDataPath);
+        loadedLayerData = (LayerData)Load(layerDataPath);
+        loadedPersistentData = (PersistentData)Load(persistentDataPath);
+        loadedPlayerData = (PlayerData)Load(playerDataPath);
+        loadedEquipmentData = (EquipmentData)Load(equipmentDataPath);
+        loadedSoulData = (SoulData)Load(soulsDataPath);
+        loadedPerkData = (PerkData)Load(perksDataPath);
+        loadedSettingsData = (SettingsData)Load(settingsDataPath);
+        loadedNpcData = (NpcData)Load(npcDataPath);
     }
 
-    // void SaveData()
-    // {
-    //     Save(loadedLayerData, layerDataPath);
-    //     Save(loadedPersistentData, persistentDataPath);
-    //     Save(loadedPlayerData, playerDataPath);
-    //     Save(loadedEquipmentData, equipmentDataPath);
-    //     Save(loadedSoulData, soulsDataPath);
-    //     Save(loadedPerkData, perksDataPath);
-    //     Save(loadedSettingsData, settingsDataPath);
-    //     Save(loadedNpcData, npcDataPath);
-    // }
+    void UpdateLoadedData(object data)
+    {
+        if (data.GetType() == typeof(LayerData))
+        {
+            loadedLayerData = (LayerData)data;
+        }
+        
+        else if (data.GetType() == typeof(PersistentData))
+        {
+            loadedPersistentData = (PersistentData)data;
+        }
+        
+        else if (data.GetType() == typeof(PlayerData))
+        {
+            loadedPlayerData = (PlayerData)data;
+        }
+        
+        else if (data.GetType() == typeof(EquipmentData))
+        {
+            loadedEquipmentData = (EquipmentData)data;
+        }
+        
+        else if (data.GetType() == typeof(SoulData))
+        {
+            loadedSoulData = (SoulData)data;
+        }
+        
+        else if (data.GetType() == typeof(PerkData))
+        {
+            loadedPerkData = (PerkData)data;
+        }
+        
+        else if (data.GetType() == typeof(SettingsData))
+        {
+            loadedSettingsData = (SettingsData)data;
+        }
+        
+        else if (data.GetType() == typeof(NpcData))
+        {
+            loadedNpcData = (NpcData)data;
+        }
 
-    #endregion
+        else
+        {
+            Debug.LogError("Data object not recognized.");
+        }
+    }
 
     object NewObject(string dataPath)
     {
         if (dataPath == layerDataPath)
         {
-            return new SaveClasses.LayerData();
+            Save(new LayerData(), dataPath);
+            return new LayerData();
         }
         
         else if (dataPath == persistentDataPath)
         {
-            return new SaveClasses.PersistentData();
+            Save(new PersistentData(), dataPath);
+            return new PersistentData();
         }
         
         else if (dataPath == playerDataPath)
         {
-            return new SaveClasses.PlayerData();
+            Save(new PlayerData(), dataPath);
+            return new PlayerData();
         }
         
         else if (dataPath == equipmentDataPath)
         {
-            print("returning equipment data object");
-            return new SaveClasses.EquipmentData();
+            Save(new EquipmentData(), dataPath);
+            return new EquipmentData();
         }
         
         else if (dataPath == soulsDataPath)
         {
-            return new SaveClasses.SoulData();
+            Save(new SoulData(), dataPath);
+            return new SoulData();
         }
         
         else if (dataPath == perksDataPath)
         {
-            return new SaveClasses.PerkData();
+            Save(new PerkData(), dataPath);
+            return new PerkData();
         }
         
         else if (dataPath == settingsDataPath)
         {
-            return new SaveClasses.SettingsData();
+            Save(new SettingsData(), dataPath);
+            return new SettingsData();
         }
         
         else if (dataPath == npcDataPath)
         {
-            return new SaveClasses.NpcData();
+            Save(new NpcData(), dataPath);
+            return new NpcData();
         }
 
         else
@@ -220,59 +321,13 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
-    void UpdateLoadedData(object data)
-    {
-        if (data.GetType() == typeof(SaveClasses.LayerData))
-        {
-            loadedLayerData = (SaveClasses.LayerData)data;
-        }
-        
-        else if (data.GetType() == typeof(SaveClasses.PersistentData))
-        {
-            loadedPersistentData = (SaveClasses.PersistentData)data;
-        }
-        
-        else if (data.GetType() == typeof(SaveClasses.PlayerData))
-        {
-            loadedPlayerData = (SaveClasses.PlayerData)data;
-        }
-        
-        else if (data.GetType() == typeof(SaveClasses.EquipmentData))
-        {
-            loadedEquipmentData = (SaveClasses.EquipmentData)data;
-        }
-        
-        else if (data.GetType() == typeof(SaveClasses.SoulData))
-        {
-            loadedSoulData = (SaveClasses.SoulData)data;
-        }
-        
-        else if (data.GetType() == typeof(SaveClasses.PerkData))
-        {
-            loadedPerkData = (SaveClasses.PerkData)data;
-        }
-        
-        else if (data.GetType() == typeof(SaveClasses.SettingsData))
-        {
-            loadedSettingsData = (SaveClasses.SettingsData)data;
-        }
-        
-        else if (data.GetType() == typeof(SaveClasses.NpcData))
-        {
-            loadedNpcData = (SaveClasses.NpcData)data;
-        }
-
-        else
-        {
-            Debug.LogError("Data object not recognized.");
-        }
-    }
+    #endregion
 
     #region Friendlify Methods
 
-    SaveClasses.FriendlyLayerData FriendlifyLayerData(SaveClasses.LayerData data)
+    FriendlyLayerData FriendlifyLayerData(LayerData data)
     {
-        var friendlyObject = new SaveClasses.FriendlyLayerData();
+        var friendlyObject = new FriendlyLayerData();
 
         friendlyObject.lState = data.lState.ToString();
         friendlyObject.layerReached = data.layerReached;
@@ -281,9 +336,9 @@ public class SaveSystem : MonoBehaviour
         return friendlyObject;
     }
 
-    SaveClasses.FriendlyEquipmentData FriendlifyEquipmentData(SaveClasses.EquipmentData data)
+    FriendlyEquipmentData FriendlifyEquipmentData(EquipmentData data)
     {
-        var friendlyObject = new SaveClasses.FriendlyEquipmentData();
+        var friendlyObject = new FriendlyEquipmentData();
 
         // Weapons
         foreach (var weapon in data.weaponData.boughtWeapons)
@@ -403,7 +458,7 @@ public class SaveSystem : MonoBehaviour
             friendlyObject.backData.seedBagUpgradeNames.Add(upgrade.title);
         }
 
-         
+        
         if (data.backData.selectedBack != null)
         friendlyObject.backData.selectedBackName = data.backData.selectedBack.title;
 
@@ -414,9 +469,9 @@ public class SaveSystem : MonoBehaviour
         return friendlyObject;
     }
 
-    SaveClasses.FriendlySoulData FriendlifySoulsData(SaveClasses.SoulData data)
+    FriendlySoulData FriendlifySoulsData(SoulData data)
     {
-        var friendlyObject = new SaveClasses.FriendlySoulData();
+        var friendlyObject = new FriendlySoulData();
 
         friendlyObject.attackSpeedSoulsBought = data.attackSpeedSoulsBought.Count;
         friendlyObject.damageSoulsBought = data.damageSoulsBought.Count;
@@ -430,9 +485,9 @@ public class SaveSystem : MonoBehaviour
         return friendlyObject;
     }
 
-    SaveClasses.FriendlyPerkData FriendlifyPerksData(SaveClasses.PerkData data)
+    FriendlyPerkData FriendlifyPerksData(PerkData data)
     {
-        var friendlyObject = new SaveClasses.FriendlyPerkData();
+        var friendlyObject = new FriendlyPerkData();
 
         friendlyObject.defencePerks = data.defencePerks.Count;
         friendlyObject.attackSpeedPerks = data.attackSpeedPerks.Count;
@@ -450,20 +505,20 @@ public class SaveSystem : MonoBehaviour
 
     #region Unfriendlify Methods
 
-    SaveClasses.LayerData UnfriendlifyLayerData(SaveClasses.FriendlyLayerData data)
+    LayerData UnfriendlifyLayerData(FriendlyLayerData data)
     {
-        var unfriendlyObject = new SaveClasses.LayerData();
+        var unfriendlyObject = new LayerData();
 
-        unfriendlyObject.lState = Enum.Parse<SaveClasses.LayerData.LayerState>(data.lState);
+        unfriendlyObject.lState = Enum.Parse<LayerData.LayerState>(data.lState);
         unfriendlyObject.layerReached = data.layerReached;
         unfriendlyObject.highestLayerReached = data.highestLayerReached;
 
         return unfriendlyObject;
     }
 
-    SaveClasses.EquipmentData UnfriendlifyEquipmentData(SaveClasses.FriendlyEquipmentData data)
+    EquipmentData UnfriendlifyEquipmentData(FriendlyEquipmentData data)
     {
-        var unfriendlyObject = new SaveClasses.EquipmentData();
+        var unfriendlyObject = new EquipmentData();
         var setObjects = SetScriptableObjects.Instance;
 
         var setWeapons = setObjects.setWeapons;
@@ -687,9 +742,9 @@ public class SaveSystem : MonoBehaviour
         return unfriendlyObject;
     }
     
-    SaveClasses.SoulData UnfriendlifySoulsData(SaveClasses.FriendlySoulData data)
+    SoulData UnfriendlifySoulsData(FriendlySoulData data)
     {
-        var unfriendlyObject = new SaveClasses.SoulData();
+        var unfriendlyObject = new SoulData();
         var setSoulItems = SetScriptableObjects.Instance.setSoulItems;
 
         SoulsItemsSO attackSpeedSoul = null;
@@ -780,9 +835,9 @@ public class SaveSystem : MonoBehaviour
         return unfriendlyObject;
     }
 
-    SaveClasses.PerkData UnfriendlifyPerksData(SaveClasses.FriendlyPerkData data)
+    PerkData UnfriendlifyPerksData(FriendlyPerkData data)
     {
-        var unfriendlyObject = new SaveClasses.PerkData();
+        var unfriendlyObject = new PerkData();
         var setPerks = SetScriptableObjects.Instance.setPerks;
 
         PerkItemsSO defencePerk = null;

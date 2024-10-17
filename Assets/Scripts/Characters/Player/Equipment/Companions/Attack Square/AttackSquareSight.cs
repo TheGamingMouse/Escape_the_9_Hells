@@ -7,7 +7,6 @@ public class AttackSquareSight : MonoBehaviour
     #region Variables
 
     [Header("Transforms")]
-    Transform player;
     public Transform target;
 
     [Header("LayerMasks")]
@@ -20,12 +19,6 @@ public class AttackSquareSight : MonoBehaviour
     #endregion
 
     #region StartUpdate Methods
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        player = PlayerComponents.Instance.player;
-    }
 
     // Update is called once per frame
     void Update()

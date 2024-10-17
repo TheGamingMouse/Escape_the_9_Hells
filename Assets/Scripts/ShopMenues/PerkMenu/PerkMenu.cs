@@ -50,6 +50,8 @@ public class PerkMenu : MonoBehaviour
     void Start()
     {
         perksSelected = new bool[perkItemsSO.Length];
+
+        reRolls = SaveSystem.loadedSoulData.reRollSoulsBought.Count;
     }
 
     // Update is called once per frame
@@ -165,6 +167,11 @@ public class PerkMenu : MonoBehaviour
 
         reRolls--;
         reRollsSpent++;
+
+        var persistentData = SaveSystem.loadedPersistentData;
+        persistentData.reRolls--;
+
+        SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
     }
 
     #endregion

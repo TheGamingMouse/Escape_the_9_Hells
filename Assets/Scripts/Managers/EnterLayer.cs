@@ -18,6 +18,14 @@ public class EnterLayer : MonoBehaviour
         if (coll.transform.CompareTag("Player"))
         {
             OnEnterLayer?.Invoke();
+
+            if (SaveSystem.loadedLayerData.lState == 
+                SaveSystemSpace.SaveClasses.LayerData.LayerState.Hub)
+            {
+                var playerData = SaveSystem.loadedPlayerData;
+                playerData.currentSouls = 0;
+                SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+            }
         }
     }
 

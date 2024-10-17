@@ -25,7 +25,7 @@ public class Pugio : MonoBehaviour
     [Header("Components")]
     BasicEnemyAction enemyAction;
     public Weapon weapon;
-    public ParticleSystem particleSystem;
+    public ParticleSystem particles;
 
     #endregion
 
@@ -35,9 +35,9 @@ public class Pugio : MonoBehaviour
     {
         enemyAction = GetComponentInParent<BasicEnemyAction>();
 
-        if (particleSystem)
+        if (particles)
         {
-            particleSystem.Stop();
+            particles.Stop();
         }
     }
 
@@ -67,7 +67,7 @@ public class Pugio : MonoBehaviour
         var sfxManager = SFXAudioManager.Instance;
 
         bossSlamming = true;
-        particleSystem.Play();
+        particles.Play();
 
         yield return new WaitForSeconds(1f);
 
@@ -75,7 +75,7 @@ public class Pugio : MonoBehaviour
 
         yield return new WaitForSeconds(0.8f);
 
-        particleSystem.Stop();
+        particles.Stop();
         bossSlamming = false;
     }
 

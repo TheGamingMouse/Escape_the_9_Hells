@@ -121,30 +121,48 @@ public class PlayerLoadout : MonoBehaviour
     #endregion
 
     #region General Methods
+
     public void SetLoadout(LoadoutItemsSO primaryWeapon, LoadoutItemsSO secondaryWeapon, LoadoutItemsSO primaryCompanion, LoadoutItemsSO secondaryCompanion, LoadoutItemsSO armor, LoadoutItemsSO back)
     {
+        var loadedEquipmentData = SaveSystem.loadedEquipmentData;
+
         selectedPrimaryWeapon = primaryWeapon;
+        loadedEquipmentData.weaponData.primaryWeapon = primaryWeapon;
         if (secondaryWeapon)
         {
             selectedSecondaryWeapon = secondaryWeapon;
+            loadedEquipmentData.weaponData.secondaryWeapon = secondaryWeapon;
         }
         else
         {
             selectedSecondaryWeapon = primaryWeapon;
+            loadedEquipmentData.weaponData.secondaryWeapon = primaryWeapon;
         }
         selectedWeapon = selectedPrimaryWeapon;
+        loadedEquipmentData.weaponData.selectedWeapon = selectedWeapon;
+
         selectedPrimaryCompanion = primaryCompanion;
+        loadedEquipmentData.companionData.primaryCompanion = primaryCompanion;
         if (secondaryCompanion)
         {
             selectedSecondaryCompanion = secondaryCompanion;
+            loadedEquipmentData.companionData.secondaryCompanion = secondaryCompanion;
         }
         else
         {
             selectedSecondaryCompanion = primaryCompanion;
+            loadedEquipmentData.companionData.selectedCompanion = primaryCompanion;
         }
         selectedCompanion = selectedPrimaryCompanion;
+        loadedEquipmentData.companionData.selectedCompanion = selectedCompanion;
+
         selectedArmor = armor;
+        loadedEquipmentData.armorData.selectedArmor = selectedArmor;
+
         selectedBack = back;
+        loadedEquipmentData.backData.selectedBack = selectedBack;
+
+        SaveSystem.Instance.Save(loadedEquipmentData, SaveSystem.equipmentDataPath);
 
         if (playerWeapon)
         {
@@ -163,7 +181,6 @@ public class PlayerLoadout : MonoBehaviour
             UpdateBack();
         }
     }
-    #nullable disable
 
     void UpdateWeapon()
     {

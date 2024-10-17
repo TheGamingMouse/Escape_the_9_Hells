@@ -4,7 +4,9 @@ using System.Globalization;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static SaveSystemSpace.SaveClasses;
 
 public class UIManager : MonoBehaviour
 {
@@ -80,7 +82,6 @@ public class UIManager : MonoBehaviour
     [Header("Transforms")]
     Transform canvas;
     Transform menus;
-    Transform npcs;
 
     [Header("TMPs")]
     TMP_Text levelText;
@@ -324,16 +325,14 @@ public class UIManager : MonoBehaviour
         GameObject pauseMenuCurrentSouls = pauseMenu.transform.Find("Souls").gameObject;
         GameObject pauseMenuTotalSouls = pauseMenu.transform.Find("TotalSouls").gameObject;
 
-        if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.Hub)
+        if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
         {
             pauseMenuCurrentSouls.SetActive(false);
             pauseMenuTotalSouls.transform.position += new Vector3(0, 113, 0);
         }
 
         bossObj = canvas.Find("Boss").gameObject;
-
         promt = canvas.Find("Promt").gameObject;
-
         npcConvos = menus.Find("npcConversations").gameObject;
     }
 
@@ -342,7 +341,7 @@ public class UIManager : MonoBehaviour
         canvas = GameObject.FindWithTag("Canvas").transform;
 
         levelText = canvas.Find("uf_level_elite/LevelText (TMP)").GetComponent<TextMeshProUGUI>();
-        if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.Hub)
+        if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
         {
             soulsText = canvas.Find("HubSouls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
             disableSoulsText = canvas.Find("Souls").gameObject;
@@ -622,7 +621,7 @@ public class UIManager : MonoBehaviour
     {
         var playerData = SaveSystem.loadedPlayerData;
 
-        if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.InLayers)
+        if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.InLayers)
         {
             totalSouls = playerData.currentSouls + _soulsCounterValue;
         }
@@ -632,6 +631,7 @@ public class UIManager : MonoBehaviour
         }
 
         totalSoulsText.text = totalSouls.ToString();
+        soulsText.text = totalSouls.ToString();
     }
 
     #endregion
@@ -670,6 +670,24 @@ public class UIManager : MonoBehaviour
         barbaraTalking = false;
     }
 
+    public void UpdatePlayerData()
+    {
+        var playerData = SaveSystem.loadedPlayerData;
+        var persistentData = SaveSystem.loadedPersistentData;
+
+        playerData.currentSouls = totalSouls;
+        if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.InLayers) 
+        {
+            playerData.totalSouls += playerData.currentSouls;
+            if (persistentData.levelsGainedInLayer > 1)
+                playerData.totalLevels += persistentData.levelsGainedInLayer;
+            playerData.demonsKilled += persistentData.demonsKilledInLayer;
+            playerData.devilsKilled += persistentData.devilsKilledInLayer;
+        }
+
+        SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+    }
+
     #endregion
 
     #region SubscriptionHandler Methods
@@ -690,7 +708,7 @@ public class UIManager : MonoBehaviour
         var playerLevel = PlayerComponents.Instance.playerLevel;
 
         Time.timeScale = 0f;
-        deathMenu.SetActive(true);
+        if (deathMenu != null) deathMenu.SetActive(true);
 
         demonsKilled = playerLevel.demonsKilled;
         devilsKilled = playerLevel.devilsKilled;
@@ -716,6 +734,11 @@ public class UIManager : MonoBehaviour
     void HandleBossDeath()
     {
         bossDead = true;
+    }
+
+    void OnApplicationQuit()
+    {
+        UpdatePlayerData();
     }
 
     #endregion

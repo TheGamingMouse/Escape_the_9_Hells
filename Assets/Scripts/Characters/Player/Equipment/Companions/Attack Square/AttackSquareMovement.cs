@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static SaveSystemSpace.SaveClasses;
 
 public class AttackSquareMovement : MonoBehaviour
 {
@@ -83,7 +84,7 @@ public class AttackSquareMovement : MonoBehaviour
         }
 
         var layerData = SaveSystem.loadedLayerData;
-        if (Vector3.Distance(player.position, transform.position) > 10f && layerData.lState == SaveClasses.LayerData.LayerState.InLayers)
+        if (Vector3.Distance(player.position, transform.position) > 10f && layerData.lState == LayerData.LayerState.InLayers)
         {
             transform.position = new Vector3(player.position.x, transform.position.y, player.position.z);
 

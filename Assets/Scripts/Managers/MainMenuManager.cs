@@ -74,13 +74,13 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        if (!DataPersistenceManager.Instance.HasData())
+        var settingsData = SaveSystem.loadedSettingsData;
+        var playerData = SaveSystem.loadedPlayerData;
+
+        if (playerData.newGame)
         {
             continueGameButton.interactable = false;
         }
-
-        var settingsData = SaveSystem.loadedSettingsData;
-        var playerData = SaveSystem.loadedPlayerData;
 
         masterVolume = settingsData.masterVolume;
         musicVolume = settingsData.musicVolume;
@@ -134,7 +134,7 @@ public class MainMenuManager : MonoBehaviour
     public void NewGameButton()
     {
         DisableButtons();
-        DataPersistenceManager.Instance.NewGame();
+        SaveSystem.Instance.StartNewGame();
         SceneManager.LoadScene("Hub");
     }
 
@@ -217,6 +217,11 @@ public class MainMenuManager : MonoBehaviour
         
         masterVolume = volume;
 
+        var settingsData = SaveSystem.loadedSettingsData;
+        settingsData.masterVolume = volume;
+
+        SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
+
         if (!started)
         {
             masterVolumeSlider.value = volume;
@@ -232,6 +237,11 @@ public class MainMenuManager : MonoBehaviour
         
         musicVolume = volume;
 
+        var settingsData = SaveSystem.loadedSettingsData;
+        settingsData.musicVolume = volume;
+
+        SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
+
         if (!started)
         {
             musicVolumeSlider.value = volume;
@@ -246,6 +256,11 @@ public class MainMenuManager : MonoBehaviour
         sfxVolumeText.text = $"{volumePercent}%";
         
         sfxVolume = volume;
+
+        var settingsData = SaveSystem.loadedSettingsData;
+        settingsData.sfxVolume = volume;
+
+        SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
         if (!started)
         {
@@ -283,6 +298,11 @@ public class MainMenuManager : MonoBehaviour
                 screenMode = 2;
                 break;
         }
+
+        var settingsData = SaveSystem.loadedSettingsData;
+        settingsData.screenMode = mode;
+
+        SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
         if (!started)
         {

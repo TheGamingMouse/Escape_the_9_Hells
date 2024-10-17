@@ -64,13 +64,16 @@ public class NPCSpawner : MonoBehaviour
 
     #endregion
 
-    // Start is called before the first frame update
+    void Awake()
+    {
+        Instance = this;
+    }
+
     void Start()
     {
         ricky = GetComponentInChildren<Ricky>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!rickySpawned)

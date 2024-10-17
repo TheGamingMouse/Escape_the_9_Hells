@@ -264,7 +264,7 @@ public class BossGenerator : MonoBehaviour
             if (!musicManager.inBossRoom && canTriggerMusic)
             {
                 musicManager.inBossRoom = true;
-                musicManager.CheckMusicTrack();
+                musicManager.PlayMusicTrack();
 
                 StartCoroutine(TriggerCooldown());
             }
@@ -281,7 +281,7 @@ public class BossGenerator : MonoBehaviour
             if (musicManager.inBossRoom && canTriggerMusic)
             {
                 musicManager.inBossRoom = false;
-                musicManager.CheckMusicTrack();
+                musicManager.PlayMusicTrack();
 
                 StartCoroutine(TriggerCooldown());
             }

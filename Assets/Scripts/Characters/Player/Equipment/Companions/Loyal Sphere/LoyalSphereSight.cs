@@ -8,7 +8,6 @@ public class LoyalSphereSight : MonoBehaviour
 
     [Header("Transforms")]
     public Transform target;
-    Transform player;
 
     [Header("LayerMasks")]
     public LayerMask enemyMask;
@@ -20,12 +19,6 @@ public class LoyalSphereSight : MonoBehaviour
     #endregion
 
     #region StartUpdate Methods
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        player = PlayerComponents.Instance.player;
-    }
 
     // Update is called once per frame
     void Update()

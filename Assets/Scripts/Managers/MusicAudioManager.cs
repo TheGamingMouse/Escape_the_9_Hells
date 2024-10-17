@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
+using System.Collections;
+using static SaveSystemSpace.SaveClasses;
 
 public class MusicAudioManager : MonoBehaviour
 {
@@ -11,16 +10,12 @@ public class MusicAudioManager : MonoBehaviour
     public static MusicAudioManager Instance;
 
     [Header("Floats")]
-    public float musicTime;
     public float bgVolumeMod;
     public float bossVolumeMod;
 
     [Header("Bools")]
     static bool onStartUp;
     public bool inBossRoom;
-
-    [Header("Lists")]
-    readonly List<AudioSource> audioSourcePool = new(2);
 
     [Header("AudioClips")]
     public AudioClip backgroundMusic;
@@ -39,6 +34,13 @@ public class MusicAudioManager : MonoBehaviour
     static void OnRuntimeInitializeLoad()
     {
         onStartUp = true;
+
+        var persistentData = SaveSystem.loadedPersistentData;
+        persistentData.musicTime = 0f;
+
+        SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
+
+        Debug.Log("Resetting music time.");
     }
 
     void Awake()
@@ -49,12 +51,18 @@ public class MusicAudioManager : MonoBehaviour
     void Start()
     {
         PrepareMusicTracks();
-        CheckMusicTrack();
+        PlayMusicTrack();
     }
 
     void Update()
     {
-        musicTime = backgroundSource.time;
+        if (SaveSystem.loadedLayerData.lState != LayerData.LayerState.InLayers && !onStartUp)
+        {
+            var persistentData = SaveSystem.loadedPersistentData;
+
+            persistentData.musicTime = backgroundSource.time;
+            SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
+        }
 
         if (SettingsManager.Instance.musicVolume == -30 || SettingsManager.Instance.masterVolume == -30)
         {
@@ -78,7 +86,7 @@ public class MusicAudioManager : MonoBehaviour
         PrepareSource(bossSource, bossMusic, bossVolumeMod);
     }
 
-    public void CheckMusicTrack()
+    public void PlayMusicTrack()
     {
         StopSource(currentAudio);
         int layer = SaveSystem.Instance.CheckLayer();

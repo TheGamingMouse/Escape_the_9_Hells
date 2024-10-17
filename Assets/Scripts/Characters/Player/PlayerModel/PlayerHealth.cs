@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static SaveSystemSpace.SaveClasses;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Components")]
     CapeOWind capeOWind;
     public Shield shield;
-    public ParticleSystem capeOWindPS;
+    public ParticleSystem capeOWindParticleSystem;
 
     #endregion
 
@@ -45,7 +46,7 @@ public class PlayerHealth : MonoBehaviour
         var layerData = SaveSystem.loadedLayerData;
         var persistentData = SaveSystem.loadedPersistentData;
 
-        if (layerData.lState == SaveClasses.LayerData.LayerState.InLayers)
+        if (layerData.lState == LayerData.LayerState.InLayers)
         {
             health = persistentData.healthInLayer;
         }
@@ -65,6 +66,11 @@ public class PlayerHealth : MonoBehaviour
                 StartCoroutine(CapeSave());
 
                 sfxManager.PlayClip(sfxManager.capeOWindActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod / 2, false, "high");
+
+                var persistentData = SaveSystem.loadedPersistentData;
+                persistentData.healthInLayer = health;
+
+                SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
 
                 return;
             }
@@ -99,6 +105,11 @@ public class PlayerHealth : MonoBehaviour
             {
                 shield.damageTaken = true;
             }
+
+            var persistentData = SaveSystem.loadedPersistentData;
+            persistentData.healthInLayer = health;
+
+            SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
         }
     }
 
@@ -112,13 +123,13 @@ public class PlayerHealth : MonoBehaviour
 
     IEnumerator CapeSave()
     {
-        capeOWindPS.gameObject.SetActive(true);
-        capeOWindPS.Play();
+        capeOWindParticleSystem.gameObject.SetActive(true);
+        capeOWindParticleSystem.Play();
 
         yield return new WaitForSeconds(0.85f);
 
-        capeOWindPS.Stop();
-        capeOWindPS.gameObject.SetActive(false);
+        capeOWindParticleSystem.Stop();
+        capeOWindParticleSystem.gameObject.SetActive(false);
     }
 
     #endregion

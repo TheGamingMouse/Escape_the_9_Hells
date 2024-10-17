@@ -321,7 +321,7 @@ public class BackUpgradesMenu : MonoBehaviour
     {
         if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
+            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
             PlayerComponents.Instance.playerUpgrades.AddAngelWingsUpgrade(itemsSO[btnNo]);
@@ -333,7 +333,7 @@ public class BackUpgradesMenu : MonoBehaviour
     {
         if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
+            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
             PlayerComponents.Instance.playerUpgrades.AddSteelWingsUpgrade(itemsSO[btnNo]);
@@ -345,7 +345,7 @@ public class BackUpgradesMenu : MonoBehaviour
     {
         if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
+            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
             PlayerComponents.Instance.playerUpgrades.AddBackpackUpgrade(itemsSO[btnNo]);
@@ -357,7 +357,7 @@ public class BackUpgradesMenu : MonoBehaviour
     {
         if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
+            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
             PlayerComponents.Instance.playerUpgrades.AddCapeOWindUpgrade(itemsSO[btnNo]);
@@ -369,22 +369,10 @@ public class BackUpgradesMenu : MonoBehaviour
     {
         if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
+            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
 
             //Unlock purchased item.
             PlayerComponents.Instance.playerUpgrades.AddSeedBagUpgrade(itemsSO[btnNo]);
-            pannelsLoaded = false;
-        }
-    }
-    
-    public void PurchaseUpgradesBack2(int btnNo)
-    {
-        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
-        {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= itemsSO[btnNo].price;
-
-            //Unlock purchased item.
-            PlayerComponents.Instance.playerUpgrades.AddBack2Upgrade(itemsSO[btnNo]);
             pannelsLoaded = false;
         }
     }

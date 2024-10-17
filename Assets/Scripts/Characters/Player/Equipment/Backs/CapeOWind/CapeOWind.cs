@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using static SaveSystemSpace.SaveClasses;
 
 public class CapeOWind : MonoBehaviour
 {
@@ -35,7 +38,7 @@ public class CapeOWind : MonoBehaviour
         var layerData = SaveSystem.loadedLayerData;
         var equipmentData = SaveSystem.loadedEquipmentData;
 
-        if (layerData.lState == SaveClasses.LayerData.LayerState.Hub)
+        if (layerData.lState == LayerData.LayerState.Hub)
         {
             cooldown = baseCooldown / backs.abilityCooldownMultiplier;
         }
@@ -81,6 +84,28 @@ public class CapeOWind : MonoBehaviour
             cooldown = 0;
             yield return null;
         }
+    }
+
+    #endregion
+
+    #region Saving
+
+    private void SaveCooldown(Scene arg0)
+    {
+        var equipmentData = SaveSystem.loadedEquipmentData;
+
+        equipmentData.backData.capeOWindCooldown = cooldown;
+        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneUnloaded += SaveCooldown;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneUnloaded -= SaveCooldown;
     }
 
     #endregion

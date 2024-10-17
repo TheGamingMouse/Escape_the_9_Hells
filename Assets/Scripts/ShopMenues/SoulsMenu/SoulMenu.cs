@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static SaveSystemSpace.SaveClasses;
 
 public class SoulsMenu : MonoBehaviour
 {
@@ -12,9 +13,7 @@ public class SoulsMenu : MonoBehaviour
     [Header("Ints")]
     readonly int soulsMax = 6;
     int soulsCount;
-
-    [Header("Floats")]
-    public float souls;
+    public int souls;
 
     [Header("Bools")]
     public bool menuOpen;
@@ -55,7 +54,7 @@ public class SoulsMenu : MonoBehaviour
 
     void Update()
     {
-        if (SaveSystem.loadedLayerData.lState == SaveClasses.LayerData.LayerState.Hub)
+        if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
         {
             if (!pannelsActivated)
             {
@@ -86,7 +85,7 @@ public class SoulsMenu : MonoBehaviour
                 }
             }
             
-            souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
+            souls = PlayerComponents.Instance.playerLevel.souls;
             
             if (!pannelsLoaded)
             {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static SaveSystemSpace.SaveClasses;
 using Random = UnityEngine.Random;
 
 public class PlayerLevel : MonoBehaviour
@@ -66,16 +67,28 @@ public class PlayerLevel : MonoBehaviour
     void Start()
     {
         var layerData = SaveSystem.loadedLayerData;
-        var persistentData = SaveSystem.loadedPersistentData;
+        PersistentData persistentData;
 
-        if (layerData.lState == SaveClasses.LayerData.LayerState.InLayers)
+        if (layerData.lState == LayerData.LayerState.InLayers)
         {
+            persistentData = SaveSystem.loadedPersistentData;
+
             level = persistentData.levelsGainedInLayer;
             exp = persistentData.expGainedInLayer;
             expMultiplier = persistentData.expMultiplierInLayer;
             souls = persistentData.soulsCollectedInLayer;
             demonsKilled = persistentData.demonsKilledInLayer;
             devilsKilled = persistentData.devilsKilledInLayer;
+
+            souls = SaveSystem.loadedPlayerData.currentSouls;
+        }
+        else
+        {
+            persistentData = new PersistentData();
+            SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
+
+            var playerData = SaveSystem.loadedPlayerData;
+            souls = playerData.currentSouls;
         }
 
         levelUpEffect = levelUpEffectObj.GetComponent<ParticleSystem>();
@@ -100,11 +113,17 @@ public class PlayerLevel : MonoBehaviour
         }
 
         var layerData = SaveSystem.loadedLayerData;
-        if (layerData.lState == SaveClasses.LayerData.LayerState.InLayers && UIManager.Instance.componentsFound)
+        if (layerData.lState == LayerData.LayerState.InLayers && UIManager.Instance.componentsFound)
         {
             if (level == 0)
             {
                 expMultiplier = 250;
+
+                var persistentData = SaveSystem.loadedPersistentData;
+                persistentData.expMultiplierInLayer = expMultiplier;
+
+                SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
+                
                 while (startLevel > 0)
                 {
                     LevelUp(false, false);
@@ -144,6 +163,11 @@ public class PlayerLevel : MonoBehaviour
         if (expLoss)
         {
             exp -= 1f;
+
+            var persistentDataLocal = SaveSystem.loadedPersistentData;
+            persistentDataLocal.expGainedInLayer = exp;
+
+            SaveSystem.Instance.Save(persistentDataLocal, SaveSystem.persistentDataPath);
         }
 
         levelUpEffectObj.SetActive(true);
@@ -153,12 +177,27 @@ public class PlayerLevel : MonoBehaviour
         {
             ExpSoulsManager.Instance.AddSouls(2 * level, true);
             expMultiplier *= 1.65f;
+
+            var persistentDataLocal = SaveSystem.loadedPersistentData;
+            persistentDataLocal.expMultiplierInLayer = expMultiplier;
+
+            SaveSystem.Instance.Save(persistentDataLocal, SaveSystem.persistentDataPath);
         }
 
         if (boss)
         {
             devilsKilled++;
+
+            var persistentDataLocal = SaveSystem.loadedPersistentData;
+            persistentDataLocal.devilsKilledInLayer++;
+
+            SaveSystem.Instance.Save(persistentDataLocal, SaveSystem.persistentDataPath);
         }
+
+        var persistentData = SaveSystem.loadedPersistentData;
+        persistentData.levelsGainedInLayer++;
+
+        SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
 
         OnLevelUp?.Invoke();
     }
@@ -188,6 +227,11 @@ public class PlayerLevel : MonoBehaviour
             {
                 LevelUp(true, true);
 
+                var persistentData = SaveSystem.loadedPersistentData;
+                persistentData.expGainedInLayer = exp;
+
+                SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
+
                 sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod / 2);
             }
         }
@@ -197,10 +241,20 @@ public class PlayerLevel : MonoBehaviour
             if (enemyType.ToLower() == "demon")
             {
                 demonsKilled++;
+
+                var persistentData = SaveSystem.loadedPersistentData;
+                persistentData.demonsKilledInLayer++;
+
+                SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
             }
             else if (enemyType.ToLower() == "devil")
             {
                 devilsKilled++;
+
+                var persistentData = SaveSystem.loadedPersistentData;
+                persistentData.devilsKilledInLayer++;
+
+                SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
             }
         }
     }
@@ -224,6 +278,11 @@ public class PlayerLevel : MonoBehaviour
             exp += newExp / expMultiplier * expLayerMultiplier;
         }
 
+        var persistentData = SaveSystem.loadedPersistentData;
+        persistentData.expGainedInLayer = exp;
+
+        SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
+
         if (exp >= 1f)
         {
             sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod / 2);
@@ -237,14 +296,23 @@ public class PlayerLevel : MonoBehaviour
         if (enemyType.ToLower() == "demon")
         {
             demonsKilled++;
+
+            var persistentDataLocal = SaveSystem.loadedPersistentData;
+            persistentDataLocal.demonsKilledInLayer++;
+
+            SaveSystem.Instance.Save(persistentDataLocal, SaveSystem.persistentDataPath);
         }
     }
 
     void HandleSoulsChange(int newSouls, bool fromLevel)
     {
         var sfxManager = SFXAudioManager.Instance;
+        var persistentData = SaveSystem.loadedPersistentData;
         
         souls += newSouls;
+
+        persistentData.soulsCollectedInLayer = souls;
+        SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
 
         if (!fromLevel)
         {

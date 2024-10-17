@@ -76,17 +76,14 @@ public class LayerGenerator : MonoBehaviour
         Instance = this;
     }
 
-    void Update()
+    void Start()
     {
-        if (SaveSystem.loadedNpcData.ready && !layerGenerated)
+        if (!LayerManager.Instance.showroom)
         {
-            if (!LayerManager.Instance.showroom)
-            {
-                playerPathfinder = PlayerComponents.Instance.playerSouls.playerPathfinder;
-            }
-
-            Generator();
+            playerPathfinder = PlayerComponents.Instance.playerSouls.playerPathfinder;
         }
+
+        Generator();
     }
 
     #endregion

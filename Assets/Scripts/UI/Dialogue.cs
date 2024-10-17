@@ -42,7 +42,11 @@ public class Dialogue : MonoBehaviour
 
     #endregion
 
-    // Update is called once per frame
+    void Awake()
+    {
+        Instance = this;
+    }
+
     void Update()
     {
         if (lines.Length > 0 && dialogue.text == lines[index])

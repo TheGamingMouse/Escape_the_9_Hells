@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static SaveSystemSpace.SaveClasses;
 
 public class PlayerPerks : MonoBehaviour
 {
@@ -52,7 +53,6 @@ public class PlayerPerks : MonoBehaviour
 
     #region StartUpdate Methods
 
-    // Start is called before the first frame update
     void Start()
     {
         var player = PlayerComponents.Instance.player;
@@ -69,7 +69,7 @@ public class PlayerPerks : MonoBehaviour
         var layerData = SaveSystem.loadedLayerData;
         var perkData = SaveSystem.loadedPerkData;
 
-        if (layerData.lState == SaveClasses.LayerData.LayerState.InLayers)
+        if (layerData.lState == LayerData.LayerState.InLayers)
         {
             defencePerks = perkData.defencePerks;
             attackSpeedPerks = perkData.attackSpeedPerks;
@@ -108,6 +108,8 @@ public class PlayerPerks : MonoBehaviour
             perkData.fireAuraPerks.Clear();
             perkData.shieldPerks.Clear();
             perkData.iceAuraPerks.Clear();
+
+            SaveSystem.Instance.Save(perkData, SaveSystem.perksDataPath);
         }
 
         if (fireAuraPerks.Count > 0 && !fAuraActive)
@@ -225,59 +227,105 @@ public class PlayerPerks : MonoBehaviour
         }
         else if (perk.title == "Defence Perk")
         {
+            var perkData = SaveSystem.loadedPerkData;
+
+            perkData.defencePerks.Add(perk);
             defencePerks.Add(perk);
+            
+            SaveSystem.Instance.Save(perkData, SaveSystem.perksDataPath);
+            
             PlayerComponents.Instance.playerHealth.resistanceMultiplier += defenceMod;
 
             sfxManager.PlayClip(sfxManager.defencePerk, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Attack Speed Perk")
         {
+            var perkData = SaveSystem.loadedPerkData;
+
+            perkData.attackSpeedPerks.Add(perk);
             attackSpeedPerks.Add(perk);
+            
+            SaveSystem.Instance.Save(perkData, SaveSystem.perksDataPath);
+
             weapon.attackSpeedMultiplier += attackSpeedMod;
 
             sfxManager.PlayClip(sfxManager.attSpeedPerk, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Damage Perk")
         {
+            var perkData = SaveSystem.loadedPerkData;
+
+            perkData.damagePerks.Add(perk);
             damagePerks.Add(perk);
+            
             weapon.damageMultiplier += damageMod;
+
+            SaveSystem.Instance.Save(perkData, SaveSystem.perksDataPath);
 
             sfxManager.PlayClip(sfxManager.damagePerk, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Movement Speed Perk")
         {
+            var perkData = SaveSystem.loadedPerkData;
+
+            perkData.damagePerks.Add(perk);
             moveSpeedPerks.Add(perk);
+            
             PlayerComponents.Instance.playerMovement.speedMultiplier += moveSpeedMod;
+
+            SaveSystem.Instance.Save(perkData, SaveSystem.perksDataPath);
 
             sfxManager.PlayClip(sfxManager.moveSpeedPerk, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Luck Perk")
         {
+            var perkData = SaveSystem.loadedPerkData;
+
+            perkData.damagePerks.Add(perk);
             luckPerks.Add(perk);
+            
             PlayerComponents.Instance.playerLevel.luck += luckMod;
+
+            SaveSystem.Instance.Save(perkData, SaveSystem.perksDataPath);
 
             sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.perkEffectsVolumeMod);
         }
         else if (perk.title == "Fire Aura Perk")
         {
+            var perkData = SaveSystem.loadedPerkData;
+
+            perkData.damagePerks.Add(perk);
             fireAuraPerks.Add(perk);
+            
             fireAura.damage += fireAuraMod;
 
             PlayFireAuraAudio();
         }
         else if (perk.title == "Shield Perk")
         {
+            var perkData = SaveSystem.loadedPerkData;
+
+            perkData.damagePerks.Add(perk);
             shieldPerks.Add(perk);
+            
             shield.protection += shieldPerks.Count * shieldMod;
             shield.modifierApplied = false;
+
+            SaveSystem.Instance.Save(perkData, SaveSystem.perksDataPath);
 
             PlayShieldAudio();
         }
         else if (perk.title == "Ice Aura Perk")
         {
+            var perkData = SaveSystem.loadedPerkData;
+
+            perkData.damagePerks.Add(perk);
             iceAuraPerks.Add(perk);
+            
             iceAura.damage += iceAuraDamageMod;
             iceAura.speedPenalty += iceAuraSpeedMod;
+
+            SaveSystem.Instance.Save(perkData, SaveSystem.perksDataPath);
             
             PlayIceAuraAudio();
         }
