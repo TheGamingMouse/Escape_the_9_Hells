@@ -45,10 +45,7 @@ public class LevelManager : MonoBehaviour
 
     void Update()
     {
-        if (SceneManager.GetActiveScene().name == "NotImplimented")
-        {
-            Cursor.visible = true;
-        }
+        if (SceneManager.GetActiveScene().name == "NotImplimented") Cursor.visible = true;
     }
 
     #endregion
@@ -58,6 +55,7 @@ public class LevelManager : MonoBehaviour
     public void ReturnToHub()
     {
         SceneManager.LoadScene("Hub");
+        PlayerComponents.Instance.playerHealth.health = PlayerComponents.Instance.playerHealth.maxHealth;
     }
 
     public void ReturnToMenu()

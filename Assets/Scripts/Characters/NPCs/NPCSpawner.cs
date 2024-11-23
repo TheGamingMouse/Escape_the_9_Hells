@@ -31,6 +31,9 @@ public class NPCSpawner : MonoBehaviour
     [Header("Instance")]
     public static NPCSpawner Instance;
 
+    [Header("Enums")]
+    public NPCEnum NPC;
+
     [Header("Bools")]
     public bool rickyStart;
     public bool rickySpawned;
@@ -57,7 +60,7 @@ public class NPCSpawner : MonoBehaviour
     public List<string> jensMessages;
 
     [Header("Components")]
-    public Ricky ricky;
+    public RickyController ricky;
     public Barbara barbara;
     public Alexander alexander;
     public Jens jens;
@@ -71,7 +74,7 @@ public class NPCSpawner : MonoBehaviour
 
     void Start()
     {
-        ricky = GetComponentInChildren<Ricky>();
+        ricky = GetComponentInChildren<RickyController>();
     }
 
     void Update()
@@ -80,12 +83,12 @@ public class NPCSpawner : MonoBehaviour
         {
             if (!rickyStart)
             {
-                ricky = Instantiate(rickyObj, rickyPos.startPos.First(), Quaternion.identity, transform).GetComponent<Ricky>();
+                ricky = Instantiate(rickyObj, rickyPos.startPos.First(), Quaternion.identity, transform).GetComponent<RickyController>();
                 rickySpawned = true;
             }
             else
             {
-                ricky = Instantiate(rickyObj, rickyPos.rickyDefaultPos.First(), Quaternion.identity, transform).GetComponent<Ricky>();
+                ricky = Instantiate(rickyObj, rickyPos.rickyDefaultPos.First(), Quaternion.identity, transform).GetComponent<RickyController>();
                 rickySpawned = true;
             }
         }
@@ -110,5 +113,13 @@ public class NPCSpawner : MonoBehaviour
                 jensSpawned = true;
             }
         }
+    }
+
+    public enum NPCEnum
+    {
+        Ricky,
+        Barbara,
+        Alexander,
+        Jens
     }
 }

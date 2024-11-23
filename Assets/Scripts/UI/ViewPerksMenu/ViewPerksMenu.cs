@@ -20,6 +20,7 @@ public class ViewPerksMenu : MonoBehaviour
     bool fireAuraPannelActive;
     bool shieldPannelActive;
     bool iceAuraPannelActive;
+    bool allPerksAquired;
 
     [Header("Arrays")]
     public ViewPerksSO[] perksSO;
@@ -46,10 +47,9 @@ public class ViewPerksMenu : MonoBehaviour
     {
         var playerPerks = PlayerComponents.Instance.playerPerks;
         
-        if (perksAquired > 0)
+        if (perksAquired > 0 && !allPerksAquired)
         {
             for (int i = perksCollected; i < perksSO.Length; i++)
-            {
                 if (playerPerks.defencePerks.Count > 0 && !defencePannelActive)
                 {
                     perkPannelsSO[i].SetActive(true);
@@ -98,6 +98,11 @@ public class ViewPerksMenu : MonoBehaviour
                     iceAuraPannelActive = true;
                     perksCollected++;
                 }
+            
+            if (defencePannelActive && attackSpeedPannelActive && damagePannelActive && moveSpeedPannelActive && luckPannelActive 
+                && fireAuraPannelActive && shieldPannelActive && iceAuraPannelActive && !allPerksAquired)
+            {
+                allPerksAquired = true;
             }
 
             for (int i = 0; i < perksSO.Length; i++)
@@ -149,7 +154,6 @@ public class ViewPerksMenu : MonoBehaviour
                     perksSO[i].amount = playerPerks.iceAuraPerks.Count;
                 }
             }
-
             LoadPannels();
 
             perksAquired = 0;
@@ -163,9 +167,7 @@ public class ViewPerksMenu : MonoBehaviour
     public void LoadPannels()
     {
         for (int i = 0; i < perksSO.Length; i++)
-        {
             for (int j = 0; j < perksSO.Length; j++)
-            {
                 if (perksSO[j].active && !perksSO[j].isUsed)
                 {
                     perkPannels[i].titleText.text = perksSO[j].title;
@@ -176,8 +178,6 @@ public class ViewPerksMenu : MonoBehaviour
 
                     break;
                 }
-            }
-        }
     }
 
     #endregion

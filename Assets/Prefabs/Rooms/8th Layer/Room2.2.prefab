@@ -450,7 +450,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distToPlayer: 0
-  maxDist: 25
   room: {fileID: 8278331197367282909}
 --- !u!1 &5251367776273287195
 GameObject:
@@ -1013,6 +1012,8 @@ MonoBehaviour:
   doInterior: 0
   completed: 0
   active: 0
+  mainPath: 0
+  playerPathfinder: 0
   door: {fileID: 0}
   secondDoor: {fileID: 0}
   backDoor: {fileID: 0}

@@ -61,10 +61,8 @@ public class InternalMaze : MonoBehaviour
             int randomInt = Random.Range(0, board.Count);
             Cell randomCell = board[randomInt];
 
-            if (randomCell.visited && !randomCell.spawnPoint)
-            {
+            if (randomCell.visited && !randomCell.spawnPoint) 
                 randomCell.spawnPoint = true;
-            }
             else
             {
                 spawnPoint--;
@@ -73,7 +71,6 @@ public class InternalMaze : MonoBehaviour
         }
 
         for (int i = 0; i < size.x; i++)
-        {
             for (int j = 0; j < size.y; j++)
             {
                 Cell currentCell = board[Mathf.FloorToInt(i + j * size.x)];
@@ -96,7 +93,6 @@ public class InternalMaze : MonoBehaviour
                     spawnPointVar.name += " " + i + " - " + j + $"( Room: {GetComponent<RoomBehavior>().x} - {GetComponent<RoomBehavior>().y})";
                 }
             }
-        }
     }
 
     public void MazeGenerator()
@@ -104,12 +100,7 @@ public class InternalMaze : MonoBehaviour
         board = new List<Cell>();
 
         for (int i = 0; i < size.x; i++)
-        {
-            for (int j = 0; j < size.y; j++)
-            {
-                board.Add(new Cell());
-            }
-        }
+            for (int j = 0; j < size.y; j++) board.Add(new Cell());
 
         int currentCell = startPos;
 
@@ -138,9 +129,7 @@ public class InternalMaze : MonoBehaviour
             k++;
 
             if (!board[currentCell].unVisitable)
-            {
                 board[currentCell].visited = true;
-            }
             else
             {
                 currentCell++;
@@ -150,16 +139,8 @@ public class InternalMaze : MonoBehaviour
             List<int> neighbors = CheckNeighbors(currentCell);
 
             if (neighbors.Count == 0)
-            {
-                if (path.Count == 0)
-                {
-                    break;
-                }
-                else
-                {
-                    currentCell = path.Pop();
-                }
-            }
+                if (path.Count == 0) break;
+                else currentCell = path.Pop();
             else
             {
                 path.Push(currentCell);
@@ -209,32 +190,20 @@ public class InternalMaze : MonoBehaviour
         List<int> neighbors = new();
 
         // Upward
-        if (cell - size.x >= 0 && !board[Mathf.FloorToInt(cell - size.x)].visited && 
-            !board[Mathf.FloorToInt(cell - size.x)].unVisitable)
-        {
+        if (cell - size.x >= 0 && !board[Mathf.FloorToInt(cell - size.x)].visited && !board[Mathf.FloorToInt(cell - size.x)].unVisitable) 
             neighbors.Add(Mathf.FloorToInt(cell - size.x));
-        }
 
         // Downward
-        if (cell + size.x < board.Count && !board[Mathf.FloorToInt(cell + size.x)].visited && 
-            !board[Mathf.FloorToInt(cell + size.x)].unVisitable)
-        {
+        if (cell + size.x < board.Count && !board[Mathf.FloorToInt(cell + size.x)].visited && !board[Mathf.FloorToInt(cell + size.x)].unVisitable) 
             neighbors.Add(Mathf.FloorToInt(cell + size.x));
-        }
 
         // Right
-        if ((cell + 1) % size.x != 0 && !board[Mathf.FloorToInt(cell + 1)].visited && 
-            !board[Mathf.FloorToInt(cell + 1)].unVisitable)
-        {
+        if ((cell + 1) % size.x != 0 && !board[Mathf.FloorToInt(cell + 1)].visited && !board[Mathf.FloorToInt(cell + 1)].unVisitable) 
             neighbors.Add(Mathf.FloorToInt(cell + 1));
-        }
 
         // Left
-        if (cell % size.x != 0 && !board[Mathf.FloorToInt(cell - 1)].visited && 
-            !board[Mathf.FloorToInt(cell - 1)].unVisitable)
-        {
+        if (cell % size.x != 0 && !board[Mathf.FloorToInt(cell - 1)].visited && !board[Mathf.FloorToInt(cell - 1)].unVisitable)
             neighbors.Add(Mathf.FloorToInt(cell - 1));
-        }
 
         return neighbors;
     }

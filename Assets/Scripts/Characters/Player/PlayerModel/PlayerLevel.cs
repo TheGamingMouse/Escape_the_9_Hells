@@ -79,16 +79,13 @@ public class PlayerLevel : MonoBehaviour
             souls = persistentData.soulsCollectedInLayer;
             demonsKilled = persistentData.demonsKilledInLayer;
             devilsKilled = persistentData.devilsKilledInLayer;
-
-            souls = SaveSystem.loadedPlayerData.currentSouls;
         }
         else
         {
             persistentData = new PersistentData();
             SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
 
-            var playerData = SaveSystem.loadedPlayerData;
-            souls = playerData.currentSouls;
+            souls = SaveSystem.loadedPlayerData.currentSouls;
         }
 
         levelUpEffect = levelUpEffectObj.GetComponent<ParticleSystem>();
@@ -107,14 +104,10 @@ public class PlayerLevel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (timesLeveledUp < 0)
-        {
-            timesLeveledUp = 0;
-        }
+        if (timesLeveledUp < 0) timesLeveledUp = 0;
 
         var layerData = SaveSystem.loadedLayerData;
         if (layerData.lState == LayerData.LayerState.InLayers && UIManager.Instance.componentsFound)
-        {
             if (level == 0)
             {
                 expMultiplier = 250;
@@ -130,7 +123,6 @@ public class PlayerLevel : MonoBehaviour
                     startLevel--;
                 }
             }
-        }
 
         if (previousSouls != souls)
         {
@@ -140,14 +132,8 @@ public class PlayerLevel : MonoBehaviour
 
         int i = SaveSystem.Instance.CheckLayer();
         
-        if (i > 0)
-        {
-            expLayerMultiplier = Mathf.Pow(7, i - 1);
-        }
-        else
-        {
-            expLayerMultiplier = 1f;
-        }
+        if (i > 0) expLayerMultiplier = Mathf.Pow(7, i - 1);
+        else expLayerMultiplier = 1f;
     }
 
     #endregion
@@ -237,7 +223,6 @@ public class PlayerLevel : MonoBehaviour
         }
 
         if (wasEnemy)
-        {
             if (enemyType.ToLower() == "demon")
             {
                 demonsKilled++;
@@ -256,7 +241,6 @@ public class PlayerLevel : MonoBehaviour
 
                 SaveSystem.Instance.Save(persistentData, SaveSystem.persistentDataPath);
             }
-        }
     }
 
     #endregion
@@ -273,10 +257,7 @@ public class PlayerLevel : MonoBehaviour
             exp += newExp / expMultiplier * expLayerMultiplier * 2;
             sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod / 2);
         }
-        else
-        {
-            exp += newExp / expMultiplier * expLayerMultiplier;
-        }
+        else exp += newExp / expMultiplier * expLayerMultiplier;
 
         var persistentData = SaveSystem.loadedPersistentData;
         persistentData.expGainedInLayer = exp;
@@ -287,10 +268,7 @@ public class PlayerLevel : MonoBehaviour
         {
             sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod / 2);
 
-            while (exp >= 1f)
-            {
-                LevelUp(true, true);
-            }
+            while (exp >= 1f) LevelUp(true, true);
         }
 
         if (enemyType.ToLower() == "demon")

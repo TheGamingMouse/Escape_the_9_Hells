@@ -9,6 +9,7 @@ public class KillBox : MonoBehaviour
         if (coll.transform.CompareTag("Player") && coll.TryGetComponent(out PlayerHealth pComp))
         {
             pComp.Die();
+            print("Player has touched the killbox");
         }
     }
 }

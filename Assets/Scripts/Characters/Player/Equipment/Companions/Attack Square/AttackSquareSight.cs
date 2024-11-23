@@ -25,19 +25,10 @@ public class AttackSquareSight : MonoBehaviour
     {
         var playerMovement = PlayerComponents.Instance.playerMovement;
 
-        if (playerMovement.roomSpawner)
-        {
-            roomSpawner = playerMovement.roomSpawner;
-        }
+        if (playerMovement.roomSpawner) roomSpawner = playerMovement.roomSpawner;
 
-        if (!target)
-        {
-            FindTarget();
-        }
-        else if (!PlayerInArea() || Physics.Linecast(transform.position, target.position, obstructionMask))
-        {
-            target = null;
-        }
+        if (!target) FindTarget();
+        else if (!PlayerInArea() || Physics.Linecast(transform.position, target.position, obstructionMask)) target = null;
     }
 
     #endregion
@@ -66,19 +57,9 @@ public class AttackSquareSight : MonoBehaviour
 
         if (bossGenerator)
         {
-            if (bossGenerator.TryGetComponent(out BasicEnemyHealth beComp) && beComp.boss)
-            {
-                return bossGenerator.inArea && !bossGenerator.isBossDead;
-            }
-            else if (bossGenerator.TryGetComponent(out ImpHealth iComp) && iComp.boss)
-            {
-                return bossGenerator.inArea && !bossGenerator.isBossDead;
-            }
+            if (bossGenerator.TryGetComponent(out EnemyHealth beComp) && beComp.boss) return bossGenerator.inArea && !bossGenerator.isBossDead;
         }
-        else if (roomSpawner)
-        {
-            return roomSpawner.inArea && !roomSpawner.enemiesDefeated;
-        }
+        else if (roomSpawner) return roomSpawner.inArea && !roomSpawner.enemiesDefeated;
         return false;
     }
 

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using SaveSystemSpace;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +24,7 @@ public class SoulsMenu : MonoBehaviour
     bool pannelsLoaded;
     bool playerStoped;
     bool pannelsActivated;
+    bool starting;
 
     [Header("TMP_Pros")]
     public TMP_Text soulsText;
@@ -39,61 +42,21 @@ public class SoulsMenu : MonoBehaviour
     public Transform soulContents;
 
     [Header("Components")]
-    Ricky ricky;
+    RickyController ricky;
     Interactor interactor;
 
     void Awake()
     {
         Instance = this;
-    }
 
-    void Start()
-    {
         menuCanOpen = true;
+        starting = true;
     }
 
     void Update()
     {
         if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
         {
-            if (!pannelsActivated)
-            {
-                for (int i = 0; i < soulsItemsSO.Length; i++)
-                {
-                    soulsPannelsSO[i].SetActive(true);
-                }
-
-                soulContents.transform.position = new Vector3(10000f, soulContents.transform.position.y, soulContents.transform.position.z);
-
-                var player = PlayerComponents.Instance.player;
-
-                interactor = player.GetComponent<Interactor>();
-
-                CheckSoulsPurchaseable();
-
-                pannelsActivated = true;
-            }
-
-            if (!ricky)
-            {
-                if (UIManager.Instance.npcsActive)
-                {
-                    if (NPCSpawner.Instance.rickySpawned)
-                    {
-                        ricky = NPCSpawner.Instance.ricky;
-                    }
-                }
-            }
-            
-            souls = PlayerComponents.Instance.playerLevel.souls;
-            
-            if (!pannelsLoaded)
-            {
-                LoadSoulsPannels();
-            }
-
-            CheckSoulsPurchaseable();
-
             if (menuOpen)
             {
                 contents.SetActive(true);
@@ -113,12 +76,36 @@ public class SoulsMenu : MonoBehaviour
                     Cursor.visible = false;
                 }
             }
+
+            if (!pannelsActivated)
+            {
+                for (int i = 0; i < soulsItemsSO.Length; i++)
+                    soulsPannelsSO[i].SetActive(true);
+
+                soulContents.transform.position = new Vector3(10000f, soulContents.transform.position.y, soulContents.transform.position.z);
+
+                var player = PlayerComponents.Instance.player;
+
+                interactor = player.GetComponent<Interactor>();
+
+                CheckSoulsPurchaseable();
+
+                pannelsActivated = true;
+            }
+
+            if (!ricky && NPCSpawner.Instance.rickySpawned) ricky = NPCSpawner.Instance.ricky;
+            
+            souls = PlayerComponents.Instance.playerLevel.souls;
+            
+            if (!pannelsLoaded && menuOpen) LoadSoulsPannels();
+
+            CheckSoulsPurchaseable();
         }
     }
 
-    private void LoadSoulsPannels()
+    void LoadSoulsPannels()
     {
-        var playerSouls = PlayerComponents.Instance.playerSouls;
+        var playerSouls = SaveSystem.loadedSoulData;
 
         for (int i = 0; i < soulsItemsSO.Length; i++)
         {
@@ -126,105 +113,53 @@ public class SoulsMenu : MonoBehaviour
             soulsPannels[i].descriptionText.text = soulsItemsSO[i].description;
             soulsPannels[i].priceText.text = "Price: " + soulsItemsSO[i].price.ToString();
 
-            if (soulsItemsSO[i].title == "Attack Speed Soul")
+            soulsCount = soulsItemsSO[i].title switch
             {
-                soulsCount = playerSouls.attackSpeedSouls.Count;
-            }
-            else if (soulsItemsSO[i].title == "Damage Soul")
+                SoulData.attackSpeedString => playerSouls.attackSpeedSoulsBought.Count,
+                SoulData.damageString => playerSouls.damageSoulsBought.Count,
+                SoulData.defenceString => playerSouls.defenceSoulsBought.Count,
+                SoulData.movementSpeedString => playerSouls.movementSpeedSoulsBought.Count,
+                SoulData.luckString => playerSouls.luckSoulsBought.Count,
+                SoulData.startLevelString => playerSouls.startLevelSoulsBought.Count,
+                SoulData.reRollString => playerSouls.reRollSoulsBought.Count,
+                SoulData.pathFinderString => playerSouls.pathFinderSoulsBought.Count,
+
+                _ => throw new System.ArgumentException($"Soul '{soulsItemsSO[i].title}' was not recognized.")
+            };
+
+            if (starting)
             {
-                soulsCount = playerSouls.damageSouls.Count;
-            }
-            else if (soulsItemsSO[i].title == "Defence Soul")
-            {
-                soulsCount = playerSouls.defenceSouls.Count;
-            }
-            else if (soulsItemsSO[i].title == "Movement Speed Soul")
-            {
-                soulsCount = playerSouls.movementSpeedSouls.Count;
-            }
-            else if (soulsItemsSO[i].title == "Luck Soul")
-            {
-                soulsCount = playerSouls.luckSouls.Count;
-            }
-            else if (soulsItemsSO[i].title == "Start Level Soul")
-            {
-                soulsCount = playerSouls.startLevelSouls.Count;
-            }
-            else if (soulsItemsSO[i].title == "Re Roll Soul")
-            {
-                soulsCount = playerSouls.reRollSouls.Count;
-            }
-            else if (soulsItemsSO[i].title == "Path Finder Soul")
-            {
-                if (playerSouls.playerPathfinder)
+                for (int j = 0; j < soulsCount; j++)
                 {
-                    soulsCount = 1;
+                    soulsPannels[i].starsActive[j].SetActive(true);
+                    soulsPannels[i].starsInactive[j].SetActive(false);
                 }
-                else
-                {
-                    soulsCount = 0;
-                }
+
+                starting = false;
             }
 
-            if (soulsItemsSO[i].title == "Path Finder Soul")
-            {
+            if (soulsItemsSO[i].title == SoulData.pathFinderString)
                 if (soulsCount == 1)
                 {
-                    soulsPannels[i].counter1.gameObject.SetActive(true);
-                    soulsPannels[i].counter2.gameObject.SetActive(true);
+                    soulsPannels[i].starsActive.First().SetActive(true);
+                    soulsPannels[i].starsInactive.First().SetActive(false);
                 }
                 else
                 {
-                    soulsPannels[i].counter1.gameObject.SetActive(false);
-                    soulsPannels[i].counter2.gameObject.SetActive(false);
+                    soulsPannels[i].starsInactive.First().SetActive(true);
+                    soulsPannels[i].starsActive.First().SetActive(false);
                 }
-            }
-            else
+            else if (soulsCount > 0)
             {
-                switch (soulsCount)
-                {
-                    case 0:
-                        soulsPannels[i].counter1.fillAmount = 0f;
-                        soulsPannels[i].counter2.fillAmount = 0f;
-                        break;
-                    
-                    case 1:
-                        soulsPannels[i].counter1.fillAmount = 0.3f;
-                        soulsPannels[i].counter2.fillAmount = 0f;
-                        break;
-                    
-                    case 2:
-                        soulsPannels[i].counter1.fillAmount = 0.7f;
-                        soulsPannels[i].counter2.fillAmount = 0f;
-                        break;
-                    
-                    case 3:
-                        soulsPannels[i].counter1.fillAmount = 1f;
-                        soulsPannels[i].counter2.fillAmount = 0f;
-                        break;
-                    
-                    case 4:
-                        soulsPannels[i].counter1.fillAmount = 1f;
-                        soulsPannels[i].counter2.fillAmount = 0.3f;
-                        break;
-                    
-                    case 5:
-                        soulsPannels[i].counter1.fillAmount = 1f;
-                        soulsPannels[i].counter2.fillAmount = 0.7f;
-                        break;
-                    
-                    case 6:
-                        soulsPannels[i].counter1.fillAmount = 1f;
-                        soulsPannels[i].counter2.fillAmount = 1f;
-                        break;
-                }
+                soulsPannels[i].starsActive[soulsCount-1].SetActive(true);
+                soulsPannels[i].starsInactive[soulsCount-1].SetActive(false);
             }
         }
 
         pannelsLoaded = true;
     }
 
-    private void CheckSoulsPurchaseable()
+    void CheckSoulsPurchaseable()
     {
         var playerSouls = PlayerComponents.Instance.playerSouls;
 
@@ -234,38 +169,14 @@ public class SoulsMenu : MonoBehaviour
         {
             purchaseSoulsButtons[i].interactable = souls >= soulsItemsSO[i].price;
 
-            if (soulsItemsSO[i].title == "Attack Speed Soul" && playerSouls.attackSpeedSouls.Count == soulsMax)
-            {
-                purchaseSoulsButtons[i].interactable = false;
-            }
-            else if (soulsItemsSO[i].title == "Damage Soul" && playerSouls.damageSouls.Count == soulsMax)
-            {
-                purchaseSoulsButtons[i].interactable = false;
-            }
-            else if (soulsItemsSO[i].title == "Defence Soul" && playerSouls.defenceSouls.Count == soulsMax)
-            {
-                purchaseSoulsButtons[i].interactable = false;
-            }
-            else if (soulsItemsSO[i].title == "Movement Speed Soul" && playerSouls.movementSpeedSouls.Count == soulsMax)
-            {
-                purchaseSoulsButtons[i].interactable = false;
-            }
-            else if (soulsItemsSO[i].title == "Luck Soul" && playerSouls.luckSouls.Count == soulsMax)
-            {
-                purchaseSoulsButtons[i].interactable = false;
-            }
-            else if (soulsItemsSO[i].title == "Start Level Soul" && playerSouls.startLevelSouls.Count == soulsMax)
-            {
-                purchaseSoulsButtons[i].interactable = false;
-            }
-            else if (soulsItemsSO[i].title == "Re Roll Soul" && playerSouls.reRollSouls.Count == soulsMax)
-            {
-                purchaseSoulsButtons[i].interactable = false;
-            }
-            else if (soulsItemsSO[i].title == "Path Finder Soul" && playerSouls.playerPathfinder)
-            {
-                purchaseSoulsButtons[i].interactable = false;
-            }
+            if (soulsItemsSO[i].title == SoulData.attackSpeedString && playerSouls.attackSpeedSouls.Count == soulsMax) purchaseSoulsButtons[i].interactable = false;
+            else if (soulsItemsSO[i].title == SoulData.damageString && playerSouls.damageSouls.Count == soulsMax) purchaseSoulsButtons[i].interactable = false;
+            else if (soulsItemsSO[i].title == SoulData.defenceString && playerSouls.defenceSouls.Count == soulsMax) purchaseSoulsButtons[i].interactable = false;
+            else if (soulsItemsSO[i].title == SoulData.movementSpeedString && playerSouls.movementSpeedSouls.Count == soulsMax) purchaseSoulsButtons[i].interactable = false;
+            else if (soulsItemsSO[i].title == SoulData.luckString && playerSouls.luckSouls.Count == soulsMax) purchaseSoulsButtons[i].interactable = false;
+            else if (soulsItemsSO[i].title == SoulData.startLevelString && playerSouls.startLevelSouls.Count == soulsMax) purchaseSoulsButtons[i].interactable = false;
+            else if (soulsItemsSO[i].title == SoulData.reRollString && playerSouls.reRollSouls.Count == soulsMax) purchaseSoulsButtons[i].interactable = false;
+            else if (soulsItemsSO[i].title == SoulData.pathFinderString	 && playerSouls.playerPathfinder) purchaseSoulsButtons[i].interactable = false;
         }
     }
 
@@ -273,8 +184,12 @@ public class SoulsMenu : MonoBehaviour
     {
         if (souls >= soulsItemsSO[btnNo].price)
         {
-            GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= soulsItemsSO[btnNo].price;
-            souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
+            var playerData = SaveSystem.loadedPlayerData;
+            playerData.currentSouls -= soulsItemsSO[btnNo].price;
+            SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+
+            PlayerComponents.Instance.playerLevel.souls -= soulsItemsSO[btnNo].price;
+            souls = PlayerComponents.Instance.playerLevel.souls;
 
             //Unlock purchased item.
             PlayerComponents.Instance.playerSouls.AddSouls(soulsItemsSO[btnNo]);
@@ -295,12 +210,19 @@ public class SoulsMenu : MonoBehaviour
 
     public void CloseStore()
     {
+        UIManager.Instance.rickyTalking = false;
+        StartCoroutine(StopTalking());
+
         menuOpen = false;
         menuCanClose = false;
         menuCanOpen = true;
-        UIManager.Instance.rickyTalking = false;
-        ricky.talking = false;
 
-        SFXAudioManager.Instance.PlayRickyVO(false);
+        SFXAudioManager.Instance.PlayNPCVoice(NPCSpawner.NPCEnum.Ricky, false);
+    }
+
+    IEnumerator StopTalking()
+    {
+        yield return new WaitForSeconds(0.1f);
+        ricky.rickyNPC.talking = false;
     }
 }

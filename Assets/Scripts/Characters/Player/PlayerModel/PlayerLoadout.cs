@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using static SaveSystemSpace.SaveClasses;
 
 public class PlayerLoadout : MonoBehaviour
 {
@@ -41,15 +40,10 @@ public class PlayerLoadout : MonoBehaviour
     {
         if (NPCSpawner.Instance)
         {
-            if (NPCSpawner.Instance.rickyStart)
-            {
-                ready = true;
-            }
+            if (NPCSpawner.Instance.rickyStart) ready = true;
         }
-        else
-        {
-            ready = true;
-        }
+        else ready = true;
+        
         if (!start && ready)
         {
             playerWeapon = GetComponentInChildren<Weapon>();
@@ -71,10 +65,7 @@ public class PlayerLoadout : MonoBehaviour
             selectedBack = equipmentData.backData.selectedBack;
 
             // Weapon
-            if (playerWeapon != null)
-            {
-                UpdateWeapon();
-            }
+            if (playerWeapon != null) UpdateWeapon();
             if (!selectedWeapon)
             {
                 selectedWeapon = defaultWeapon;
@@ -82,10 +73,7 @@ public class PlayerLoadout : MonoBehaviour
             }
 
             // Companion
-            if (playerCompanion != null)
-            {
-                UpdateCompanion();
-            }
+            if (playerCompanion != null) UpdateCompanion();
             if (!selectedCompanion)
             {
                 selectedCompanion = defaultCompanion;
@@ -93,10 +81,7 @@ public class PlayerLoadout : MonoBehaviour
             }
 
             // Armor
-            if (playerArmor != null)
-            {
-                UpdateArmor();
-            }
+            if (playerArmor != null) UpdateArmor();
             if (!selectedArmor)
             {
                 selectedArmor = defaultArmor;
@@ -104,10 +89,7 @@ public class PlayerLoadout : MonoBehaviour
             }
 
             // Back
-            if (playerBack != null)
-            {
-                UpdateBack();
-            }
+            if (playerBack != null) UpdateBack();
             if (!selectedBack)
             {
                 selectedBack = defaultBack;
@@ -164,123 +146,79 @@ public class PlayerLoadout : MonoBehaviour
 
         SaveSystem.Instance.Save(loadedEquipmentData, SaveSystem.equipmentDataPath);
 
-        if (playerWeapon)
-        {
-            UpdateWeapon();
-        }
-        if (playerCompanion)
-        {
-            UpdateCompanion();
-        }
-        if (playerArmor)
-        {
-            UpdateArmor();
-        }
-        if (playerBack)
-        {
-            UpdateBack();
-        }
+        if (playerWeapon) UpdateWeapon();
+        if (playerCompanion) UpdateCompanion();
+        if (playerArmor) UpdateArmor();
+        if (playerBack) UpdateBack();
     }
 
     void UpdateWeapon()
     {
-        if (selectedBack && selectedBack.title == "Backpack")
-        {
-            backpackActive = true;
-        }
-        else
-        {
-            backpackActive = false;
-        }
+        if (selectedBack && selectedBack.title == EquipmentData.BackData.backpackString) backpackActive = true;
+        else backpackActive = false;
 
-        if (!selectedWeapon || selectedWeapon.title == "Pugio")
+        var weapon = selectedWeapon.title switch
         {
-            playerWeapon.SwitchToPugio();
-        }
-        else if (selectedWeapon.title == "Ulfberht")
-        {
-            playerWeapon.SwitchToUlfberht();
-        }
+            EquipmentData.WeaponData.ulfberhtString => Weapon.WeaponActive.Ulfberht,
+            EquipmentData.WeaponData.pugioString => Weapon.WeaponActive.Pugio,
+
+            _ => Weapon.WeaponActive.Pugio
+        };
+        playerWeapon.SwitchWeapon(weapon);
+
         PlayerComponents.Instance.playerUpgrades.weaponUpdated = false;
     }
 
     void UpdateCompanion()
     {
-        if (selectedBack && selectedBack.title == "Seed Bag")
-        {
-            seedBagActive = true;
-        }
-        else
-        {
-            seedBagActive = false;
-        }
+        if (selectedBack && selectedBack.title == EquipmentData.BackData.seedBagString) seedBagActive = true;
+        else seedBagActive = false;
 
-        if (!selectedCompanion || selectedCompanion.title == "Unequiped")
+        var companion = selectedCompanion.title switch
         {
-            playerCompanion.SwitchToNone();
-        }
-        else if (selectedCompanion.title == "Loyal Sphere")
-        {
-            playerCompanion.SwitchToLoyalSphere();
-        }
-        else if (selectedCompanion.title == "Attack Square")
-        {
-            playerCompanion.SwitchToAttackSquare();
-        }
+            EquipmentData.unequipedString => Companion.CompanionActive.None,
+            EquipmentData.CompanionData.loyalSphereString => Companion.CompanionActive.LoyalSphere,
+            EquipmentData.CompanionData.attackSquareString => Companion.CompanionActive.AttackSquare,
+
+            _ => Companion.CompanionActive.None
+        };
+        playerCompanion.SwitchCompanion(companion);
+
         PlayerComponents.Instance.playerUpgrades.companionUpdated = false;
     }
 
     void UpdateArmor()
     {
-        if (!selectedArmor || selectedArmor.title == "Unequiped")
+        var armor = selectedArmor.title switch
         {
-            playerArmor.SwitchToNone();
-        }
-        else if (selectedArmor.title == "Leather Armor")
-        {
-            playerArmor.SwitchToLeather();
-        }
-        else if (selectedArmor.title == "Hide Armor")
-        {
-            playerArmor.SwitchToHide();
-        }
-        else if (selectedArmor.title == "Ring Mail Armor")
-        {
-            playerArmor.SwitchToRingMail();
-        }
-        else if (selectedArmor.title == "Plate Armor")
-        {
-            playerArmor.SwitchToPlate();
-        }
+            EquipmentData.unequipedString => Armor.ArmorActive.None,
+            EquipmentData.ArmorData.leatherString => Armor.ArmorActive.Leather,
+            EquipmentData.ArmorData.hideString => Armor.ArmorActive.Hide,
+            EquipmentData.ArmorData.ringMailString => Armor.ArmorActive.RingMail,
+            EquipmentData.ArmorData.plateString => Armor.ArmorActive.Plate,
+
+            _ => Armor.ArmorActive.None
+        };
+        playerArmor.SwitchArmor(armor);
+
         PlayerComponents.Instance.playerUpgrades.armorUpdated = false;
     }
 
     void UpdateBack()
     {
-        if (!selectedBack || selectedBack.title == "Unequiped")
+        var back = selectedBack.title switch
         {
-            playerBack.SwitchToNone();
-        }
-        else if (selectedBack.title == "Angel Wings")
-        {
-            playerBack.SwitchToAngelWings();
-        }
-        else if (selectedBack.title == "Steel Wings")
-        {
-            playerBack.SwitchToSteelWings();
-        }
-        else if (selectedBack.title == "Backpack")
-        {
-            playerBack.SwitchToBackpack();
-        }
-        else if (selectedBack.title == "Cape O' Wind")
-        {
-            playerBack.SwitchToCapeOWind();
-        }
-        else if (selectedBack.title == "Seed Bag")
-        {
-            playerBack.SwitchToSeedBag();
-        }
+            EquipmentData.unequipedString => Backs.BackActive.None,
+            EquipmentData.BackData.angelWingsString => Backs.BackActive.AngelWings,
+            EquipmentData.BackData.steelWingsString => Backs.BackActive.SteelWings,
+            EquipmentData.BackData.backpackString => Backs.BackActive.Backpack,
+            EquipmentData.BackData.capeOWindString => Backs.BackActive.CapeOWind,
+            EquipmentData.BackData.seedBagString => Backs.BackActive.SeedBag,
+
+            _ => Backs.BackActive.None,
+        };
+        playerBack.SwitchBack(back);
+        
         PlayerComponents.Instance.playerUpgrades.backUpdated = false;
     }
 

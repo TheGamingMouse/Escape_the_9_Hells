@@ -7,7 +7,6 @@ public class Backs : MonoBehaviour
     #region Variables
 
     [Header("Enum States")]
-    public BackType bType;
     public BackActive bActive;
 
     [Header("Floats")]
@@ -21,7 +20,7 @@ public class Backs : MonoBehaviour
     GameObject seedBagObj;
 
     [Header("Lists")]
-    readonly List<GameObject> backObjs = new();
+    readonly Dictionary<Backs.BackActive, GameObject> backs = new();
 
     [Header("Components")]
     public AngelWings angelWings;
@@ -43,125 +42,35 @@ public class Backs : MonoBehaviour
         capeOWindObj = capeOWind.gameObject;
         seedBagObj = seedBag.gameObject;
 
-        backObjs.Add(angelWingsObj);
-        backObjs.Add(steelWingsObj);
-        backObjs.Add(backpackObj);
-        backObjs.Add(capeOWindObj);
-        backObjs.Add(seedBagObj);
+        backs.Add(BackActive.AngelWings, angelWingsObj);
+        backs.Add(BackActive.SteelWings, steelWingsObj);
+        backs.Add(BackActive.Backpack, backpackObj);
+        backs.Add(BackActive.CapeOWind, capeOWindObj);
+        backs.Add(BackActive.SeedBag, seedBagObj);
 
-        SwitchToNone();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (angelWingsObj.activeInHierarchy)
-        {
-            bType = BackType.Wings;
-        }
-        else if (steelWingsObj.activeInHierarchy)
-        {
-            bType = BackType.Wings;
-        }
-        else if (backpackObj.activeInHierarchy)
-        {
-            bType = BackType.Packs;
-        }
-        else if (capeOWindObj.activeInHierarchy)
-        {
-            bType = BackType.Capes;
-        }
-        else if (seedBagObj.activeInHierarchy)
-        {
-            bType = BackType.Packs;
-        }
-        else
-        {
-            bType = BackType.None;
-        }
+        SwitchBack(BackActive.None);
     }
 
     #endregion
 
     #region Companion Swap
 
-    public void SwitchToNone()
+    public void SwitchBack(BackActive back)
     {
-        bActive = BackActive.None;
-
+        bActive = back;
         DisableElements();
-    }
+        if (back != BackActive.None) foreach (GameObject obj in backs.Values) if (obj == backs[back]) obj.SetActive(true);
 
-    public void SwitchToAngelWings()
-    {
-        bActive = BackActive.AngelWings;
-
-        DisableElements();
-        
-        if (angelWingsObj)
+        switch (back)
         {
-            angelWingsObj.SetActive(true);
+            case BackActive.Backpack: PlayerComponents.Instance.playerLoadout.backpackActive = true; break;
+            case BackActive.SeedBag: PlayerComponents.Instance.playerLoadout.seedBagActive = true; break;
         }
-    }
-
-    public void SwitchToSteelWings()
-    {
-        bActive = BackActive.SteelWings;
-
-        DisableElements();
-
-        if (steelWingsObj)
-        {
-            steelWingsObj.SetActive(true);
-        }
-    }
-
-    public void SwitchToBackpack()
-    {
-        bActive = BackActive.BackPack;
-
-        DisableElements();
-
-        if (backpackObj)
-        {
-            backpackObj.SetActive(true);
-        }
-
-        PlayerComponents.Instance.playerLoadout.backpackActive = true;
-    }
-
-    public void SwitchToCapeOWind()
-    {
-        bActive = BackActive.CapeOWind;
-
-        DisableElements();
-
-        if (capeOWindObj)
-        {
-            capeOWindObj.SetActive(true);
-        }
-    }
-
-    public void SwitchToSeedBag()
-    {
-        bActive = BackActive.SeedBag;
-
-        DisableElements();
-
-        if (seedBagObj)
-        {
-            seedBagObj.SetActive(true);
-        }
-
-        PlayerComponents.Instance.playerLoadout.seedBagActive = true;
     }
 
     void DisableElements()
     {
-        foreach (GameObject backObj in backObjs)
-        {
-            backObj.SetActive(false);
-        }
+        foreach (GameObject obj in backs.Values) obj.SetActive(false);
         angelWings.active = false;
         steelWings.active = false;
         PlayerComponents.Instance.playerLoadout.backpackActive = false;
@@ -172,20 +81,12 @@ public class Backs : MonoBehaviour
 
     #region Enums
 
-    public enum BackType
-    {
-        None,
-        Wings,
-        Packs,
-        Capes
-    }
-
     public enum BackActive
     {
         None,
         AngelWings,
         SteelWings,
-        BackPack,
+        Backpack,
         CapeOWind,
         SeedBag
     }

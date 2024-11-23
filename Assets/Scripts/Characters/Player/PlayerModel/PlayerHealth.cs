@@ -15,12 +15,11 @@ public class PlayerHealth : MonoBehaviour
     #region Variables
 
     [Header("Ints")]
-    [Range(0, 100)]
     public readonly int maxHealth = 100;
     
     [Header("Floats")]
     [Range(0, 100)]
-    public float health;
+    public int health;
     public float resistanceMultiplier = 1;
 
     [Header("Bools")]
@@ -46,10 +45,7 @@ public class PlayerHealth : MonoBehaviour
         var layerData = SaveSystem.loadedLayerData;
         var persistentData = SaveSystem.loadedPersistentData;
 
-        if (layerData.lState == LayerData.LayerState.InLayers)
-        {
-            health = persistentData.healthInLayer;
-        }
+        if (layerData.lState == LayerData.LayerState.InLayers && layerData.layerReached != 1) health = persistentData.healthInLayer;
     }
 
     // Update is called once per frame
@@ -76,6 +72,7 @@ public class PlayerHealth : MonoBehaviour
             }
             
             Die();
+            print("Player health has reached 0");
         }
     }
 
@@ -90,21 +87,15 @@ public class PlayerHealth : MonoBehaviour
             if ((health - damage) >= 0)
             {
                 var sfxManager = SFXAudioManager.Instance;
-                
-                health -= damage / resistanceMultiplier;
+
+                health -= (int)(damage / resistanceMultiplier);
 
                 int i = UnityEngine.Random.Range(0, sfxManager.playerDamage.Count);
                 sfxManager.PlayClip(sfxManager.playerDamage[i], MasterAudioManager.Instance.sBlend2D, sfxManager.playerVolumeMod);
             }
-            else if ((health - damage) < 0)
-            {
-                health = 0;
-            }
+            else health = 0;
             
-            if (!shield.onCooldown)
-            {
-                shield.damageTaken = true;
-            }
+            if (!shield.onCooldown) shield.damageTaken = true;
 
             var persistentData = SaveSystem.loadedPersistentData;
             persistentData.healthInLayer = health;
@@ -119,6 +110,8 @@ public class PlayerHealth : MonoBehaviour
         playerDead = true;
         capeOWind.cooldown = 0;
         OnPlayerDeath?.Invoke();
+
+        Debug.Log("Player has died.");
     }
 
     IEnumerator CapeSave()

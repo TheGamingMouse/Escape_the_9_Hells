@@ -12,7 +12,7 @@ public class EnemySight : MonoBehaviour
     [Header("Bools")]
     public bool isObstructed;
     public bool isInArea;
-    bool boss;
+    public bool boss;
     [HideInInspector]
     public bool minion;
 
@@ -25,7 +25,7 @@ public class EnemySight : MonoBehaviour
     public LayerMask obstructionMask;
 
     [Header("Components")]
-    [HideInInspector]
+    // [HideInInspector]
     public RoomSpawner roomSpawner;
 
     #endregion
@@ -61,14 +61,8 @@ public class EnemySight : MonoBehaviour
 
     bool TargetInArea()
     {
-        if (boss || minion)
-        {
-            return BossGenerator.Instance.inArea;
-        }
-        else
-        {
-            return roomSpawner.inArea;
-        }
+        if (boss || minion) return BossGenerator.Instance.inArea;
+        else return roomSpawner.inArea;
     }
 
     bool TargetObstructed()

@@ -45,7 +45,6 @@ public class GoldChest : MonoBehaviour
             int luckCheck = Random.Range(1, 101);
 
             if (rType == RewardType.Exp)
-            {
                 if (luckCheck <= PlayerComponents.Instance.playerLevel.luck)
                 {
                     var sfxManager = SFXAudioManager.Instance;
@@ -57,7 +56,6 @@ public class GoldChest : MonoBehaviour
                 {
                     PlayerComponents.Instance.playerLevel.AddExperience(exp, false, "none");
                 }
-            }
             else if (rType == RewardType.Level)
             {
                 var playerLevel = PlayerComponents.Instance.playerLevel;
@@ -74,7 +72,6 @@ public class GoldChest : MonoBehaviour
                 else
                 {
                     playerLevel.LevelUp(false, true);
-
                     sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
                 }
             }

@@ -43,13 +43,8 @@ public class LayerManager : MonoBehaviour
         {
             rooms = GameObject.FindGameObjectsWithTag("LayerRoom");
 
-            if (!showroom)
-            {
-                foreach (GameObject r in rooms)
-                {
-                    r.SetActive(false);
-                }
-            }
+            if (!showroom) foreach (GameObject r in rooms) r.SetActive(false);
+            
             roomsDeactivated = true;
         }
     }

@@ -15,13 +15,9 @@ public class FireAura : MonoBehaviour
 
     void OnTriggerStay(Collider coll)
     {
-        if (coll.TryGetComponent(out BasicEnemyHealth beComp))
+        if (coll.TryGetComponent(out EnemyHealth eComp))
         {
-            beComp.TakeDamage(damage, true);
-        }
-        else if (coll.TryGetComponent(out ImpHealth iComp))
-        {
-            iComp.TakeDamage(damage, true);
+            eComp.TakeDamage(damage, true);
         }
     }
 

@@ -19,9 +19,6 @@ public class CheckIfHub : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (sceneName == "Hub")
-        {
-            hubButton.interactable = false;
-        }
+        if (sceneName == "Hub") hubButton.interactable = false;
     }
 }

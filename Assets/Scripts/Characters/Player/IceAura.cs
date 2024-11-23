@@ -18,21 +18,13 @@ public class IceAura : MonoBehaviour
 
     void OnTriggerStay(Collider coll)
     {
-        if (coll.TryGetComponent(out BasicEnemyHealth beComp))
+        if (coll.TryGetComponent(out EnemyHealth eComp))
         {
-            beComp.TakeDamage(damage, true);
-            if (!beComp.GetComponent<BasicEnemyMovement>().slowed)
-            {
-                StartCoroutine(beComp.GetComponent<BasicEnemyMovement>().SlowEnemy(speedPenalty));
-            }
-        }
-        else if (coll.TryGetComponent(out ImpHealth iComp))
-        {
-            iComp.TakeDamage(damage, true);
-            if (!iComp.GetComponent<ImpMovement>().slowed)
-            {
-                StartCoroutine(iComp.GetComponent<ImpMovement>().SlowEnemy(speedPenalty));
-            }
+            eComp.TakeDamage(damage, true);
+            if (TryGetComponent(out BasicEnemyMovement _) && !eComp.GetComponent<BasicEnemyMovement>().slowed)
+                StartCoroutine(eComp.GetComponent<BasicEnemyMovement>().SlowEnemy(speedPenalty));
+            else if (TryGetComponent(out ImpMovement _) && !eComp.GetComponent<ImpMovement>().slowed)
+                StartCoroutine(eComp.GetComponent<ImpMovement>().SlowEnemy(speedPenalty));
         }
     }
 

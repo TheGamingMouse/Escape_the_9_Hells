@@ -41,16 +41,10 @@ public class AttackSquareCombat : MonoBehaviour
     {
         var sfxManager = SFXAudioManager.Instance;
 
-        if (coll.transform.TryGetComponent(out BasicEnemyHealth eComp) && canAttack)
+        if (coll.transform.TryGetComponent(out EnemyHealth eComp) && canAttack)
         {
             eComp.TakeDamage(damage, false);
             StartCoroutine(DamageRoutine());
-
-            sfxManager.PlayClip(sfxManager.attackSquareHit, MasterAudioManager.Instance.sBlend3D, sfxManager.effectsVolumeMod, gameObject, "low");
-        }
-        else if (coll.transform.TryGetComponent(out ImpHealth iComp) && canAttack)
-        {
-            iComp.TakeDamage(damage, false);
 
             sfxManager.PlayClip(sfxManager.attackSquareHit, MasterAudioManager.Instance.sBlend3D, sfxManager.effectsVolumeMod, gameObject, "low");
         }

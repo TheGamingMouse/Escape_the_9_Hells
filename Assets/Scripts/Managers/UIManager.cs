@@ -36,12 +36,12 @@ public class UIManager : MonoBehaviour
     [Header("Floats")]
     [Range(0f, 1f)]
     float exp;
-    float health;
-    float previousHealth;
     float soulsCounterFPS;
     readonly float soulsCounterDuration = 1f;
     float fadeTime;
     readonly float fadeMax = 1.5f;
+    float health;
+    float previousHealth;
 
     [Header("Strings")]
     string layerReached;
@@ -57,7 +57,7 @@ public class UIManager : MonoBehaviour
     public bool barbaraTalking;
     public bool alexanderTalking;
     public bool jensTalking;
-    bool cursorObjSpawned;
+    [SerializeField] bool cursorObjSpawned;
     bool bossSpawned;
     bool bossDead;
     bool npcMenuesFound;
@@ -108,7 +108,7 @@ public class UIManager : MonoBehaviour
     ExpProgressBar progressBarExp;
     ExpProgressBar progressBarHealth;
     DevTools devTools;
-    public Ricky ricky;
+    public RickyController ricky;
     SoulsMenu rickyConvo;
     LoadoutMenu barbaraConvo;
     EquipmentMenu alexanderConvo;
@@ -122,7 +122,7 @@ public class UIManager : MonoBehaviour
     {
         PlayerLevel.OnLevelUp += HandleLevelUp;
         PlayerHealth.OnPlayerDeath += HandlePlayerDeath;
-        RoomSpawner.OnBossSpawn += HandleBossSpawn;
+        BossGenerator.OnBossSpawn += HandleBossSpawn;
         BossGenerator.OnBossDeath += HandleBossDeath;
     }
 
@@ -130,7 +130,7 @@ public class UIManager : MonoBehaviour
     {
         PlayerLevel.OnLevelUp -= HandleLevelUp;
         PlayerHealth.OnPlayerDeath -= HandlePlayerDeath;
-        RoomSpawner.OnBossSpawn -= HandleBossSpawn;
+        BossGenerator.OnBossSpawn -= HandleBossSpawn;
         BossGenerator.OnBossDeath -= HandleBossDeath;
     }
 
@@ -141,6 +141,27 @@ public class UIManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
+
+        FindObjects();
+        FindTextElements();
+        DisableObjects();
+    }
+
+    void Start()
+    {
+        player = PlayerComponents.Instance.player.gameObject;
+        devTools = player.GetComponent<DevTools>();
+
+        GameObject pauseMenuCurrentSouls = pauseMenu.transform.Find("Souls").gameObject;
+        GameObject pauseMenuTotalSouls = pauseMenu.transform.Find("TotalSouls").gameObject;
+
+        if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
+        {
+            pauseMenuCurrentSouls.SetActive(false);
+            pauseMenuTotalSouls.transform.position += new Vector3(0, 113, 0);
+        }
+
+        PlayerComponents.Instance.playerMovement.startBool = false;
     }
 
     void FixedUpdate()
@@ -153,10 +174,6 @@ public class UIManager : MonoBehaviour
     {
         if (!componentsFound)
         {
-            FindObjects();
-            FindTextElements();
-            DisableObjects();
-
             soulsText.text = $"{PlayerComponents.Instance.playerLevel.souls}";
 
             previousHealth = health;
@@ -171,33 +188,15 @@ public class UIManager : MonoBehaviour
             componentsFound = true;
         }
 
-        if (!npcMenuesFound)
-        {
-            FindNPCMenues();
-        }
+        if (!npcMenuesFound) FindNPCMenues();
 
-        if (npcsActive)
-        {
-            npcConvos.SetActive(true);
-        }
-        else
-        {
-            npcConvos.SetActive(false);
-        }
+        if (npcsActive) npcConvos.SetActive(true);
+        else npcConvos.SetActive(false);
 
-        if (!gameStart && player.transform.position.y <= 0.55f)
-        {
-            StartGame();
-        }
+        if (!gameStart && player.transform.position.y <= 0.55f) StartGame();
 
-        if (Dialogue.Instance.dialogueDone)
-        {
-            dialogueBox.SetActive(false);
-        }
-        else if (dialogueStart)
-        {
-            dialogueBox.SetActive(true);
-        }
+        if (Dialogue.Instance.dialogueDone) dialogueBox.SetActive(false);
+        else if (dialogueStart) dialogueBox.SetActive(true);
 
         if (perkMenu.GetComponent<PerkMenu>().menuClosing && !PlayerComponents.Instance.playerHealth.playerDead && !isPaused)
         {
@@ -211,92 +210,39 @@ public class UIManager : MonoBehaviour
         UpdateHealth();
         UpdateLevel();
         UpdatePromt();
-        UpdateNPCPannels();
+        if (npcsActive) UpdateNPCPannels();
         UpdateBossName(bossNameString);
         UpdateReRollText();
-        UpdateTotalSouls();
+        UpdateSouls();
 
-        if (fadeTime > 0)
-        {
-            fadeTime -= Time.deltaTime;
-        }
+        if (fadeTime > 0) fadeTime -= Time.deltaTime;
         Color c = damageOverlay.GetComponent<Image>().color;
         c.a = fadeTime / fadeMax;
         damageOverlay.GetComponent<Image>().color = c;
-        if (fadeTime <= 0)
-        {
-            fadeTime = 0;
-        }
+        if (fadeTime <= 0) fadeTime = 0;
 
-        if (devTools.godMode)
-        {
-            godModeObj.SetActive(true);
-        }
-        else
-        {
-            godModeObj.SetActive(false);
-        }
+        if (devTools.godMode) godModeObj.SetActive(true);
+        else godModeObj.SetActive(false);
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (rickyConvo && barbaraConvo && alexanderConvo && jensConvo)
-            {
-                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen && !jensConvo.menuOpen)
                 {
-                    if (isPaused)
+                    if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen && !jensConvo.menuOpen)
                     {
-                        Unpause();
-                    }
-                    else
-                    {
-                        Pause();
+                        if (isPaused) Unpause();
+                        else Pause();
                     }
                 }
-            }
             else if (!perkMenu.GetComponent<PerkMenu>().menuOpen)
             {
-                if (isPaused)
-                {
-                    Unpause();
-                }
-                else
-                {
-                    Pause();
-                }
+                if (isPaused) Unpause();
+                else Pause();
             }
         }
 
-        if (bossSpawned && !bossDead)
-        {
-            bossObj.SetActive(true);
-        }
-        else
-        {
-            bossObj.SetActive(false);
-        }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (rickyConvo.menuCanClose)
-            {
-                rickyConvo.CloseStore();
-            }
-
-            if (barbaraConvo.menuCanClose)
-            {
-                barbaraConvo.CloseStore();
-            }
-            
-            if (alexanderConvo.menuCanClose)
-            {
-                alexanderConvo.CloseStore();
-            }
-
-            if (jensConvo.menuCanClose)
-            {
-                jensConvo.CloseStore();
-            }
-        }
+        if (bossSpawned && !bossDead) bossObj.SetActive(true);
+        else bossObj.SetActive(false);
     }
 
     #endregion
@@ -312,24 +258,12 @@ public class UIManager : MonoBehaviour
         
         progressBarExp = canvas.Find("Vertical Progress Bar").GetComponent<ExpProgressBar>();
         progressBarHealth = canvas.Find("Vertical Progress Bar (1)").GetComponent<ExpProgressBar>();
-
-        player = PlayerComponents.Instance.player.gameObject;
-        devTools = player.GetComponent<DevTools>();
         
         damageOverlay = canvas.Find("DamageIndicator").gameObject;
         perkMenu = menus.Find("PerkMenu").gameObject;
         godModeObj = canvas.Find("GodModeText (TMP)").gameObject;
         deathMenu = menus.Find("DeathMenu").gameObject;
         pauseMenu = menus.Find("PauseMenu").gameObject;
-
-        GameObject pauseMenuCurrentSouls = pauseMenu.transform.Find("Souls").gameObject;
-        GameObject pauseMenuTotalSouls = pauseMenu.transform.Find("TotalSouls").gameObject;
-
-        if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
-        {
-            pauseMenuCurrentSouls.SetActive(false);
-            pauseMenuTotalSouls.transform.position += new Vector3(0, 113, 0);
-        }
 
         bossObj = canvas.Find("Boss").gameObject;
         promt = canvas.Find("Promt").gameObject;
@@ -390,13 +324,11 @@ public class UIManager : MonoBehaviour
         pauseMenu.SetActive(false);
         bossObj.SetActive(false);
         disableSoulsText.SetActive(false);
-
-        PlayerComponents.Instance.playerMovement.startBool = false;
     }
 
     void StartGame()
     {
-        if (npcsActive && !ricky.dialogueStartComplete)
+        if (npcsActive && !ricky.rickyNPC.dialogueStartComplete)
         {
             dialogueBox.SetActive(true);
             dialogueStart = true;
@@ -410,12 +342,11 @@ public class UIManager : MonoBehaviour
 
     bool NPCIsTalking()
     {
-        if (player.GetComponent<Interactor>().colliders[0].TryGetComponent(out Ricky rickyComp))
+        // Brackets are necessary - Don't know why
+        
+        if (player.GetComponent<Interactor>().colliders[0].TryGetComponent(out RickyController rickyComp))
         {
-            if (rickyComp.canTalk)
-            {
-                return rickyComp.talking;
-            }
+            if (rickyComp.canTalk) return rickyComp.rickyNPC.talking;
         }
         else if (player.GetComponent<Interactor>().colliders[0].TryGetComponent(out Barbara barbaraComp))
         {
@@ -429,6 +360,7 @@ public class UIManager : MonoBehaviour
         {
             return jensComp.talking;
         }
+
         return true;
     }
 
@@ -436,10 +368,7 @@ public class UIManager : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        if (PlayerComponents.Instance.playerLevel.timesLeveledUp > 0)
-        {
-            HandleLevelUp();
-        }
+        if (PlayerComponents.Instance.playerLevel.timesLeveledUp > 0) HandleLevelUp();
     }
 
     #endregion
@@ -454,7 +383,7 @@ public class UIManager : MonoBehaviour
 
     void UpdateHealth()
     {
-        health = PlayerComponents.Instance.playerHealth.health / 100;
+        health = (float)PlayerComponents.Instance.playerHealth.health / 100;
         progressBarHealth.SetProgress(health);
 
         if (previousHealth > health)
@@ -462,10 +391,7 @@ public class UIManager : MonoBehaviour
             fadeTime = fadeMax;
             previousHealth = health;
         }
-        else if (previousHealth < health)
-        {
-            previousHealth = health;
-        }
+        else if (previousHealth < health) previousHealth = health;
     }
 
     void UpdateLevel()
@@ -475,10 +401,7 @@ public class UIManager : MonoBehaviour
 
     void UpdateSouls(int newValue)
     {
-        if (countingCoroutine != null)
-        {
-            StopCoroutine(countingCoroutine);
-        }
+        if (countingCoroutine != null) StopCoroutine(countingCoroutine);
         countingCoroutine = StartCoroutine(CountSouls(newValue));
     }
 
@@ -490,33 +413,22 @@ public class UIManager : MonoBehaviour
             promtText.text = $"{player.GetComponent<Interactor>().colliders[0].GetComponent<IInteractable>().promt}";
             npcName.text = $"{player.GetComponent<Interactor>().colliders[0].GetComponent<IInteractable>().npcName}";
         }
-        else
-        {
-            promt.SetActive(false);
-        }
+        else promt.SetActive(false);
     }
 
     void UpdateNPCPannels()
     {
-        if (rickyTalking && rickyConvo.menuCanOpen)
-        {
-            rickyConvo.OpenStore();
-        }
+        if (rickyTalking && rickyConvo.menuCanOpen) rickyConvo.OpenStore();
+        else if (rickyConvo.menuCanClose && Input.GetKeyDown(KeyCode.E)) rickyConvo.CloseStore();
         
-        if (barbaraTalking && barbaraConvo.menuCanOpen)
-        {
-            barbaraConvo.OpenStore();
-        }
+        if (barbaraTalking && barbaraConvo.menuCanOpen) barbaraConvo.OpenStore();
+        else if (barbaraConvo.menuCanClose && Input.GetKeyDown(KeyCode.E)) barbaraConvo.CloseStore();
 
-        if (alexanderTalking && alexanderConvo.menuCanOpen)
-        {
-            alexanderConvo.OpenStore();
-        }
+        if (alexanderTalking && alexanderConvo.menuCanOpen) alexanderConvo.OpenStore();
+        else if (alexanderConvo.menuCanClose && Input.GetKeyDown(KeyCode.E)) alexanderConvo.CloseStore();
 
-        if (jensTalking && jensConvo.menuCanOpen)
-        {
-            jensConvo.OpenStore();
-        }
+        if (jensTalking && jensConvo.menuCanOpen) jensConvo.OpenStore();
+        else if (jensConvo.menuCanClose && Input.GetKeyDown(KeyCode.E)) jensConvo.CloseStore();
     }
 
     IEnumerator CountSouls(int newValue)
@@ -528,24 +440,15 @@ public class UIManager : MonoBehaviour
         int previousValue = _soulsCounterValue;
         int stepAmount;
 
-        if (newValue - previousValue < 0)
-        {
-            stepAmount = Mathf.FloorToInt((newValue - previousValue) / (soulsCounterFPS * soulsCounterDuration));
-        }
-        else
-        {
-            stepAmount = Mathf.CeilToInt((newValue - previousValue) / (soulsCounterFPS * soulsCounterDuration));
-        }
+        if (newValue - previousValue < 0) stepAmount = Mathf.FloorToInt((newValue - previousValue) / (soulsCounterFPS * soulsCounterDuration));
+        else stepAmount = Mathf.CeilToInt((newValue - previousValue) / (soulsCounterFPS * soulsCounterDuration));
 
         if (previousValue < newValue)
         {
             while (previousValue < newValue)
             {
                 previousValue += stepAmount;
-                if (previousValue > newValue)
-                {
-                    previousValue = newValue;
-                }
+                if (previousValue > newValue) previousValue = newValue;
 
                 soulsText.SetText(previousValue.ToString("N0"));
                 pauseMenuSoulsText.SetText(previousValue.ToString("N0"));
@@ -558,10 +461,7 @@ public class UIManager : MonoBehaviour
             while (previousValue > newValue)
             {
                 previousValue += stepAmount;
-                if (previousValue < newValue)
-                {
-                    previousValue = newValue;
-                }
+                if (previousValue < newValue) previousValue = newValue;
 
                 soulsText.SetText(previousValue.ToString("N0"));
                 pauseMenuSoulsText.SetText(previousValue.ToString("N0"));
@@ -577,15 +477,9 @@ public class UIManager : MonoBehaviour
         {
             if (rickyConvo && barbaraConvo && alexanderConvo && jensConvo)
             {
-                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen && !jensConvo.menuOpen)
-                {
-                    UpdateCursor();
-                }
+                if (!rickyConvo.menuOpen && !barbaraConvo.menuOpen && !alexanderConvo.menuOpen && !jensConvo.menuOpen) UpdateCursor();
             }
-            else if (perkMenu && !perkMenu.GetComponent<PerkMenu>().menuOpen)
-            {
-                UpdateCursor();
-            }
+            else if (perkMenu && !perkMenu.GetComponent<PerkMenu>().menuOpen) UpdateCursor();
         }
     }
 
@@ -597,7 +491,6 @@ public class UIManager : MonoBehaviour
             if (!cursorObjSpawned)
             {
                 cursorObj = Instantiate(cursorObj, hit.point, Quaternion.LookRotation(hit.normal));
-
                 cursorObjSpawned = true;
             }
 
@@ -617,21 +510,25 @@ public class UIManager : MonoBehaviour
         reRollText.text = $"Re-Rolls ({perkMenu.GetComponent<PerkMenu>().reRolls})";
     }
 
-    void UpdateTotalSouls()
+    void UpdateSouls()
     {
         var playerData = SaveSystem.loadedPlayerData;
 
         if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.InLayers)
         {
-            totalSouls = playerData.currentSouls + _soulsCounterValue;
+            var persistentData = SaveSystem.loadedPersistentData;
+
+            totalSouls = playerData.currentSouls;
+            totalSoulsText.text = totalSouls.ToString();
+            
+            PlayerComponents.Instance.playerLevel.souls = persistentData.soulsCollectedInLayer;
         }
         else
         {
-            totalSouls = playerData.currentSouls;
+            totalSouls = playerData.totalSouls;
+            totalSoulsText.text = PlayerComponents.Instance.playerLevel.souls.ToString();
         }
-
-        totalSoulsText.text = totalSouls.ToString();
-        soulsText.text = totalSouls.ToString();
+        soulsText.text = PlayerComponents.Instance.playerLevel.souls.ToString();
     }
 
     #endregion
@@ -660,27 +557,16 @@ public class UIManager : MonoBehaviour
         Cursor.visible = false;
     }
 
-    public void CloseSoulsStore()
-    {
-        rickyTalking = false;
-    }
-
-    public void CloseLoadoutSelection()
-    {
-        barbaraTalking = false;
-    }
-
     public void UpdatePlayerData()
     {
         var playerData = SaveSystem.loadedPlayerData;
         var persistentData = SaveSystem.loadedPersistentData;
 
-        playerData.currentSouls = totalSouls;
+        playerData.currentSouls += persistentData.soulsCollectedInLayer;
         if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.InLayers) 
         {
             playerData.totalSouls += playerData.currentSouls;
-            if (persistentData.levelsGainedInLayer > 1)
-                playerData.totalLevels += persistentData.levelsGainedInLayer;
+            playerData.totalLevels += persistentData.levelsGainedInLayer;
             playerData.demonsKilled += persistentData.demonsKilledInLayer;
             playerData.devilsKilled += persistentData.devilsKilledInLayer;
         }
@@ -709,6 +595,7 @@ public class UIManager : MonoBehaviour
 
         Time.timeScale = 0f;
         if (deathMenu != null) deathMenu.SetActive(true);
+        else return;
 
         demonsKilled = playerLevel.demonsKilled;
         devilsKilled = playerLevel.devilsKilled;

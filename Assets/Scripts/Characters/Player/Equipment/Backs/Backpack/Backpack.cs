@@ -88,11 +88,11 @@ public class Backpack : MonoBehaviour
 
         if (primaryWeapon.title == "Ulfberht")
         {
-            weapon.SwitchToUlfberht();
+            weapon.SwitchWeapon(Weapon.WeaponActive.Ulfberht);
         }
         else if (primaryWeapon.title == "Pugio")
         {
-            weapon.SwitchToPugio();
+            weapon.SwitchWeapon(Weapon.WeaponActive.Pugio);
         }
 
         PlayerComponents.Instance.playerLoadout.selectedWeapon = primaryWeapon;
@@ -107,11 +107,11 @@ public class Backpack : MonoBehaviour
 
         if (secondaryWeapon.title == "Ulfberht")
         {
-            weapon.SwitchToUlfberht();
+            weapon.SwitchWeapon(Weapon.WeaponActive.Ulfberht);
         }
         else if (secondaryWeapon.title == "Pugio")
         {
-            weapon.SwitchToPugio();
+            weapon.SwitchWeapon(Weapon.WeaponActive.Pugio);
         }
 
         PlayerComponents.Instance.playerLoadout.selectedWeapon = secondaryWeapon;

@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 5774074460272781032}
   - component: {fileID: 1018124072973464398}
   - component: {fileID: 7437394198222296374}
+  - component: {fileID: 7231581969228865048}
+  - component: {fileID: -3577735620458435825}
   m_Layer: 8
   m_Name: Ricky
   m_TagString: Untagged
@@ -149,13 +151,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c6fca2d308ea504da1dfbdd229d80e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueStartComplete: 0
   secondPosition: 0
-  talking: 0
+  combatCanStart: 0
   canTalk: 0
-  daggerGiven: 0
+  daggerGiven: 1
+  rickyNPC: {fileID: 7231581969228865048}
+  rickyCombat: {fileID: -3577735620458435825}
+--- !u!114 &7231581969228865048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3535221476105702027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45ad410d48288a84395751e93cd69fb7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  listIndex: 0
+  dialogue2: 0
+  dialogueStartComplete: 0
+  talking: 0
+  beginDialogue: 0
+  returnedTo: 0
   npcSprite: {fileID: 21300000, guid: 11fcd2382e76f944e837cac39a9261b7, type: 3}
-  npcSpawner: {fileID: 0}
+  ricky: {fileID: 0}
+--- !u!114 &-3577735620458435825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3535221476105702027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55e42eafea20fd148bbbbf6b99a92ac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 0
+  combatStart: 1
+  combatDone: 0
+  healthbar: {fileID: 6003815106588637663}
+  healthImage: {fileID: 970703936215810647}
+  rb: {fileID: 0}
+  ricky: {fileID: 0}
 --- !u!1001 &5616825753197344682
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -253,8 +293,24 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
+--- !u!114 &970703936215810647 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4650629986592519677, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
+  m_PrefabInstance: {fileID: 5616825753197344682}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6003815106588637659 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2207660214897938033, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
+  m_PrefabInstance: {fileID: 5616825753197344682}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6003815106588637663 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2207660214897938037, guid: f7211b6cecc608d4a9b2f71be3da264e, type: 3}
   m_PrefabInstance: {fileID: 5616825753197344682}
   m_PrefabAsset: {fileID: 0}

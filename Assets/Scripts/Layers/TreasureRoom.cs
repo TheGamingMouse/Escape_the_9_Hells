@@ -27,14 +27,8 @@ public class TreasureRoom : MonoBehaviour
     {
         if (!ready)
         {
-            if (tType == TreasureType.Souls || tType == TreasureType.Exp)
-            {
-                spawns = spawns1;
-            }
-            else if (tType == TreasureType.Level)
-            {
-                spawns = spawns2;
-            }
+            if (tType == TreasureType.Souls || tType == TreasureType.Exp) spawns = spawns1;
+            else if (tType == TreasureType.Level) spawns = spawns2;
 
             spawnable = new bool[spawns.Length];
             ready = true;
@@ -58,19 +52,14 @@ public class TreasureRoom : MonoBehaviour
                 continue;
             }
 
-            int chest = -1;
-            if (tType == TreasureType.Souls)
+            var chest = tType switch
             {
-                chest = 0;
-            }
-            else if (tType == TreasureType.Exp)
-            {
-                chest = 1;
-            }
-            else if (tType == TreasureType.Level)
-            {
-                chest = 2;
-            }
+                TreasureType.Souls => 0,
+                TreasureType.Exp => 1,
+                TreasureType.Level => 2,
+
+                _ => -1
+            };
 
             if (chest == -1)
             {

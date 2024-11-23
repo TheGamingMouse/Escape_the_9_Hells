@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "StoreMenu", menuName = "Scriptable Objects/New Loadout Item", order = 2)]

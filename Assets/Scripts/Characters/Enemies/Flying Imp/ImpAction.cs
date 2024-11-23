@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ImpAction : MonoBehaviour
+public class ImpAction : MonoBehaviour, IEnemyAction
 {
     #region Variables
 
@@ -35,8 +35,10 @@ public class ImpAction : MonoBehaviour
 
     [Header("Components")]
     ImpMovement enemyMovement;
-    ImpHealth enemyHealth;
+    EnemyHealth enemyHealth;
     EnemySight enemySight;
+
+    bool IEnemyAction.male { get => male; set => GetComponent<IEnemyAction>().male = male; }
 
     #endregion
 
@@ -46,19 +48,13 @@ public class ImpAction : MonoBehaviour
     void Start()
     {
         enemyMovement = GetComponent<ImpMovement>();
-        enemyHealth = GetComponent<ImpHealth>();
+        enemyHealth = GetComponent<EnemyHealth>();
         enemySight = GetComponent<EnemySight>();
         
         boss = enemyHealth.boss;
 
-        if (boss)
-        {
-            male = true;
-        }
-        else
-        {
-            male = Random.Range(0, 10) < 2;
-        }
+        if (boss) male = true;
+        else male = Random.Range(0, 10) < 2;
     }
 
     // Update is called once per frame
@@ -66,14 +62,8 @@ public class ImpAction : MonoBehaviour
     {
         if (enemyMovement.targetInRange && canAttack)
         {
-            if (boss)
-            {
-                BossAttack();
-            }
-            else
-            {
-                Attack();
-            }
+            if (boss) BossAttack();
+            else Attack();
         }
         
         if (!cooling && enemySight.target)
@@ -89,10 +79,7 @@ public class ImpAction : MonoBehaviour
             StopAllCoroutines();
         }
 
-        if (canLaugh)
-        {
-            StartCoroutine(Laugh());
-        }
+        if (canLaugh) StartCoroutine(Laugh());
     }
 
     #endregion
@@ -162,10 +149,7 @@ public class ImpAction : MonoBehaviour
 
         yield return new WaitForSeconds(5f);
 
-        if (Random.Range(0, 3) == 0)
-        {
-            EnemyLaugh();
-        }
+        if (Random.Range(0, 3) == 0) EnemyLaugh();
         canLaugh = true;
     }
 
@@ -173,15 +157,14 @@ public class ImpAction : MonoBehaviour
     {
         var sfxManager = SFXAudioManager.Instance;
 
-        int randLaugh;
         if (male)
         {
-            randLaugh = Random.Range(0, sfxManager.enemyLaughMale.Count);
+            int randLaugh = Random.Range(0, sfxManager.enemyLaughMale.Count);
             sfxManager.PlayClip(sfxManager.enemyLaughMale[randLaugh], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
         else
         {
-            randLaugh = Random.Range(0, sfxManager.enemyLaughFemale.Count);
+            int randLaugh = Random.Range(0, sfxManager.enemyLaughFemale.Count);
             sfxManager.PlayClip(sfxManager.enemyLaughFemale[randLaugh], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
     }
@@ -190,15 +173,14 @@ public class ImpAction : MonoBehaviour
     {
         var sfxManager = SFXAudioManager.Instance;
         
-        int randTarget;
         if (male)
         {
-            randTarget = Random.Range(0, sfxManager.impTargetingMale.Count);
+            int randTarget = Random.Range(0, sfxManager.impTargetingMale.Count);
             sfxManager.PlayClip(sfxManager.impTargetingMale[randTarget], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod * 2, gameObject);
         }
         else
         {
-            randTarget = Random.Range(0, sfxManager.impTargetingFemale.Count);
+            int randTarget = Random.Range(0, sfxManager.impTargetingFemale.Count);
             sfxManager.PlayClip(sfxManager.impTargetingFemale[randTarget], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod * 2, gameObject);
         }
     }
@@ -206,16 +188,15 @@ public class ImpAction : MonoBehaviour
     void AttackAudio()
     {
         var sfxManager = SFXAudioManager.Instance;
-        
-        int randAttack;
+
         if (male)
         {
-            randAttack = Random.Range(0, sfxManager.impAttackMale.Count);
+            int randAttack = Random.Range(0, sfxManager.impAttackMale.Count);
             sfxManager.PlayClip(sfxManager.impAttackMale[randAttack], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject);
         }
         else
         {
-            randAttack = Random.Range(0, sfxManager.impAttackFemale.Count);
+            int randAttack = Random.Range(0, sfxManager.impAttackFemale.Count);
             sfxManager.PlayClip(sfxManager.impAttackFemale[randAttack], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject);
         }
 

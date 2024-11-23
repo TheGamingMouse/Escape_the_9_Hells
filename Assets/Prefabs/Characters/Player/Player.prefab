@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98d18c721e480fc47960c9eca32c7792, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 0
+  health: 100
   resistanceMultiplier: 1
   playerDead: 0
   isInvinsible: 0
@@ -336,7 +336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   godMode: 0
   isDev: 1
-  toBossRoom: {fileID: 0}
+  weapon: {fileID: 904703759980282549}
 --- !u!114 &5337425809499855676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393,28 +393,17 @@ MonoBehaviour:
   armorUpdated: 0
   upgradesPugio: []
   upgradesUlfberht: []
-  upgradesWeapon1: []
-  upgradesWeapon2: []
-  upgradesWeapon3: []
-  upgradesWeapon4: []
   upgradesLoyalSphere: []
   upgradesAttackSquare: []
-  upgradesCompanion1: []
-  upgradesCompanion2: []
-  upgradesCompanion3: []
-  upgradesCompanion4: []
   upgradesLeather: []
   upgradesHide: []
   upgradesRingMail: []
   upgradesPlate: []
-  upgradesArmor1: []
-  upgradesArmor2: []
   upgradesAngelWings: []
   upgradesSteelWings: []
   upgradesBackpacks: []
   upgradesCapeOWinds: []
-  upgradesSeedBag: []
-  upgradesBacks2: []
+  upgradesSeedBags: []
 --- !u!114 &862136867418967543
 MonoBehaviour:
   m_ObjectHideFlags: 0

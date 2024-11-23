@@ -51,7 +51,7 @@ public class MinionSpawner : MonoBehaviour
             newMinion.GetComponent<EnemySight>().minion = true;
             newMinion.transform.position += new Vector3(0f, 0.125f, 0f);
 
-            newMinion.GetComponent<ImpHealth>().minion = true;
+            newMinion.GetComponent<EnemyHealth>().minion = true;
             minions.Add(newMinion);
 
             StartCoroutine(Cooldown());

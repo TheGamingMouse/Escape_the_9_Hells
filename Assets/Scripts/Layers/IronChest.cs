@@ -49,10 +49,8 @@ public class IronChest : MonoBehaviour
                 souls = Random.Range(10, 26) * 2;
                 sfxManager.PlayClip(sfxManager.activateLucky, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
             }
-            else
-            {
-                souls = Random.Range(10, 26);
-            }
+            else souls = Random.Range(10, 26);
+            
             ExpSoulsManager.Instance.AddSouls(souls, false);
 
             chestOpened = true;

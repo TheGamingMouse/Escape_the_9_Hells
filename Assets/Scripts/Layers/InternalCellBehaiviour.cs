@@ -18,10 +18,7 @@ public class InternalCellBehaiviour : MonoBehaviour
 
     public void UpdateCell(bool[] status)
     {
-        for (int i = 0; i < status.Length; i++)
-        {
-            walls[i].SetActive(!status[i]);
-        }
+        for (int i = 0; i < status.Length; i++) walls[i].SetActive(!status[i]);
     }
 
     #endregion

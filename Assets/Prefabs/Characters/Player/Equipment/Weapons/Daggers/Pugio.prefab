@@ -44,7 +44,6 @@ GameObject:
   - component: {fileID: 7428708554516412200}
   - component: {fileID: 7428708554515314152}
   - component: {fileID: 3177567728095501359}
-  - component: {fileID: 8769703537442074907}
   - component: {fileID: 7149514712631583380}
   m_Layer: 0
   m_Name: WeaponModel
@@ -140,23 +139,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300002, guid: 5797bd9bd844a8347bfa426c65f9b35e, type: 3}
---- !u!114 &8769703537442074907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7428708554517310252}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fddee3d70ed911541b7e98aad831c057, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 0
-  piercing: 0
-  canDamageEnemies: 0
-  specialAttacking: 0
-  weapon: {fileID: 0}
 --- !u!95 &7149514712631583380
 Animator:
   serializedVersion: 5

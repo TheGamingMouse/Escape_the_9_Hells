@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -108,16 +109,14 @@ public class SFXAudioManager : MonoBehaviour
         Button[] buttons = FindObjectsOfType<Button>();
 	
         foreach (var b in buttons)
-        {
             b.onClick.AddListener(OnClick);
-        }
-
-        PopulateAudioSourcePool();
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        PopulateAudioSourcePool();
+
         dialogueSource.clip = dialogue;
         dialogueSource.outputAudioMixerGroup = MasterAudioManager.Instance.sfxMixer;
         dialogueSource.volume = CalculateVolume(uiVolumeMod);
@@ -130,19 +129,11 @@ public class SFXAudioManager : MonoBehaviour
         if (SettingsManager.Instance.sfxVolume == -30 || SettingsManager.Instance.masterVolume == -30)
         {
             foreach (var source in audioSourcePool)
-            {
-                if (!source.isPlaying)
-                {
-                    source.volume = 0f;
-                }
-            }
+                if (!source.isPlaying) source.volume = 0f;
 
             dialogueSource.volume = 0f;
         }
-        else
-        {
-            dialogueSource.volume = CalculateVolume(uiVolumeMod);
-        }
+        else dialogueSource.volume = CalculateVolume(uiVolumeMod);
     }
 
     #endregion
@@ -160,69 +151,43 @@ public class SFXAudioManager : MonoBehaviour
         PlayClip(reRollSFX[randReRoll], MasterAudioManager.Instance.sBlend2D, effectsVolumeMod);
     }
 
-    public void PlayAlexanderVO(bool isGreeting)
+    public void PlayNPCVoice(NPCSpawner.NPCEnum npc, bool isGreeting)
     {
         var masterManager = MasterAudioManager.Instance;
 
-        List<List<AudioClip>> clipList = new()
+        List<List<AudioClip>> clipList = new();
+        switch (npc)
         {
-            alexanderGreetings,
-            alexanderFarewells
-        };
+            case NPCSpawner.NPCEnum.Ricky:
+                clipList.Add(rickyGreetings);
+                clipList.Add(rickyFarewells);
+                break;
+            
+            case NPCSpawner.NPCEnum.Barbara:
+                clipList.Add(barbaraGreetings);
+                clipList.Add(barbaraFarewells);
+                break;
+            
+            case NPCSpawner.NPCEnum.Alexander:
+                clipList.Add(alexanderGreetings);
+                clipList.Add(alexanderFarewells);
+                break;
+
+            case NPCSpawner.NPCEnum.Jens:
+                // clipList.Add(jensGreetings);
+                // clipList.Add(jensFarewells);
+                break;
+        }
 
         if (isGreeting)
         {
-            int randInt = Random.Range(0, alexanderGreetings.Count);
-            PlayClip(alexanderGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
+            int randInt = Random.Range(0, clipList.First().Count);
+            PlayClip(clipList.First()[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
         }
         else
         {
-            int randInt = Random.Range(0, alexanderFarewells.Count);
-            PlayClip(alexanderFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
-        }
-    }
-
-    public void PlayBarbaraVO(bool isGreeting)
-    {
-        var masterManager = MasterAudioManager.Instance;
-
-        List<List<AudioClip>> clipList = new()
-        {
-            barbaraGreetings,
-            barbaraFarewells
-        };
-
-        if (isGreeting)
-        {
-            int randInt = Random.Range(0, barbaraGreetings.Count);
-            PlayClip(barbaraGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
-        }
-        else
-        {
-            int randInt = Random.Range(0, barbaraFarewells.Count);
-            PlayClip(barbaraFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
-        }
-    }
-
-    public void PlayRickyVO(bool isGreeting)
-    {
-        var masterManager = MasterAudioManager.Instance;
-
-        List<List<AudioClip>> clipList = new()
-        {
-            rickyGreetings,
-            rickyFarewells
-        };
-
-        if (isGreeting)
-        {
-            int randInt = Random.Range(0, rickyGreetings.Count);
-            PlayClip(rickyGreetings[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
-        }
-        else
-        {
-            int randInt = Random.Range(0, rickyFarewells.Count);
-            PlayClip(rickyFarewells[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
+            int randInt = Random.Range(0, clipList.Last().Count);
+            PlayClip(clipList.Last()[randInt], masterManager.sBlend2D, npcDialogueVolumeMod, false, "none", null, 1, false, clipList);
         }
     }
 
@@ -246,10 +211,7 @@ public class SFXAudioManager : MonoBehaviour
         float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
         
         float realVolume = (sfxVolume + masterVolume) / 2;
-        if (volumeOverride > 0f)
-        {
-            realVolume *= volumeOverride;
-        }
+        if (volumeOverride > 0f) realVolume *= volumeOverride;
         else
         {
             Debug.LogError("volumeOverride must be a positive number.");
@@ -267,37 +229,19 @@ public class SFXAudioManager : MonoBehaviour
     AudioSource AddNewSourceToPool(float blend, float volumeOverride, GameObject objectSource, string priority, float pitchOverride)
     {
         AudioSource newSource;
-        if (!objectSource)
-        {
-            newSource = gameObject.AddComponent<AudioSource>();
-        }
-        else
-        {
-            newSource = objectSource.AddComponent<AudioSource>();
-        }
+        if (!objectSource) newSource = gameObject.AddComponent<AudioSource>();
+        else newSource = objectSource.AddComponent<AudioSource>();
 
         if (priority != "none")
-        {
-            if (priority == "high")
-            {
-                newSource.priority = 1;
-            }
-            else if (priority == "low")
-            {
-                newSource.priority = 256;
-            }
-        }
+            if (priority == "high") newSource.priority = 1;
+            else if (priority == "low") newSource.priority = 256;
 
         newSource.playOnAwake = false;
         newSource.spatialBlend = blend;
-        if (SettingsManager.Instance.sfxVolume == -30 || SettingsManager.Instance.masterVolume == -30)
-        {
-            newSource.volume = 0f;
-        }
-        else
-        {
-            newSource.volume = CalculateVolume(volumeOverride);
-        }
+
+        if (SettingsManager.Instance.sfxVolume == -30 || SettingsManager.Instance.masterVolume == -30) newSource.volume = 0f;
+        else newSource.volume = CalculateVolume(volumeOverride);
+
         newSource.pitch = pitchOverride;
         newSource.outputAudioMixerGroup = MasterAudioManager.Instance.sfxMixer;
         audioSourcePool.Add(newSource);
@@ -309,34 +253,18 @@ public class SFXAudioManager : MonoBehaviour
         //Fetch the first source in the pool that is not currently playing anything
         foreach (var source in audioSourcePool)
         {
-            if (source.IsDestroyed())
-            {
-                audioSourcePool.Remove(source);
-            }
+            if (source.IsDestroyed()) audioSourcePool.Remove(source);
 
             if (!canPlayIfPlaying)
             {
-                if (IsAudioPlaying(clipLists, source))
-                {
-                    source.Stop();
-                }
+                if (IsAudioPlaying(clipLists, source)) source.Stop();
                 return source;
             }
 
             if (!objectSource)
-            {
-                if (!source.isPlaying)
-                {
-                    return source;
-                }
-            }
+                if (!source.isPlaying) return source;
             else
-            {
-                if (!source.isPlaying && objectSource == source.gameObject)
-                {
-                    return source;
-                }
-            }
+                if (!source.isPlaying && objectSource == source.gameObject) return source;
         }
 
         //No unused sources. Create and fetch a new source
@@ -347,59 +275,31 @@ public class SFXAudioManager : MonoBehaviour
     {
         //Fetch the first source in the pool that is not currently playing anything
         foreach (var source in audioSourcePool)
-        {
-            if (source.isPlaying && source.clip == clip)
-            {
-                return source;
-            }
-        }
+            if (source.isPlaying && source.clip == clip) return source;
         return null;
     }
 
     bool IsAudioPlaying(List<List<AudioClip>> clipLists, AudioSource source)
     {
         foreach (List<AudioClip> list in clipLists)
-        {
-            if (list.Contains(source.clip) && source.isPlaying)
-            {
-                return true;
-            }
-        }
-
+            if (list.Contains(source.clip) && source.isPlaying) return true;
         return false;
     }
 
     public void PlayClip(AudioClip clip, float blend, float volumeOverride, bool randomPitch = false, string priority = "none", GameObject objectSource = null, float pitchOverride = 1f, bool canPlayIfPlaying = true, List<List<AudioClip>> clipLists = null)
     {
+        if (clip == null) return;
         AudioSource source = GetAvailablePoolSource(blend, volumeOverride, objectSource, priority, pitchOverride, canPlayIfPlaying, clipLists);
-        if (source)
-        {
-            source.clip = clip;
-        }
-        else
-        {
-            return;
-        }
+        if (source) source.clip = clip;
+        else return;
 
-        if (SettingsManager.Instance.sfxVolume == -30 || SettingsManager.Instance.masterVolume == -30)
-        {
-            source.volume = 0f;
-        }
-        else
-        {
-            source.volume = volumeOverride;
-        }
+        if (SettingsManager.Instance.sfxVolume == -30 || SettingsManager.Instance.masterVolume == -30) source.volume = 0f;
+        else source.volume = volumeOverride;
 
         source.spatialBlend = blend;
 
-        if (randomPitch)
-        {
-            source.pitch = CalculateRandomPitch(pitchOverride);
-        }
-        else
-        {
-            source.pitch = pitchOverride;
-        }
+        if (randomPitch) source.pitch = CalculateRandomPitch(pitchOverride);
+        else source.pitch = pitchOverride;
 
         source.Play();
     }
@@ -407,16 +307,16 @@ public class SFXAudioManager : MonoBehaviour
     public void StopClip(AudioClip clip)
     {
         AudioSource source = GetUnavailablePoolSource(clip);
-        if (source == null)
-        {
-            return;
-        }
+        if (source == null) return;
+        
         source.clip = clip;
         source.Stop();
     }
 
     void PopulateAudioSourcePool()
     {
+        if (MasterAudioManager.Instance == null) return;
+
         var masterManager = MasterAudioManager.Instance;
 
         for (int i = 0; i < 15; i++)

@@ -77,10 +77,7 @@ public class MainMenuManager : MonoBehaviour
         var settingsData = SaveSystem.loadedSettingsData;
         var playerData = SaveSystem.loadedPlayerData;
 
-        if (playerData.newGame)
-        {
-            continueGameButton.interactable = false;
-        }
+        if (playerData.newGame) continueGameButton.interactable = false;
 
         masterVolume = settingsData.masterVolume;
         musicVolume = settingsData.musicVolume;
@@ -106,10 +103,7 @@ public class MainMenuManager : MonoBehaviour
             string option = resolutions[i].width + " x " + resolutions[i].height;
             options.Add(option);
 
-            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
-            {
-                currentResolution = i;
-            }
+            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height) currentResolution = i;
         }
 
         resolutionDropdown.AddOptions(options);
@@ -152,56 +146,23 @@ public class MainMenuManager : MonoBehaviour
 
     void CalculateLayerReached(int layer)
     {
-        switch (layer)
+        highestLayer = layer switch
         {
-            case 0:
-                highestLayer = "Hub...";
-                break;
-            
-            case 1:
-                highestLayer = "9th layer";
-                break;
-            
-            case 2:
-                highestLayer = "8th layer";
-                break;
-            
-            case 3:
-                highestLayer = "7th layer";
-                break;
-            
-            case 4:
-                highestLayer = "6th layer";
-                break;
-            
-            case 5:
-                highestLayer = "5th layer";
-                break;
-            
-            case 6:
-                highestLayer = "4th layer";
-                break;
-            
-            case 7:
-                highestLayer = "3rd layer";
-                break;
-            
-            case 8:
-                highestLayer = "2nd layer";
-                break;
-            
-            case 9:
-                highestLayer = "1st layer";
-                break;
-            
-            case 10:
-                highestLayer = "Void";
-                break;
-            
-            case 11:
-                highestLayer = "Gates";
-                break;
-        }
+            0 => highestLayer = "Hub...",
+            1 => highestLayer = "9th layer",
+            2 => highestLayer = "8th layer",
+            3 => highestLayer = "7th layer",
+            4 => highestLayer = "6th layer",
+            5 => highestLayer = "5th layer",
+            6 => highestLayer = "4th layer",
+            7 => highestLayer = "3rd layer",
+            8 => highestLayer = "2nd layer",
+            9 => highestLayer = "1st layer",
+            10 => highestLayer = "Void",
+            11 => highestLayer = "Gates",
+
+            _ => throw new ArgumentException($"Layer '{layer}' was not recognized.")
+        };
     }
 
     #endregion
@@ -222,10 +183,7 @@ public class MainMenuManager : MonoBehaviour
 
         SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
-        if (!started)
-        {
-            masterVolumeSlider.value = volume;
-        }
+        if (!started) masterVolumeSlider.value = volume;
     }
 
     public void SetMusicVolume(float volume)
@@ -242,10 +200,7 @@ public class MainMenuManager : MonoBehaviour
 
         SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
-        if (!started)
-        {
-            musicVolumeSlider.value = volume;
-        }
+        if (!started) musicVolumeSlider.value = volume;
     }
 
     public void SetSFXVolume(float volume)
@@ -262,10 +217,7 @@ public class MainMenuManager : MonoBehaviour
 
         SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
-        if (!started)
-        {
-            sfxVolumeSlider.value = volume;
-        }
+        if (!started) sfxVolumeSlider.value = volume;
     }
 
     #endregion
@@ -287,14 +239,9 @@ public class MainMenuManager : MonoBehaviour
                 break;
             
             case 2:
-                if (SystemInfo.operatingSystem.Contains("Windows"))
-                {
-                    Screen.fullScreenMode = FullScreenMode.Windowed;
-                }
-                else if (SystemInfo.operatingSystem.Contains("Mac"))
-                {
-                    Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-                }
+                if (SystemInfo.operatingSystem.Contains("Windows")) Screen.fullScreenMode = FullScreenMode.Windowed;
+                else if (SystemInfo.operatingSystem.Contains("Mac")) Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
+
                 screenMode = 2;
                 break;
         }
@@ -304,10 +251,7 @@ public class MainMenuManager : MonoBehaviour
 
         SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
-        if (!started)
-        {
-            fullscreenModeDropdown.value = screenMode;
-        }
+        if (!started) fullscreenModeDropdown.value = screenMode;
     }
 
     public void SetResolution(int resolutionIndex)
@@ -324,49 +268,34 @@ public class MainMenuManager : MonoBehaviour
     {
         highesteLayerText.text = $"Your highest reached layer is the {highestLayer}";
         
+        currentSoulsText.text = $"You currently have {currentSouls} total soul";
         if (currentSouls != 1)
         {
-            currentSoulsText.text = $"You currently have {currentSouls} souls in your collection";
-        }
-        else
-        {
-            currentSoulsText.text = $"You currently have {currentSouls} soul in your collection";
+            currentSoulsText.text += "s";
         }
         
+        totalSoulsText.text = $"You have collected {totalSouls} soul";
         if (totalSouls != 1)
         {
-            totalSoulsText.text = $"You have collected {totalSouls} souls";
+            totalSoulsText.text += "s";
         }
-        else
-        {
-            totalSoulsText.text = $"You have collected {totalSouls} soul";
-        }
-
+        
+        totalLevelsText.text = $"You have gained {totalLevels} level";
         if (totalLevels != 1)
         {
-            totalLevelsText.text = $"You have gained {totalLevels} levels";
-        }
-        else
-        {
-            totalLevelsText.text = $"You have gained {totalLevels} level";
+            totalLevelsText.text += "s";
         }
 
+        demonsKilledText.text = $"You have killed {demonsKilled} demon";
         if (demonsKilled != 1)
         {
-            demonsKilledText.text = $"You have killed {demonsKilled} demons";
-        }
-        else
-        {
-            demonsKilledText.text = $"You have killed {demonsKilled} demon";
+            demonsKilledText.text += "s";
         }
 
+        devilsKilledText.text = $"You have killed {devilsKilled} devil";
         if (devilsKilled != 1)
         {
-            devilsKilledText.text = $"You have killed {devilsKilled} devils";
-        }
-        else
-        {
-            devilsKilledText.text = $"You have killed {devilsKilled} devil";
+            devilsKilledText.text += "s";
         }
     }
 

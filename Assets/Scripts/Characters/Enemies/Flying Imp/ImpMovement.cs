@@ -13,7 +13,6 @@ public class ImpMovement : MonoBehaviour
 
     [Header("Bools")]
     public bool targetInRange;
-    bool boss;
     public bool slowed;
 
     [Header("Transforms")]
@@ -27,7 +26,7 @@ public class ImpMovement : MonoBehaviour
     public Rigidbody rb;
     public EnemySight enemySight;
     public ImpAction enemyAction;
-    public ImpHealth enemyHealth;
+    public EnemyHealth enemyHealth;
 
     #endregion
 
@@ -38,11 +37,7 @@ public class ImpMovement : MonoBehaviour
     {
         player = PlayerComponents.Instance.player;
 
-        boss = enemyHealth.boss;
-        if (boss)
-        {
-            moveSpeed = bossSpeed;
-        }
+        if (enemyHealth.boss) moveSpeed = bossSpeed;
     }
 
     void FixedUpdate()

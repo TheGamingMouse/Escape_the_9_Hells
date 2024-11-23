@@ -25,7 +25,7 @@ public class BasicEnemyMovement : MonoBehaviour
     Rigidbody rb;
     EnemySight enemySight;
     BasicEnemyAction enemyAction;
-    BasicEnemyHealth enemyHealth;
+    EnemyHealth enemyHealth;
 
     #endregion
 
@@ -38,7 +38,7 @@ public class BasicEnemyMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         enemySight = GetComponent<EnemySight>();
         enemyAction = GetComponent<BasicEnemyAction>();
-        enemyHealth = GetComponent<BasicEnemyHealth>();
+        enemyHealth = GetComponent<EnemyHealth>();
 
         boss = enemyHealth.boss;
     }

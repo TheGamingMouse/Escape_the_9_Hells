@@ -41,7 +41,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 698888396137438797}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -56,7 +56,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -4938,7 +4938,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1015187289698502806}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -4953,7 +4953,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -9826,7 +9826,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2120955566595670010}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -9841,7 +9841,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -14786,7 +14786,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2845572430592622508}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -14801,7 +14801,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -19683,7 +19683,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3173625027041890385}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -19698,7 +19698,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -24581,7 +24581,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7027507786630212550}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -24596,7 +24596,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -29469,7 +29469,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7115755936440263174}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -29484,7 +29484,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -34330,9 +34330,9 @@ GameObject:
   - component: {fileID: 5464500159910439906}
   - component: {fileID: 1907926202514464247}
   - component: {fileID: 5772205341432789300}
-  - component: {fileID: 2546568517046701281}
   - component: {fileID: 2807877289643119560}
   - component: {fileID: 4362209245112506694}
+  - component: {fileID: 2425644634883152882}
   m_Layer: 9
   m_Name: BossBasicDemon
   m_TagString: Enemy
@@ -34472,6 +34472,7 @@ MonoBehaviour:
   eType: 0
   isObstructed: 0
   isInArea: 0
+  boss: 1
   minion: 0
   target: {fileID: 0}
   playerMask:
@@ -34481,26 +34482,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   roomSpawner: {fileID: 0}
-  bossGenerator: {fileID: 0}
---- !u!114 &2546568517046701281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7151730078538460501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87e578f9b7378c44da5b451167ff394c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 370
-  soulAmount: 50
-  expAmount: 25
-  boss: 1
-  bossName: Cain, the Envious Traitor
-  roomSpawner: {fileID: 0}
-  bossGenerator: {fileID: 0}
 --- !u!114 &2807877289643119560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34530,11 +34511,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attacking: 0
-  boss: 0
-  male: 0
+  boss: 1
+  male: 1
   playerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
+  pugioAnimator: {fileID: 1343548128545409666}
+  pugioAttack: {fileID: 7286232679702112587}
+--- !u!114 &2425644634883152882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7151730078538460501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7441b62f86474464eb60fd9d22dc8823, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 750
+  soulAmount: 100
+  expAmount: 250
+  boss: 1
+  minion: 0
+  bossName: Cain, the Cowardly Traitor
+  roomSpawner: {fileID: 0}
 --- !u!1 &7802815550659648721
 GameObject:
   m_ObjectHideFlags: 0
@@ -34576,7 +34578,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7802815550659648721}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -34591,7 +34593,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -39464,7 +39466,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7988468295282254555}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -39479,7 +39481,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -44371,7 +44373,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8284835505837948396}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -44386,7 +44388,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -49268,7 +49270,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8657672139225346789}
   serializedVersion: 8
-  lengthInSec: 2
+  lengthInSec: 10
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -49283,7 +49285,7 @@ ParticleSystem:
   startDelay:
     serializedVersion: 2
     minMaxState: 0
-    scalar: 0
+    scalar: 0.1
     minScalar: 0
     maxCurve:
       serializedVersion: 2
@@ -54171,13 +54173,86 @@ PrefabInstance:
       propertyPath: PS
       value: 
       objectReference: {fileID: 5780379006569095970}
+    - target: {fileID: 8769703537442074907, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+      propertyPath: particles
+      value: 
+      objectReference: {fileID: 5780379006569095970}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7428708554517310252, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1343548128545409666}
+    - targetCorrespondingSourceObject: {fileID: 7428708554517310252, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7286232679702112587}
+    - targetCorrespondingSourceObject: {fileID: 7428708554517310252, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9208417187618314327}
   m_SourcePrefab: {fileID: 100100000, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+--- !u!1 &7044288800207942692 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7428708554517310252, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+  m_PrefabInstance: {fileID: 493782173036371720}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1343548128545409666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7044288800207942692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd2322aab6305c84fac1208639b196ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playNormalAudio: 0
+  animator: {fileID: 7341546364508405148}
+  pugio: {fileID: 7286232679702112587}
+--- !u!114 &7286232679702112587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7044288800207942692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fff99d1b35f7344fab715810a9d0607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  piercing: 0
+  canDamageEnemies: 0
+  heavyAttacking: 0
+  canAttack: 0
+  canHeavy: 0
+  weapon: {fileID: 0}
+--- !u!114 &9208417187618314327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7044288800207942692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fddee3d70ed911541b7e98aad831c057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 0
+  bossSlam: 0
+  bossSlamming: 0
+  player: {fileID: 0}
+  particles: {fileID: 5780379006569095970}
 --- !u!4 &7044288800208431106 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7428708554517739274, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+  m_PrefabInstance: {fileID: 493782173036371720}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7341546364508405148 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7149514712631583380, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
   m_PrefabInstance: {fileID: 493782173036371720}
   m_PrefabAsset: {fileID: 0}

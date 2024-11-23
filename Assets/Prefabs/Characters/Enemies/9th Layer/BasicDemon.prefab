@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3726074934857269477}
   - component: {fileID: 275667798557307803}
   - component: {fileID: 8508756721305883436}
-  - component: {fileID: -966050103840300871}
+  - component: {fileID: 2972398994255568617}
   - component: {fileID: 8928245564331845087}
   - component: {fileID: -2247917427767758802}
   m_Layer: 9
@@ -153,8 +153,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42490fa85364eef4ea4d13393f327e7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eType: 0
   isObstructed: 0
   isInArea: 0
+  boss: 0
   minion: 0
   target: {fileID: 0}
   playerMask:
@@ -164,8 +166,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   roomSpawner: {fileID: 0}
-  bossGenerator: {fileID: 0}
---- !u!114 &-966050103840300871
+--- !u!114 &2972398994255568617
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,16 +175,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 4342466281012111629}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87e578f9b7378c44da5b451167ff394c, type: 3}
+  m_Script: {fileID: 11500000, guid: 7441b62f86474464eb60fd9d22dc8823, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 75
   soulAmount: 50
   expAmount: 25
   boss: 0
+  minion: 0
   bossName: 
   roomSpawner: {fileID: 0}
-  bossGenerator: {fileID: 0}
 --- !u!114 &8928245564331845087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,6 +199,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 4
   targetInRange: 0
+  slowed: 0
   target: {fileID: 0}
 --- !u!114 &-2247917427767758802
 MonoBehaviour:
@@ -213,9 +215,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attacking: 0
   boss: 0
+  male: 0
   playerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
+  pugioAnimator: {fileID: 3564467232327886221}
+  pugioAttack: {fileID: 3501821633360227426}
 --- !u!1001 &4793408848745464269
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -373,10 +378,59 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7428708554517310252, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3564467232327886221}
+    - targetCorrespondingSourceObject: {fileID: 7428708554517310252, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3501821633360227426}
   m_SourcePrefab: {fileID: 100100000, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+--- !u!95 &3564698934501900393 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7149514712631583380, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+  m_PrefabInstance: {fileID: 5926867998763033341}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3843932341622396407 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7428708554517739274, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
   m_PrefabInstance: {fileID: 5926867998763033341}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3843932341622688209 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7428708554517310252, guid: 1449b230ee97e85478809e95acdc782b, type: 3}
+  m_PrefabInstance: {fileID: 5926867998763033341}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3564467232327886221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3843932341622688209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd2322aab6305c84fac1208639b196ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playNormalAudio: 0
+  animator: {fileID: 3564698934501900393}
+  pugio: {fileID: 3501821633360227426}
+--- !u!114 &3501821633360227426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3843932341622688209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fff99d1b35f7344fab715810a9d0607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  piercing: 0
+  canDamageEnemies: 0
+  heavyAttacking: 0
+  canAttack: 0
+  canHeavy: 0
+  weapon: {fileID: 0}

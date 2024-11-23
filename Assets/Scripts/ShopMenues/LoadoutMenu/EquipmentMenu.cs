@@ -91,63 +91,40 @@ public class EquipmentMenu : MonoBehaviour
         interactor = player.GetComponent<Interactor>();
 
         if (UIManager.Instance.npcsActive)
-        {
-            if (NPCSpawner.Instance.alexSpawned)
-            {
-                alexander = NPCSpawner.Instance.alexander;
-            }
-        }
+            if (NPCSpawner.Instance.alexSpawned) alexander = NPCSpawner.Instance.alexander;
         
         if (!pannelsActivated && PlayerComponents.Instance.playerEquipment.equipmentLoaded)
         {
             for (int i = 0; i < equipmentItemsSOWeapons.Length; i++)
-            {
                 if (!PlayerComponents.Instance.playerEquipment.boughtWeapons.Contains(equipmentItemsSOWeapons[i]))
                 {
                     equipmentPannelsSOWeapons[i].SetActive(true);
                     equipmentPannelsWeapons[i].priceObj.SetActive(true);
                 }
-                else
-                {
-                    equipmentPannelsSOWeapons[i].SetActive(false);
-                }
-            }
+                else equipmentPannelsSOWeapons[i].SetActive(false);
+
             for (int i = 0; i < equipmentItemsSOCompanion.Length; i++)
-            {
                 if (!PlayerComponents.Instance.playerEquipment.boughtCompanions.Contains(equipmentItemsSOCompanion[i]))
                 {
                     equipmentPannelsSOCompanion[i].SetActive(true);
                     equipmentPannelsCompanion[i].priceObj.SetActive(true);
                 }
-                else
-                {
-                    equipmentPannelsSOCompanion[i].SetActive(false);
-                }
-            }
+                else equipmentPannelsSOCompanion[i].SetActive(false);
+
             for (int i = 0; i < equipmentItemsSOArmor.Length; i++)
-            {
                 if (!PlayerComponents.Instance.playerEquipment.boughtArmors.Contains(equipmentItemsSOArmor[i]))
                 {
                     equipmentPannelsSOArmor[i].SetActive(true);
                     equipmentPannelsArmor[i].priceObj.SetActive(true);
                 }
-                else
-                {
-                    equipmentPannelsSOArmor[i].SetActive(false);
-                }
-            }
+                else equipmentPannelsSOArmor[i].SetActive(false);
             for (int i = 0; i < equipmentItemsSOBack.Length; i++)
-            {
                 if (!PlayerComponents.Instance.playerEquipment.boughtBacks.Contains(equipmentItemsSOBack[i]))
                 {
                     equipmentPannelsSOBack[i].SetActive(true);
                     equipmentPannelsBack[i].priceObj.SetActive(true);
                 }
-                else
-                {
-                    equipmentPannelsSOBack[i].SetActive(false);
-                }
-            }
+                else equipmentPannelsSOBack[i].SetActive(false);
 
             weaponContents.position = new Vector3(weaponContents.position.x, -10000f, 0);
             companionContents.position = new Vector3(companionContents.position.x, -10000f, 0f);
@@ -159,10 +136,7 @@ public class EquipmentMenu : MonoBehaviour
             pannelsActivated = true;
         }
         
-        if (!pannelsLoaded)
-        {
-            LoadLoadoutPannels();
-        }
+        if (!pannelsLoaded) LoadLoadoutPannels();
 
         if (menuOpen)
         {
@@ -234,27 +208,27 @@ public class EquipmentMenu : MonoBehaviour
         soulsText.text = $"{souls}";
         
         for (int i = 0; i < equipmentItemsSOWeapons.Length; i++)
-        {
             equipmentButtonsWeapons[i].interactable = souls >= equipmentItemsSOWeapons[i].price;
-        }
+
         for (int i = 0; i < equipmentItemsSOCompanion.Length; i++)
-        {
             equipmentButtonsCompanion[i].interactable = souls >= equipmentItemsSOCompanion[i].price;
-        }
+
         for (int i = 0; i < equipmentItemsSOArmor.Length; i++)
-        {
             equipmentButtonsArmor[i].interactable = souls >= equipmentItemsSOArmor[i].price;
-        }
+
         for (int i = 0; i < equipmentItemsSOBack.Length; i++)
-        {
             equipmentButtonsBack[i].interactable = souls >= equipmentItemsSOBack[i].price;
-        }
+            
     }
 
     public void PurchaseEquipmentWeapon(int btnNo)
     {
         if (souls >= equipmentItemsSOWeapons[btnNo].price)
         {
+            var playerData = SaveSystem.loadedPlayerData;
+            playerData.currentSouls -= equipmentItemsSOWeapons[btnNo].price;
+            SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOWeapons[btnNo].price;
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
 
@@ -271,6 +245,10 @@ public class EquipmentMenu : MonoBehaviour
     {
         if (souls >= equipmentItemsSOCompanion[btnNo].price)
         {
+            var playerData = SaveSystem.loadedPlayerData;
+            playerData.currentSouls -= equipmentItemsSOCompanion[btnNo].price;
+            SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOCompanion[btnNo].price;
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
 
@@ -287,6 +265,10 @@ public class EquipmentMenu : MonoBehaviour
     {
         if (souls >= equipmentItemsSOArmor[btnNo].price)
         {
+            var playerData = SaveSystem.loadedPlayerData;
+            playerData.currentSouls -= equipmentItemsSOArmor[btnNo].price;
+            SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOArmor[btnNo].price;
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
 
@@ -303,6 +285,10 @@ public class EquipmentMenu : MonoBehaviour
     {
         if (souls >= equipmentItemsSOBack[btnNo].price)
         {
+            var playerData = SaveSystem.loadedPlayerData;
+            playerData.currentSouls -= equipmentItemsSOBack[btnNo].price;
+            SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+
             GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls -= equipmentItemsSOBack[btnNo].price;
             souls = GameObject.FindWithTag("Player").GetComponent<PlayerLevel>().souls;
 
@@ -331,9 +317,15 @@ public class EquipmentMenu : MonoBehaviour
         menuCanClose = false;
         menuCanOpen = true;
         UIManager.Instance.alexanderTalking = false;
-        alexander.talking = false;
+        StartCoroutine(StopTalking());
 
-        SFXAudioManager.Instance.PlayAlexanderVO(false);
+        SFXAudioManager.Instance.PlayNPCVoice(NPCSpawner.NPCEnum.Alexander, false);
+    }
+
+    IEnumerator StopTalking()
+    {
+        yield return new WaitForSeconds(0.1f);
+        alexander.talking = false;
     }
 
     #endregion

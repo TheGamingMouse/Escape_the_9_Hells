@@ -51,7 +51,6 @@ public class LayerGenerator : MonoBehaviour
     public bool layerGenerated;
     public bool printPops;
     bool doInterior;
-    public bool playerPathfinder;
 
     [Header("GameObjects")]
     public GameObject internalCell;
@@ -78,11 +77,6 @@ public class LayerGenerator : MonoBehaviour
 
     void Start()
     {
-        if (!LayerManager.Instance.showroom)
-        {
-            playerPathfinder = PlayerComponents.Instance.playerSouls.playerPathfinder;
-        }
-
         Generator();
     }
 
@@ -93,7 +87,6 @@ public class LayerGenerator : MonoBehaviour
     void GenerateLayer()
     {
         for (int i = 0; i < size.x; i++)
-        {
             for (int j = 0; j < size.y; j++)
             {
                 Cell currentCell = board[Mathf.FloorToInt(i + j * size.x)];
@@ -101,23 +94,16 @@ public class LayerGenerator : MonoBehaviour
                 {
                     int randomRoom = Random.Range(1 , rooms.Length);
                     if (iChoice == InteriorChoice.NoMaze)
-                    {
                         doInterior = false;
-                    }
                     else if (iChoice == InteriorChoice.SomeMaze)
                     {
                         int interior = Random.Range(1, 101);
                         doInterior = interior <= mazeChance;
                     }
                     else if (iChoice == InteriorChoice.FullMaze)
-                    {
                         doInterior = true;
-                    }
 
-                    if (doInterior)
-                    {
-                        randomRoom = 0;
-                    }
+                    if (doInterior) randomRoom = 0;
 
                     var newRoom = Instantiate(rooms[randomRoom], new Vector3(i * offset.x, 0, -j * offset.y), 
                         Quaternion.identity, transform).GetComponentInChildren<RoomBehavior>();
@@ -131,8 +117,6 @@ public class LayerGenerator : MonoBehaviour
                     newRoom.index = Mathf.FloorToInt(i + j * size.x);
                     newRoom.doInterior = doInterior;
                     newRoom.mainPath = currentCell.mainPath;
-
-                    newRoom.playerPathfinder = playerPathfinder || LayerManager.Instance.showroom;
 
                     if (!doInterior && newRoom.interior != null)
                     {
@@ -159,20 +143,13 @@ public class LayerGenerator : MonoBehaviour
                     newRoom.UpdateRoom(board[Mathf.FloorToInt(i + j * size.x)].status);
                 }
             }
-        }
     }
 
     void  Generator()
     {
         board = new List<Cell>();
 
-        for (int i = 0; i < size.x; i++)
-        {
-            for (int j = 0; j < size.y; j++)
-            {
-                board.Add(new Cell());
-            }
-        }
+        for (int i = 0; i < size.x; i++) for (int j = 0; j < size.y; j++) board.Add(new Cell());
 
         int currentCell = startPos;
 
@@ -197,6 +174,7 @@ public class LayerGenerator : MonoBehaviour
                 layerGenerated = true;
                 break;
             }
+
             if (currentCell == startPos)
             {
                 board[currentCell].status[0] = true;
@@ -208,18 +186,12 @@ public class LayerGenerator : MonoBehaviour
             if (neighbors.Count == 0)
             {
                 if (path.Count == 0)
-                {
                     break;
-                }
                 else
                 {
                     board[currentCell].mainPath = false;
                     currentCell = path.Pop();
-                    if (printPops)
-                    {
-                        print("Path popped");
-                    }
-                    
+                    if (printPops) print("Path popped");
                 }
             }
             else
@@ -229,7 +201,6 @@ public class LayerGenerator : MonoBehaviour
                 int newCell = neighbors[Random.Range(0, neighbors.Count)];
 
                 if (newCell > currentCell)
-                {
                     if (newCell - 1 == currentCell)
                     {
                         board[currentCell].status[2] = true;
@@ -246,9 +217,7 @@ public class LayerGenerator : MonoBehaviour
                         board[currentCell].status[0] = true;
                         board[currentCell].backDoors[0] = true;
                     }
-                }
                 else
-                {
                     if (newCell + 1 == currentCell)
                     {
                         board[currentCell].status[3] = true;
@@ -265,7 +234,6 @@ public class LayerGenerator : MonoBehaviour
                         board[currentCell].status[1] = true;
                         board[currentCell].backDoors[1] = true;
                     }
-                }
             }
         }
         GenerateLayer();
@@ -276,25 +244,13 @@ public class LayerGenerator : MonoBehaviour
     {
         List<int> neighbors = new();
 
-        if (cell - size.x >= 0 && !board[Mathf.FloorToInt(cell - size.x)].visited)
-        {
-            neighbors.Add(Mathf.FloorToInt(cell - size.x));
-        }
+        if (cell - size.x >= 0 && !board[Mathf.FloorToInt(cell - size.x)].visited) neighbors.Add(Mathf.FloorToInt(cell - size.x));
 
-        if (cell + size.x < board.Count && !board[Mathf.FloorToInt(cell + size.x)].visited)
-        {
-            neighbors.Add(Mathf.FloorToInt(cell + size.x));
-        }
+        if (cell + size.x < board.Count && !board[Mathf.FloorToInt(cell + size.x)].visited) neighbors.Add(Mathf.FloorToInt(cell + size.x));
 
-        if ((cell + 1) % size.x != 0 && !board[Mathf.FloorToInt(cell + 1)].visited)
-        {
-            neighbors.Add(Mathf.FloorToInt(cell + 1));
-        }
+        if ((cell + 1) % size.x != 0 && !board[Mathf.FloorToInt(cell + 1)].visited) neighbors.Add(Mathf.FloorToInt(cell + 1));
 
-        if (cell % size.x != 0 && !board[Mathf.FloorToInt(cell - 1)].visited)
-        {
-            neighbors.Add(Mathf.FloorToInt(cell - 1));
-        }
+        if (cell % size.x != 0 && !board[Mathf.FloorToInt(cell - 1)].visited) neighbors.Add(Mathf.FloorToInt(cell - 1));
 
         return neighbors;
     }

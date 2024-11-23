@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class BasicEnemyAction : MonoBehaviour
+public class BasicEnemyAction : MonoBehaviour, IEnemyAction
 {
     #region Variables
 
@@ -29,8 +29,11 @@ public class BasicEnemyAction : MonoBehaviour
 
     [Header("Components")]
     BasicEnemyMovement enemyMovement;
-    BasicEnemyHealth enemyHealth;
-    Pugio pugio;
+    EnemyHealth enemyHealth;
+    public PugioNormalAnimator pugioAnimator;
+    public PugioNormalAttack pugioAttack;
+
+    bool IEnemyAction.male { get => male; set => GetComponent<IEnemyAction>().male = male; }
 
     #endregion
 
@@ -40,75 +43,53 @@ public class BasicEnemyAction : MonoBehaviour
     void Start()
     {
         enemyMovement = GetComponent<BasicEnemyMovement>();
-        enemyHealth = GetComponent<BasicEnemyHealth>();
-        pugio = GetComponentInChildren<Pugio>();
+        enemyHealth = GetComponent<EnemyHealth>();
         
         boss = enemyHealth.boss;
-        pugio.canDamageEnemies = false;
+        pugioAttack.canDamageEnemies = false;
         canAttack = true;
 
-        if (boss)
-        {
-            male = true;
-        }
-        else
-        {
-            male = Random.Range(0, 10) < 2;
-        }
+        if (boss) male = true;
+        else male = Random.Range(0, 10) < 2;
 
-        animator = pugio.GetComponentInParent<Animator>();
+        animator = pugioAnimator.animator;
         AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
 
         string clipName;
-        if (!boss)
-        {
-            clipName = "Pugio Pierce";
-        }
-        else
-        {
-            clipName = "BasicBoss Slam";
-        }
+        if (!boss) clipName = "Pugio Pierce";
+        else clipName = "BasicBoss Slam";
         foreach (AnimationClip c in clips)
         {
-            if (c.name == clipName)
-            {
-                clip = c;
-            }
+            if (c.name == clipName) clip = c;
         }
 
-        animator.SetFloat("AttackSpeed", attackSpeed);
+        if (!boss) animator.SetFloat("AttackSpeed", attackSpeed);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (enemyMovement.targetInRange && !attacking && !boss)
-        {
-            StartAttack();
-        }
+        if (enemyMovement.targetInRange && !attacking && !boss) Attack();
         else if (enemyMovement.targetInRange && canAttack && boss)
         {
             animator.SetBool("Boss", boss);
             BossStartAttack();
         }
 
-        if (canLaugh)
-        {
-            StartCoroutine(Laugh());
-        }
+        if (canLaugh) StartCoroutine(Laugh());
     }
 
     #endregion
 
     #region Attack Methods
 
-    void StartAttack()
+    void Attack()
     {
-        pugio.piercing = true;
+        pugioAttack.piercing = true;
         animator.SetBool("Piercing", true);
 
         StartCoroutine(EndAttack());
-        StartCoroutine(pugio.PlayNormalAudio());
+        StartCoroutine(pugioAnimator.PlayNormalAudio());
 
         attacking = true;
     }
@@ -119,7 +100,7 @@ public class BasicEnemyAction : MonoBehaviour
 
         yield return new WaitForSeconds(clipLength);
 
-        pugio.piercing = false;
+        pugioAttack.piercing = false;
         animator.SetBool("Piercing", false);
 
         attacking = false;
@@ -127,7 +108,7 @@ public class BasicEnemyAction : MonoBehaviour
 
     void BossStartAttack()
     {
-        pugio.piercing = true;
+        pugioAttack.piercing = true;
         animator.SetBool("Piercing", true);
         
         StartCoroutine(BossEndAttack());
@@ -143,15 +124,13 @@ public class BasicEnemyAction : MonoBehaviour
 
         yield return new WaitForSeconds(attackTime);
 
-        Collider[] colliders = Physics.OverlapSphere(pugio.transform.position, splashRange, playerMask);
+        Collider[] colliders = Physics.OverlapSphere(pugioAnimator.transform.position, splashRange, playerMask);
         if (colliders.Length > 0 && colliders[0].GetComponent<PlayerHealth>())
-        {
-            colliders[0].GetComponent<PlayerHealth>().TakeDamage((int)pugio.damage * 5);
-        }
+            colliders[0].GetComponent<PlayerHealth>().TakeDamage((int)pugioAttack.damage * 5);
 
         yield return new WaitForSeconds(clipLength - attackTime - clipLength * 0.05f);
         
-        pugio.piercing = false;
+        pugioAttack.piercing = false;
         animator.SetBool("Piercing", false);
         attacking = false;
 
@@ -166,10 +145,7 @@ public class BasicEnemyAction : MonoBehaviour
 
         yield return new WaitForSeconds(5f);
 
-        if (Random.Range(0, 3) == 0)
-        {
-            EnemyLaugh();
-        }
+        if (Random.Range(0, 3) == 0) EnemyLaugh();
         canLaugh = true;
     }
 
@@ -196,10 +172,10 @@ public class BasicEnemyAction : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        if (pugio)
+        if (pugioAnimator)
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(pugio.transform.position, splashRange);
+            Gizmos.DrawWireSphere(pugioAnimator.transform.position, splashRange);
         }
     }
 

@@ -88,11 +88,11 @@ public class SeedBag : MonoBehaviour
 
         if (primaryCompanion.title == "Loyal Sphere")
         {
-            companion.SwitchToLoyalSphere();
+            companion.SwitchCompanion(Companion.CompanionActive.LoyalSphere);
         }
         else if (primaryCompanion.title == "Attack Square")
         {
-            companion.SwitchToAttackSquare();
+            companion.SwitchCompanion(Companion.CompanionActive.AttackSquare);
         }
 
         PlayerComponents.Instance.playerLoadout.selectedCompanion = primaryCompanion;
@@ -107,11 +107,11 @@ public class SeedBag : MonoBehaviour
         
         if (secondaryCompanion.title == "Loyal Sphere")
         {
-            companion.SwitchToLoyalSphere();
+            companion.SwitchCompanion(Companion.CompanionActive.LoyalSphere);
         }
         else if (secondaryCompanion.title == "Attack Square")
         {
-            companion.SwitchToAttackSquare();
+            companion.SwitchCompanion(Companion.CompanionActive.AttackSquare);
         }
 
         PlayerComponents.Instance.playerLoadout.selectedCompanion = secondaryCompanion;

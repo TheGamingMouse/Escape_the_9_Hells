@@ -7,7 +7,6 @@ public class Armor : MonoBehaviour
     #region Variables
 
     [Header("Enum States")]
-    public ArmorType aType;
     public ArmorActive aActive;
 
     [Header("Floats")]
@@ -23,7 +22,7 @@ public class Armor : MonoBehaviour
     GameObject plateObj;
 
     [Header("Lists")]
-    readonly List<GameObject> armorObjs = new();
+    readonly Dictionary<ArmorActive, GameObject> armors = new();
 
     [Header("Components")]
     public LeatherArmor leather;
@@ -43,174 +42,65 @@ public class Armor : MonoBehaviour
         ringMailObj = ringMail.gameObject;
         plateObj = plate.gameObject;
 
-        armorObjs.Add(leatherObj);
-        armorObjs.Add(hideObj);
-        armorObjs.Add(ringMailObj);
-        armorObjs.Add(plateObj);
+        armors.Add(ArmorActive.Leather, leatherObj);
+        armors.Add(ArmorActive.Hide, hideObj);
+        armors.Add(ArmorActive.RingMail, ringMailObj);
+        armors.Add(ArmorActive.Plate, plateObj);
 
-        SwitchToNone();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (leatherObj.activeInHierarchy)
-        {
-            aType = ArmorType.Light;
-        }
-        else if (hideObj.activeInHierarchy)
-        {
-            aType = ArmorType.Medium;
-        }
-        else if (ringMailObj.activeInHierarchy)
-        {
-            aType = ArmorType.Heavy;
-        }
-        else if (plateObj.activeInHierarchy)
-        {
-            aType = ArmorType.Heavy;
-        }
-        else
-        {
-            aType = ArmorType.None;
-        }
+        SwitchArmor(ArmorActive.None);
     }
 
     #endregion
 
-    #region Companion Swap
+    #region General Methods
 
-    public void SwitchToNone()
+    public void SwitchArmor(ArmorActive armor)
     {
-        aActive = ArmorActive.None;
+        aActive = armor;
+        foreach (GameObject obj in armors.Values) obj.SetActive(false);
+        if (armor != ArmorActive.None) foreach (GameObject obj in armors.Values) if (obj == armors[armor]) obj.SetActive(true);
 
-        foreach (GameObject armorObj in armorObjs)
+        switch (armor)
         {
-            armorObj.SetActive(false);
+            case ArmorActive.Leather:
+                newResistanceMod = leather.resistanceMod;
+                newSpeedMod = leather.speedMod;
+                break;
+            
+            case ArmorActive.Hide:
+                newResistanceMod = hide.resistanceMod;
+                newSpeedMod = hide.speedMod;
+                break;
+            
+            case ArmorActive.RingMail:
+                newResistanceMod = ringMail.resistanceMod;
+                newSpeedMod = ringMail.speedMod;
+                break;
+            
+            case ArmorActive.Plate:
+                newResistanceMod = plate.resistanceMod;
+                newSpeedMod = plate.speedMod;
+                break;
+            
+            default:
+                currentResistanceMod = 0f;
+                currentSpeedMod = 0f;
+                break;
         }
 
         PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
+        PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
+        
         PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
+        PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
 
-        currentResistanceMod = 0f;
-        currentSpeedMod = 0f;
-    }
-
-    public void SwitchToLeather()
-    {
-        aActive = ArmorActive.Leather;
-
-        foreach (GameObject armorObj in armorObjs)
-        {
-            armorObj.SetActive(false);
-        }
-        if (leatherObj)
-        {
-            leatherObj.SetActive(true);
-
-            newResistanceMod = leather.resistanceMod;
-            newSpeedMod = leather.speedMod;
-
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
-            
-            PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
-            PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
-
-            currentResistanceMod = newResistanceMod;
-            currentSpeedMod = newSpeedMod;
-        }
-    }
-
-    public void SwitchToHide()
-    {
-        aActive = ArmorActive.Hide;
-
-        foreach (GameObject armorObj in armorObjs)
-        {
-            armorObj.SetActive(false);
-        }
-        if (hideObj)
-        {
-            hideObj.SetActive(true);
-
-            newResistanceMod = hide.resistanceMod;
-            newSpeedMod = hide.speedMod;
-
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
-            
-            PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
-            PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
-
-            currentResistanceMod = newResistanceMod;
-            currentSpeedMod = newSpeedMod;
-        }
-    }
-
-    public void SwitchToRingMail()
-    {
-        aActive = ArmorActive.RingMail;
-
-        foreach (GameObject armorObj in armorObjs)
-        {
-            armorObj.SetActive(false);
-        }
-        if (ringMailObj)
-        {
-            ringMailObj.SetActive(true);
-
-            newResistanceMod = ringMail.resistanceMod;
-            newSpeedMod = ringMail.speedMod;
-
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
-            
-            PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
-            PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
-
-            currentResistanceMod = newResistanceMod;
-            currentSpeedMod = newSpeedMod;
-        }
-    }
-
-    public void SwitchToPlate()
-    {
-        aActive = ArmorActive.Plate;
-
-        foreach (GameObject armorObj in armorObjs)
-        {
-            armorObj.SetActive(false);
-        }
-        if (plateObj)
-        {
-            plateObj.SetActive(true);
-
-            newResistanceMod = plate.resistanceMod;
-            newSpeedMod = plate.speedMod;
-
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= currentResistanceMod;
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier += newResistanceMod;
-            
-            PlayerComponents.Instance.playerMovement.speedMultiplier -= currentSpeedMod;
-            PlayerComponents.Instance.playerMovement.speedMultiplier += newSpeedMod;
-
-            currentResistanceMod = newResistanceMod;
-            currentSpeedMod = newSpeedMod;
-        }
+        currentResistanceMod = newResistanceMod;
+        currentSpeedMod = newSpeedMod;
     }
 
     #endregion
 
     #region Enums
-
-    public enum ArmorType
-    {
-        None,
-        Light,
-        Medium,
-        Heavy
-    }
 
     public enum ArmorActive
     {

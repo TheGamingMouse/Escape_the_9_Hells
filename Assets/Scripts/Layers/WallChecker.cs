@@ -28,10 +28,7 @@ public class WallChecker : MonoBehaviour
 
     void OnTriggerEnter(Collider coll)
     {
-        if (checkThis && coll.transform.CompareTag("WallChecks"))
-        {
-            Destroy(gameObject);
-        }
+        if (checkThis && coll.transform.CompareTag("WallChecks")) Destroy(gameObject);
     }
 
     #endregion

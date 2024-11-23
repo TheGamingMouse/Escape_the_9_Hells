@@ -14,7 +14,7 @@ public class Interactor : MonoBehaviour
 
     [Header("Bools")]
     public bool promtFound;
-    bool npc;
+    bool npcTalking;
     public bool interacting;
 
     [Header("Arrays")]
@@ -36,14 +36,14 @@ public class Interactor : MonoBehaviour
             var interactable = colliders[0].GetComponent<IInteractable>();
             FindNPC();
 
-            if (interactable != null && Input.GetKeyDown(KeyCode.E) && !npc)
+            if (interactable != null && Input.GetKeyDown(KeyCode.E) && !npcTalking)
             {
                 interactable.InteractE(this);
                 
                 interacting = true;
                 StartCoroutine(InteractingRoutine());
             }
-            if (interactable != null && Input.GetKeyDown(KeyCode.Q) && !npc)
+            else if (interactable != null && Input.GetKeyDown(KeyCode.Q) && !npcTalking)
             {
                 interactable.InteractQ(this);
                 
@@ -65,18 +65,10 @@ public class Interactor : MonoBehaviour
 
     void FindNPC()
     {
-        if (colliders[0].TryGetComponent(out Ricky rickyComp))
-        {
-            npc = rickyComp.talking;
-        }
-        else if (colliders[0].TryGetComponent(out Barbara barbaraComp))
-        {
-            npc = barbaraComp.talking;
-        }
-        else if (colliders[0].TryGetComponent(out Alexander alexanderComp))
-        {
-            npc = alexanderComp.talking;
-        }
+        if (colliders[0].TryGetComponent(out RickyController rickyComp)) npcTalking = rickyComp.rickyNPC.talking;
+        else if (colliders[0].TryGetComponent(out Barbara barbaraComp)) npcTalking = barbaraComp.talking;
+        else if (colliders[0].TryGetComponent(out Alexander alexanderComp)) npcTalking = alexanderComp.talking;
+        else if (colliders[0].TryGetComponent(out Jens jensComp)) npcTalking = jensComp.talking;
     }
 
     IEnumerator InteractingRoutine()

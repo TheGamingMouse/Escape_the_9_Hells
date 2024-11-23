@@ -33,33 +33,19 @@ public class Firebolt : MonoBehaviour
                 pComp.TakeDamage(damage);
                 Explode();
             }
-            else if (coll.TryGetComponent(out LoyalSphereSight _))
-            {
+            else if (coll.TryGetComponent(out LoyalSphereSight _) || coll.TryGetComponent(out AttackSquareCombat _))
                 Explode();
-            }
-            else if (coll.TryGetComponent(out AttackSquareCombat _))
-            {
-                Explode();
-            }
         }
         else if (canDamageEnemies)
         {
-            if (coll.TryGetComponent(out BasicEnemyHealth eComp))
+            if (coll.TryGetComponent(out EnemyHealth eComp))
             {
                 eComp.TakeDamage(damage, false);
                 Explode();
             }
-            else if (coll.TryGetComponent(out ImpHealth iComp))
-            {
-                iComp.TakeDamage(damage, false);
-                Explode();
-            }
         }
         
-        if (coll.CompareTag("Wall") || coll.CompareTag("Pillar") || coll.CompareTag("Door") || coll.CompareTag("FloorTile"))
-        {
-            Explode();
-        }
+        if (coll.CompareTag("Wall") || coll.CompareTag("Pillar") || coll.CompareTag("Door") || coll.CompareTag("FloorTile")) Explode();
     }
 
     void Explode()
@@ -89,12 +75,7 @@ public class Firebolt : MonoBehaviour
     void OnDestroy()
     {
         foreach (var source in gameObject.GetComponents<AudioSource>())
-        {
-            if (SFXAudioManager.Instance.audioSourcePool.Contains(source))
-            {
-                SFXAudioManager.Instance.audioSourcePool.Remove(source);
-            }
-        }
+            if (SFXAudioManager.Instance.audioSourcePool.Contains(source)) SFXAudioManager.Instance.audioSourcePool.Remove(source);
     }
 
     #endregion

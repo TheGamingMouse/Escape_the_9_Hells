@@ -15,7 +15,6 @@ public class StartLevel : MonoBehaviour
     bool doorOpened;
     bool firstRoomLoaded;
     bool doorOpenedAudio;
-    bool playerPathfinder;
 
     [Header("GameObjects")]
     public GameObject door;
@@ -42,7 +41,12 @@ public class StartLevel : MonoBehaviour
 
     void Update()
     {
-        if (LayerGenerator.Instance && LayerGenerator.Instance.layerGenerated && LayerGenerator.Instance.playerPathfinder)
+        if (LayerGenerator.Instance && LayerGenerator.Instance.layerGenerated && PlayerComponents.Instance && PlayerComponents.Instance.playerSouls.playerPathfinder)
+        {
+            startLight.GetComponentInChildren<Light>().color = mainPathColor;
+            startLight.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
+        }
+        else if (LayerManager.Instance.showroom)
         {
             startLight.GetComponentInChildren<Light>().color = mainPathColor;
             startLight.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor",mainPathColor);
@@ -55,13 +59,9 @@ public class StartLevel : MonoBehaviour
             {
                 rooms = LayerManager.Instance.rooms;
                 
-                if (rooms.Length == 0)
-                {
-                    return;
-                }
+                if (rooms.Length == 0) return;
 
                 foreach (GameObject r in rooms)
-                {
                     if (r.GetComponent<RoomBehavior>().index == LayerGenerator.Instance.startPos)
                     {
                         r.SetActive(true);
@@ -69,7 +69,6 @@ public class StartLevel : MonoBehaviour
                         r.GetComponent<RoomBehavior>().backDoor.transform.Find("DoorHinge").gameObject.SetActive(false);
                         r.GetComponent<RoomBehavior>().backDoor.GetComponentInChildren<MeshCollider>().enabled = false;
                     }
-                }
 
                 startWalls.SetActive(false);
                 
@@ -84,10 +83,7 @@ public class StartLevel : MonoBehaviour
 
     void OnTriggerEnter(Collider coll)
     {
-        if (coll.transform.CompareTag("Player") && !doorOpening && !doorOpened)
-        {
-            doorOpening = true;
-        }
+        if (coll.transform.CompareTag("Player") && !doorOpening && !doorOpened) doorOpening = true;
     }
 
     void OpenDoor()

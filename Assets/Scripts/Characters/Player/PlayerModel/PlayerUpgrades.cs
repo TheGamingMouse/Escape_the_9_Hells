@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SaveSystemSpace;
+using Unity.VisualScripting;
 using UnityEngine;
+using static SaveSystemSpace.SaveClasses.EquipmentData;
 
 public class PlayerUpgrades : MonoBehaviour
 {
@@ -43,34 +46,23 @@ public class PlayerUpgrades : MonoBehaviour
     // Weapons
     public List<UpgradeItemsSO> upgradesPugio = new();
     public List<UpgradeItemsSO> upgradesUlfberht = new();
-    public List<UpgradeItemsSO> upgradesWeapon1 = new();
-    public List<UpgradeItemsSO> upgradesWeapon2 = new();
-    public List<UpgradeItemsSO> upgradesWeapon3 = new();
-    public List<UpgradeItemsSO> upgradesWeapon4 = new();
 
     // Companions
     public List<UpgradeItemsSO> upgradesLoyalSphere = new();
     public List<UpgradeItemsSO> upgradesAttackSquare = new();
-    public List<UpgradeItemsSO> upgradesCompanion1 = new();
-    public List<UpgradeItemsSO> upgradesCompanion2 = new();
-    public List<UpgradeItemsSO> upgradesCompanion3 = new();
-    public List<UpgradeItemsSO> upgradesCompanion4 = new();
 
     // Armors
     public List<UpgradeItemsSO> upgradesLeather = new();
     public List<UpgradeItemsSO> upgradesHide = new();
     public List<UpgradeItemsSO> upgradesRingMail = new();
     public List<UpgradeItemsSO> upgradesPlate = new();
-    public List<UpgradeItemsSO> upgradesArmor1 = new();
-    public List<UpgradeItemsSO> upgradesArmor2 = new();
 
     // Backs
     public List<UpgradeItemsSO> upgradesAngelWings = new();
     public List<UpgradeItemsSO> upgradesSteelWings = new();
     public List<UpgradeItemsSO> upgradesBackpacks = new();
     public List<UpgradeItemsSO> upgradesCapeOWinds = new();
-    public List<UpgradeItemsSO> upgradesSeedBag = new();
-    public List<UpgradeItemsSO> upgradesBacks2 = new();
+    public List<UpgradeItemsSO> upgradesSeedBags = new();
 
     [Header("Components")]
     Weapon weapon;
@@ -87,6 +79,7 @@ public class PlayerUpgrades : MonoBehaviour
         weapon = GetComponentInChildren<Weapon>();
         armor = GetComponentInChildren<Armor>();
         backs = GetComponentInChildren<Backs>();
+        
         if (GameObject.FindWithTag("Companions"))
         {
             companion = GameObject.FindWithTag("Companions").GetComponent<Companion>();
@@ -122,7 +115,7 @@ public class PlayerUpgrades : MonoBehaviour
                 upgradesSteelWings = equipmentData.backData.steelWingsUpgrades;
                 upgradesBackpacks = equipmentData.backData.backpackUpgrades;
                 upgradesCapeOWinds = equipmentData.backData.capeOWindUpgrades;
-                upgradesSeedBag = equipmentData.backData.seedBagUpgrades;
+                upgradesSeedBags = equipmentData.backData.seedBagUpgrades;
 
                 loaded = true;
             }
@@ -130,433 +123,28 @@ public class PlayerUpgrades : MonoBehaviour
             // Weapons
             if (!weaponUpdated)
             {
-                if (loadout.selectedWeapon.title.ToLower() == "pugio")
-                {
-                    // Attack Speed
-                    weapon.attackSpeedMultiplier -= activeAtSpeed;
-
-                    activeAtSpeed = upgradesPugio.Where(x => x.name == "Attack Speed Upgrade").Count() * atSpeed;
-                    weapon.attackSpeedMultiplier += activeAtSpeed;
-
-                    // Damage
-                    weapon.damageMultiplier -= acitveDamage;
-
-                    acitveDamage = upgradesPugio.Where(x => x.name == "Damage Upgrade").Count() * damage;
-                    weapon.damageMultiplier += acitveDamage;
-
-                    // Special Attack
-                    if (upgradesPugio.Where(x => x.name == "Special Attack").Count() > 0)
-                    {
-                        weapon.specialAttack = true;
-                    }
-                    else
-                    {
-                        weapon.specialAttack = false;
-                    }
-
-                    // Special Cooldown
-                    weapon.specialCooldownMultiplier -= activeSpCool;
-
-                    activeSpCool = upgradesPugio.Where(x => x.name == "Special Cooldown Upgrade").Count() * spCool;
-                    weapon.specialCooldownMultiplier += activeSpCool;
-                }
-                else if (loadout.selectedWeapon.title.ToLower() == "ulfberht")
-                {
-                    // Attack Speed
-                    weapon.attackSpeedMultiplier -= activeAtSpeed;
-
-                    activeAtSpeed = upgradesUlfberht.Where(x => x.name == "Attack Speed Upgrade").Count() * atSpeed;
-                    weapon.attackSpeedMultiplier += activeAtSpeed;
-
-                    // Damage
-                    weapon.damageMultiplier -= acitveDamage;
-
-                    acitveDamage = upgradesUlfberht.Where(x => x.name == "Damage Upgrade").Count() * damage;
-                    weapon.damageMultiplier += acitveDamage;
-
-                    // Special Attack
-                    if (upgradesUlfberht.Where(x => x.name == "Special Attack").Count() > 0)
-                    {
-                        weapon.specialAttack = true;
-                    }
-                    else
-                    {
-                        weapon.specialAttack = false;
-                    }
-
-                    // Special Cooldown
-                    weapon.specialCooldownMultiplier -= activeSpCool;
-
-                    activeSpCool = upgradesUlfberht.Where(x => x.name == "Special Cooldown Upgrade").Count() * spCool;
-                    weapon.specialCooldownMultiplier += activeSpCool;
-                }
-                else if (loadout.selectedWeapon.title.ToLower() == "weapon1")
-                {
-                    // Attack Speed
-                    weapon.attackSpeedMultiplier -= activeAtSpeed;
-
-                    activeAtSpeed = upgradesWeapon1.Where(x => x.name == "Attack Speed Upgrade").Count() * atSpeed;
-                    weapon.attackSpeedMultiplier += activeAtSpeed;
-
-                    // Damage
-                    weapon.damageMultiplier -= acitveDamage;
-
-                    acitveDamage = upgradesWeapon1.Where(x => x.name == "Damage Upgrade").Count() * damage;
-                    weapon.damageMultiplier += acitveDamage;
-
-                    // Special Attack
-                    if (upgradesWeapon1.Where(x => x.name == "Special Attack").Count() > 0)
-                    {
-                        weapon.specialAttack = true;
-                    }
-                    else
-                    {
-                        weapon.specialAttack = false;
-                    }
-
-                    // Special Cooldown
-                    weapon.specialCooldownMultiplier -= activeSpCool;
-
-                    activeSpCool = upgradesWeapon1.Where(x => x.name == "Special Cooldown Upgrade").Count() * spCool;
-                    weapon.specialCooldownMultiplier += activeSpCool;
-                }
-                else if (loadout.selectedWeapon.title.ToLower() == "weapon2")
-                {
-                    // Attack Speed
-                    weapon.attackSpeedMultiplier -= activeAtSpeed;
-
-                    activeAtSpeed = upgradesWeapon2.Where(x => x.name == "Attack Speed Upgrade").Count() * atSpeed;
-                    weapon.attackSpeedMultiplier += activeAtSpeed;
-
-                    // Damage
-                    weapon.damageMultiplier -= acitveDamage;
-
-                    acitveDamage = upgradesWeapon2.Where(x => x.name == "Damage Upgrade").Count() * damage;
-                    weapon.damageMultiplier += acitveDamage;
-
-                    // Special Attack
-                    if (upgradesWeapon2.Where(x => x.name == "Special Cooldown").Count() > 0)
-                    {
-                        weapon.specialAttack = true;
-                    }
-                    else
-                    {
-                        weapon.specialAttack = false;
-                    }
-
-                    // Special Cooldown
-                    weapon.specialCooldownMultiplier -= activeSpCool;
-
-                    activeSpCool = upgradesWeapon2.Where(x => x.name == "Special Cooldown Upgrade").Count() * spCool;
-                    weapon.specialCooldownMultiplier += activeSpCool;
-                }
-                else if (loadout.selectedWeapon.title.ToLower() == "weapon3")
-                {
-                    // Attack Speed
-                    weapon.attackSpeedMultiplier -= activeAtSpeed;
-
-                    activeAtSpeed = upgradesWeapon3.Where(x => x.name == "Attack Speed Upgrade").Count() * atSpeed;
-                    weapon.attackSpeedMultiplier += activeAtSpeed;
-
-                    // Damage
-                    weapon.damageMultiplier -= acitveDamage;
-
-                    acitveDamage = upgradesWeapon3.Where(x => x.name == "Damage Upgrade").Count() * damage;
-                    weapon.damageMultiplier += acitveDamage;
-
-                    // Special Attack
-                    if (upgradesWeapon3.Where(x => x.name == "Special Attack").Count() > 0)
-                    {
-                        weapon.specialAttack = true;
-                    }
-                    else
-                    {
-                        weapon.specialAttack = false;
-                    }
-
-                    // Special Cooldown
-                    weapon.specialCooldownMultiplier -= activeSpCool;
-
-                    activeSpCool = upgradesWeapon3.Where(x => x.name == "Special Cooldown Upgrade").Count() * spCool;
-                    weapon.specialCooldownMultiplier += activeSpCool;
-                }
-                else if (loadout.selectedWeapon.title.ToLower() == "weapon4")
-                {
-                    // Attack Speed
-                    weapon.attackSpeedMultiplier -= activeAtSpeed;
-
-                    activeAtSpeed = upgradesWeapon4.Where(x => x.name == "Attack Speed Upgrade").Count() * atSpeed;
-                    weapon.attackSpeedMultiplier += activeAtSpeed;
-
-                    // Damage
-                    weapon.damageMultiplier -= acitveDamage;
-
-                    acitveDamage = upgradesWeapon4.Where(x => x.name == "Damage Upgrade").Count() * damage;
-                    weapon.damageMultiplier += acitveDamage;
-
-                    // Special Attack
-                    if (upgradesWeapon4.Where(x => x.name == "Special Attack").Count() > 0)
-                    {
-                        weapon.specialAttack = true;
-                    }
-                    else
-                    {
-                        weapon.specialAttack = false;
-                    }
-
-                    // Special Cooldown
-                    weapon.specialCooldownMultiplier -= activeSpCool;
-
-                    activeSpCool = upgradesWeapon4.Where(x => x.name == "Special Cooldown Upgrade").Count() * spCool;
-                    weapon.specialCooldownMultiplier += activeSpCool;
-                }
-                else
-                {
-                    // Attack Speed
-                    weapon.attackSpeedMultiplier -= activeAtSpeed;
-                    activeAtSpeed = 0f;
-
-                    // Damage
-                    weapon.damageMultiplier -= acitveDamage;
-                    acitveDamage = 0f;
-
-                    // Special Attack
-                    weapon.specialAttack = false;
-
-                    // Special Cooldown
-                    weapon.specialCooldownMultiplier -= activeSpCool;
-                    activeSpCool = 0f;
-
-                }
-
+                UpdateWeapon(loadout.selectedWeapon.title);
                 weaponUpdated = true;
             }
 
             // Companions
             if (!companionUpdated)
             {
-                if (loadout.selectedCompanion.title.ToLower() == "loyal sphere")
-                {
-                    // Ability Rate
-                    companion.abilityRateMultiplier -= activeAbRate;
-
-                    activeAbRate = upgradesLoyalSphere.Where(x => x.name == "Ability Rate Upgrade").Count() * abRate;
-                    companion.abilityRateMultiplier += activeAbRate;
-                    
-                    // Ability Strength
-                    companion.abilityStrengthMultiplier -= activeAbStrength;
-
-                    activeAbStrength = upgradesLoyalSphere.Where(x => x.name == "Ability Strength Upgrade").Count() * abStrength;
-                    companion.abilityStrengthMultiplier += activeAbStrength;
-                    
-                }
-                else if (loadout.selectedCompanion.title.ToLower() == "attack square")
-                {
-                    // Ability Rate
-                    companion.abilityRateMultiplier -= activeAbRate;
-
-                    activeAbRate = upgradesAttackSquare.Where(x => x.name == "Ability Rate Upgrade").Count() * abRate;
-                    companion.abilityRateMultiplier += activeAbRate;
-                    
-                    // Ability Strength
-                    companion.abilityStrengthMultiplier -= activeAbStrength;
-
-                    activeAbStrength = upgradesAttackSquare.Where(x => x.name == "Ability Strength Upgrade").Count() * abStrength;
-                    companion.abilityStrengthMultiplier += activeAbStrength;
-                }
-                else if (loadout.selectedCompanion.title.ToLower() == "companion1")
-                {
-                    // Ability Rate
-                    companion.abilityRateMultiplier -= activeAbRate;
-
-                    activeAbRate = upgradesCompanion1.Where(x => x.name == "Ability Rate Upgrade").Count() * abRate;
-                    companion.abilityRateMultiplier += activeAbRate;
-                    
-                    // Ability Strength
-                    companion.abilityStrengthMultiplier -= activeAbStrength;
-
-                    activeAbStrength = upgradesCompanion1.Where(x => x.name == "Ability Strength Upgrade").Count() * abStrength;
-                    companion.abilityStrengthMultiplier += activeAbStrength;
-                }
-                else if (loadout.selectedCompanion.title.ToLower() == "companion2")
-                {
-                    // Ability Rate
-                    companion.abilityRateMultiplier -= activeAbRate;
-
-                    activeAbRate = upgradesCompanion2.Where(x => x.name == "Ability Rate Upgrade").Count() * abRate;
-                    companion.abilityRateMultiplier += activeAbRate;
-                    
-                    // Ability Strength
-                    companion.abilityStrengthMultiplier -= activeAbStrength;
-
-                    activeAbStrength = upgradesCompanion2.Where(x => x.name == "Ability Strength Upgrade").Count() * abStrength;
-                    companion.abilityStrengthMultiplier += activeAbStrength;
-                }
-                else if (loadout.selectedCompanion.title.ToLower() == "companion3")
-                {
-                    // Ability Rate
-                    companion.abilityRateMultiplier -= activeAbRate;
-
-                    activeAbRate = upgradesCompanion3.Where(x => x.name == "Ability Rate Upgrade").Count() * abRate;
-                    companion.abilityRateMultiplier += activeAbRate;
-                    
-                    // Ability Strength
-                    companion.abilityStrengthMultiplier -= activeAbStrength;
-
-                    activeAbStrength = upgradesCompanion3.Where(x => x.name == "Ability Strength Upgrade").Count() * abStrength;
-                    companion.abilityStrengthMultiplier += activeAbStrength;
-                }
-                else if (loadout.selectedCompanion.title.ToLower() == "companion4")
-                {
-                    // Ability Rate
-                    companion.abilityRateMultiplier -= activeAbRate;
-
-                    activeAbRate = upgradesCompanion4.Where(x => x.name == "Ability Rate Upgrade").Count() * abRate;
-                    companion.abilityRateMultiplier += activeAbRate;
-                    
-                    // Ability Strength
-                    companion.abilityStrengthMultiplier -= activeAbStrength;
-
-                    activeAbStrength = upgradesCompanion4.Where(x => x.name == "Ability Strength Upgrade").Count() * abStrength;
-                    companion.abilityStrengthMultiplier += activeAbStrength;
-                }
-                else
-                {
-                    // Ability Rate
-                    companion.abilityRateMultiplier -= activeAbRate;
-                    activeAbRate = 0f;
-
-                    // Ability Strength
-                    companion.abilityStrengthMultiplier -= activeAbStrength;
-                    activeAbStrength = 0f;
-                }
-
+                UpdateCompanion(loadout.selectedCompanion.title);
                 companionUpdated = true;
             }
 
             // Armors
             if (!armorUpdated)
             {
-                if (loadout.selectedArmor.title.ToLower() == "leather armor")
-                {
-                    // Resistance
-                    armor.leather.resistanceMod -= activeResist;
-
-                    activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
-                    armor.leather.resistanceMod += activeResist;
-
-                    // Speed
-                    armor.leather.speedMod -= activeSpeedPen;
-
-                    activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
-                    armor.leather.speedMod += activeSpeedPen;
-                }
-                else if (loadout.selectedArmor.title.ToLower() == "hide armor")
-                {
-                    // Resistance
-                    armor.leather.resistanceMod -= activeResist;
-
-                    activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
-                    armor.leather.resistanceMod += activeResist;
-
-                    // Speed
-                    armor.leather.speedMod -= activeSpeedPen;
-
-                    activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
-                    armor.leather.speedMod += activeSpeedPen;
-                }
-                else if (loadout.selectedArmor.title.ToLower() == "ring mail armor")
-                {
-                    // Resistance
-                    armor.leather.resistanceMod -= activeResist;
-
-                    activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
-                    armor.leather.resistanceMod += activeResist;
-
-                    // Speed
-                    armor.leather.speedMod -= activeSpeedPen;
-
-                    activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
-                    armor.leather.speedMod += activeSpeedPen;
-                }
-                else if (loadout.selectedArmor.title.ToLower() == "plate armor")
-                {
-                    // Resistance
-                    armor.leather.resistanceMod -= activeResist;
-
-                    activeResist = upgradesLeather.Where(x => x.name == "Resistance Upgrade").Count() * resist;
-                    armor.leather.resistanceMod += activeResist;
-
-                    // Speed
-                    armor.leather.speedMod -= activeSpeedPen;
-
-                    activeSpeedPen = upgradesLeather.Where(x => x.name == "Speed Upgrade").Count() * speedPen;
-                    armor.leather.speedMod += activeSpeedPen;
-                }
-                else
-                {
-                    // Resistance
-                    armor.leather.resistanceMod -= activeResist;
-                    armor.leather.resistanceMod = 0f;
-
-                    // Speed
-                    armor.leather.speedMod -= activeSpeedPen;
-                    armor.leather.speedMod = 0f;
-                }
-
+                UpdateArmor(loadout.selectedArmor.title);
                 armorUpdated = true;
             }
 
             // Backs
             if (!backUpdated)
             {
-                if (loadout.selectedBack.title.ToLower() == "angel wings")
-                {
-                    // Cooldown
-                    backs.abilityCooldownMultiplier -= activeCool;
-
-                    activeCool = upgradesAngelWings.Where(x => x.name == "Cooldown").Count() * cool;
-                    backs.abilityCooldownMultiplier += activeCool;
-                }
-                else if (loadout.selectedBack.title.ToLower() == "steel wings")
-                {
-                    // Cooldown
-                    backs.abilityCooldownMultiplier -= activeCool;
-
-                    activeCool = upgradesSteelWings.Where(x => x.name == "Cooldown").Count() * cool;
-                    backs.abilityCooldownMultiplier += activeCool;
-                }
-                else if (loadout.selectedBack.title.ToLower() == "backpack")
-                {
-                    // Cooldown
-                    backs.abilityCooldownMultiplier -= activeCool;
-
-                    activeCool = upgradesBackpacks.Where(x => x.name == "Cooldown").Count() * cool;
-                    backs.abilityCooldownMultiplier += activeCool;
-                }
-                else if (loadout.selectedBack.title.ToLower() == "cape o' wind")
-                {
-                    // Cooldown
-                    backs.abilityCooldownMultiplier -= activeCool;
-
-                    activeCool = upgradesCapeOWinds.Where(x => x.name == "Cooldown").Count() * cool;
-                    backs.abilityCooldownMultiplier += activeCool;
-                }
-                else if (loadout.selectedBack.title.ToLower() == "seed bag")
-                {
-                    // Cooldown
-                    backs.abilityCooldownMultiplier -= activeCool;
-
-                    activeCool = upgradesSeedBag.Where(x => x.name == "Cooldown").Count() * cool;
-                    backs.abilityCooldownMultiplier += activeCool;
-                }
-                else
-                {
-                    // Cooldown
-                    backs.abilityCooldownMultiplier -= activeCool;
-                    activeCool = 0f;
-                }
-
+                UpdateBacks(loadout.selectedBack.title);
                 backUpdated = true;
             }
         }
@@ -564,147 +152,166 @@ public class PlayerUpgrades : MonoBehaviour
 
     #endregion
 
-    #region Weapon Methods
+    #region General Methods
 
-    public void AddPugioUpgrade(UpgradeItemsSO upgrade)
+    void UpdateWeapon(string weaponName)
     {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.weaponData.pugioUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
+        var upgrades = weaponName switch
+        {
+            WeaponData.pugioString => upgradesPugio,
+            WeaponData.ulfberhtString => upgradesUlfberht,
 
-        weaponUpdated = false;
+            _ => throw new System.Exception($"Weapon name: '{weaponName}' not recognized.")
+        };
+
+        // Attack Speed
+        weapon.attackSpeedMultiplier -= activeAtSpeed;
+        activeAtSpeed = upgrades.Where(x => x.name == WeaponData.attackSpeedUpgradeString).Count() * atSpeed;
+        weapon.attackSpeedMultiplier += activeAtSpeed;
+
+        // Damage
+        weapon.damageMultiplier -= acitveDamage;
+        acitveDamage = upgrades.Where(x => x.name == WeaponData.damageUpgradeString).Count() * damage;
+        weapon.damageMultiplier += acitveDamage;
+
+        // Special Attack
+        if (upgrades.Where(x => x.name == WeaponData.specialAttackUpgradeString).Count() > 0) weapon.heavyAttack = true;
+        else weapon.heavyAttack = false;
+
+        // Special Cooldown
+        weapon.heavyCooldownMultiplier -= activeSpCool;
+        activeSpCool = upgrades.Where(x => x.name == WeaponData.specialCooldownUpgradeString).Count() * spCool;
+        weapon.heavyCooldownMultiplier += activeSpCool;
     }
 
-    public void AddUlfberhtUpgrade(UpgradeItemsSO upgrade)
+    void UpdateCompanion(string companionName)
     {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.weaponData.ulfberhtUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
+        var upgrades = companionName switch
+        {
+            CompanionData.loyalSphereString => upgradesLoyalSphere,
+            CompanionData.attackSquareString => upgradesAttackSquare,
 
-        weaponUpdated = false;
+            _ => new List<UpgradeItemsSO>()
+        };
+
+        if (upgrades.Count > 0)
+        {
+            // Ability Rate
+            companion.abilityRateMultiplier -= activeAbRate;
+
+            activeAbRate = upgrades.Where(x => x.name == CompanionData.abilityRateUpgradeString).Count() * abRate;
+            companion.abilityRateMultiplier += activeAbRate;
+            
+            // Ability Strength
+            companion.abilityStrengthMultiplier -= activeAbStrength;
+
+            activeAbStrength = upgrades.Where(x => x.name == CompanionData.abilityStrengthUpgradeString).Count() * abStrength;
+            companion.abilityStrengthMultiplier += activeAbStrength;
+        }
+        else
+        {
+            // Ability Rate
+            companion.abilityRateMultiplier -= activeAbRate;
+            activeAbRate = 0f;
+
+            // Ability Strength
+            companion.abilityStrengthMultiplier -= activeAbStrength;
+            activeAbStrength = 0f;
+        }
     }
 
-    #endregion
-
-    #region Companion Methods
-
-    public void AddLoyalSphereUpgrade(UpgradeItemsSO upgrade)
+    void UpdateArmor(string armorName)
     {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.companionData.loyalSphereUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
+        var upgrades = armorName switch
+        {
+            ArmorData.leatherString => upgradesLeather,
+            ArmorData.hideString => upgradesHide,
+            ArmorData.ringMailString => upgradesRingMail,
+            ArmorData.plateString => upgradesPlate,
 
-        weaponUpdated = false;
+            _ => new List<UpgradeItemsSO>()
+        };
+
+        if (upgrades.Count > 0)
+        {
+            // Resistance
+            armor.leather.resistanceMod -= activeResist;
+
+            activeResist = upgrades.Where(x => x.name == ArmorData.resistanceUpgradeString).Count() * resist;
+            armor.leather.resistanceMod += activeResist;
+
+            // Speed
+            armor.leather.speedMod -= activeSpeedPen;
+
+            activeSpeedPen = upgrades.Where(x => x.name == ArmorData.speedUpgradeString).Count() * speedPen;
+            armor.leather.speedMod += activeSpeedPen;
+        }
+        else
+        {
+            // Resistance
+            armor.leather.resistanceMod -= activeResist;
+            armor.leather.resistanceMod = 0f;
+
+            // Speed
+            armor.leather.speedMod -= activeSpeedPen;
+            armor.leather.speedMod = 0f;
+        }
     }
 
-    public void AddAttackSquareUpgrade(UpgradeItemsSO upgrade)
+    void UpdateBacks(string backName)
     {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.companionData.attackSquareUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
+        var upgrades = backName switch
+        {
+            BackData.angelWingsString => upgradesAngelWings,
+            BackData.steelWingsString => upgradesSteelWings,
+            BackData.backpackString => upgradesBackpacks,
+            BackData.capeOWindString => upgradesCapeOWinds,
+            BackData.seedBagString => upgradesSeedBags,
 
-        weaponUpdated = false;
+            _ => new List<UpgradeItemsSO>()
+        };
+
+        if (upgrades.Count > 0)
+        {
+            // Cooldown
+            backs.abilityCooldownMultiplier -= activeCool;
+
+            activeCool = upgrades.Where(x => x.name == BackData.cooldownUpgradeString).Count() * cool;
+            backs.abilityCooldownMultiplier += activeCool;
+        }
+        else
+        {
+            // Cooldown
+            backs.abilityCooldownMultiplier -= activeCool;
+            activeCool = 0f;
+        }
     }
 
-    #endregion
-
-    #region Armor Methods
-
-    public void AddLeatherUpgrade(UpgradeItemsSO upgrade)
+    public void AddUpgrade(UpgradeItemsSO upgrade, string equipment)
     {
         var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.armorData.leatherUpgrades.Add(upgrade);
-        
+
+        var upgrades = equipment switch
+        {
+            WeaponData.pugioString => equipmentData.weaponData.pugioUpgrades,
+            WeaponData.ulfberhtString => equipmentData.weaponData.ulfberhtUpgrades,
+            CompanionData.loyalSphereString => equipmentData.companionData.loyalSphereUpgrades,
+            CompanionData.attackSquareString => equipmentData.companionData.attackSquareUpgrades,
+            ArmorData.leatherString => equipmentData.armorData.leatherUpgrades,
+            ArmorData.hideString => equipmentData.armorData.hideUpgrades,
+            ArmorData.ringMailString => equipmentData.armorData.ringMailUpgrades,
+            ArmorData.plateString => equipmentData.armorData.plateUpgrades,
+            BackData.angelWingsString => equipmentData.backData.angelWingsUpgrades,
+            BackData.steelWingsString => equipmentData.backData.steelWingsUpgrades,
+            BackData.backpackString => equipmentData.backData.backpackUpgrades,
+            BackData.capeOWindString => equipmentData.backData.capeOWindUpgrades,
+            BackData.seedBagString => equipmentData.backData.seedBagUpgrades,
+
+            _ => throw new System.Exception($"Upgrade: '{upgrade}' was not recognized.")
+        };
+        upgrades.Add(upgrade);
+
         SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
-        weaponUpdated = false;
-    }
-
-    public void AddHideUpgrade(UpgradeItemsSO upgrade)
-    {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.armorData.hideUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
-        weaponUpdated = false;
-    }
-
-    public void AddRingMailUpgrade(UpgradeItemsSO upgrade)
-    {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.armorData.ringMailUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
-        weaponUpdated = false;
-    }
-
-    public void AddPlateUpgrade(UpgradeItemsSO upgrade)
-    {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.armorData.plateUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
-        weaponUpdated = false;
-    }
-
-    #endregion
-
-    #region Back Methods
-
-    public void AddAngelWingsUpgrade(UpgradeItemsSO upgrade)
-    {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.backData.angelWingsUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
-        weaponUpdated = false;
-    }
-
-    public void AddSteelWingsUpgrade(UpgradeItemsSO upgrade)
-    {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.backData.steelWingsUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
-        weaponUpdated = false;
-    }
-
-    public void AddBackpackUpgrade(UpgradeItemsSO upgrade)
-    {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.backData.backpackUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
-        weaponUpdated = false;
-    }
-
-    public void AddCapeOWindUpgrade(UpgradeItemsSO upgrade)
-    {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.backData.capeOWindUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
-        weaponUpdated = false;
-    }
-
-    public void AddSeedBagUpgrade(UpgradeItemsSO upgrade)
-    {
-        var equipmentData = SaveSystem.loadedEquipmentData;
-        equipmentData.backData.seedBagUpgrades.Add(upgrade);
-        
-        SaveSystem.Instance.Save(equipmentData, SaveSystem.equipmentDataPath);
-
         weaponUpdated = false;
     }
 

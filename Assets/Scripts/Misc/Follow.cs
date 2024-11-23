@@ -31,14 +31,9 @@ public class Follow : MonoBehaviour
     {
         if (fState == FollowState.Player)
         {
-            if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
-            {
-                transform.position = new Vector3(Mathf.Clamp(player.position.x + offset.x, -11f, 11f), player.position.y + offset.y, Mathf.Clamp(player.position.z + offset.z, -6.5f, 2.5f));
-            }
-            else
-            {
-                transform.position = new Vector3(player.position.x + offset.x, player.position.y + offset.y, player.position.z + offset.z);
-            }
+            if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub) transform.position = new Vector3(Mathf.Clamp(player.position.x + offset.x, -11f, 11f), 
+                player.position.y + offset.y, Mathf.Clamp(player.position.z + offset.z, -6.5f, 2.5f));
+            else transform.position = new Vector3(player.position.x + offset.x, player.position.y + offset.y, player.position.z + offset.z);
         }
     }
 

@@ -75,10 +75,7 @@ public class SettingsManager : MonoBehaviour
             string option = resolutions[i].width + " x " + resolutions[i].height;
             options.Add(option);
 
-            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
-            {
-                currentResolution = i;
-            }
+            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height) currentResolution = i;
         }
 
         resolutionDropdown.AddOptions(options);
@@ -135,10 +132,7 @@ public class SettingsManager : MonoBehaviour
 
         SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
-        if (!started)
-        {
-            masterVolumeSlider.value = volume;
-        }
+        if (!started) masterVolumeSlider.value = volume;
     }
 
     public void SetMusicVolume(float volume)
@@ -155,10 +149,7 @@ public class SettingsManager : MonoBehaviour
 
         SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
-        if (!started)
-        {
-            musicVolumeSlider.value = volume;
-        }
+        if (!started) musicVolumeSlider.value = volume;
     }
 
     public void SetSFXVolume(float volume)
@@ -175,10 +166,7 @@ public class SettingsManager : MonoBehaviour
 
         SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
-        if (!started)
-        {
-            sfxVolumeSlider.value = volume;
-        }
+        if (!started) sfxVolumeSlider.value = volume;
     }
 
     #endregion
@@ -200,14 +188,8 @@ public class SettingsManager : MonoBehaviour
                 break;
             
             case 2:
-                if (SystemInfo.operatingSystem.Contains("Windows"))
-                {
-                    Screen.fullScreenMode = FullScreenMode.Windowed;
-                }
-                else if (SystemInfo.operatingSystem.Contains("Mac"))
-                {
-                    Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
-                }
+                if (SystemInfo.operatingSystem.Contains("Windows")) Screen.fullScreenMode = FullScreenMode.Windowed;
+                else if (SystemInfo.operatingSystem.Contains("Mac")) Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
                 screenMode = 2;
                 break;
         }
@@ -217,10 +199,7 @@ public class SettingsManager : MonoBehaviour
 
         SaveSystem.Instance.Save(settingsData, SaveSystem.settingsDataPath);
 
-        if (!started)
-        {
-            fullscreenModeDropdown.value = screenMode;
-        }
+        if (!started) fullscreenModeDropdown.value = screenMode;
     }
 
     public void SetResolution(int resolutionIndex)

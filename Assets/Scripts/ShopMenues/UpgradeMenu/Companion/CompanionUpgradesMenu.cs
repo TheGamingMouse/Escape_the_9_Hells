@@ -21,113 +21,61 @@ public class CompanionUpgradesMenu : MonoBehaviour
     public Transform contents;
     public Transform loyalSphereContents;
     public Transform attackSquareContents;
-    public Transform companions1Contents;
-    public Transform companions2Contents;
-    public Transform companions3Contents;
-    public Transform companions4Contents;
 
     [Header("TMP_Texts")]
     public TMP_Text headerText;
 
     [Header("Arrays")]
     public UpgradeItemsSO[] itemsSO;
-    public UpgradeTemplate[] PannelsLoyalSphere;
-    public UpgradeTemplate[] PannelsAttackSquare;
-    public UpgradeTemplate[] PannelsCompanions1;
-    public UpgradeTemplate[] PannelsCompanions2;
-    public UpgradeTemplate[] PannelsCompanions3;
-    public UpgradeTemplate[] PannelsCompanions4;
-    public GameObject[] PannelsSOLoyalSphere;
-    public GameObject[] PannelsSOAttackSquare;
-    public GameObject[] PannelsSOCompanions1;
-    public GameObject[] PannelsSOCompanions2;
-    public GameObject[] PannelsSOCompanions3;
-    public GameObject[] PannelsSOCompanions4;
-    public Button[] ButtonsLoyalSphere;
-    public Button[] ButtonsAttackSquare;
-    public Button[] ButtonsCompanions1;
-    public Button[] ButtonsCompanions2;
-    public Button[] ButtonsCompanions3;
-    public Button[] ButtonsCompanions4;
+    public UpgradeTemplate[] pannelsLoyalSphere;
+    public UpgradeTemplate[] pannelsAttackSquare;
     public GameObject[] companions;
+
+    [Header("Lists")]
+    readonly List<UpgradeTemplate[]> companionPannels = new();
 
     #endregion
 
     #region StartUpdate Methods
+
+    void Awake()
+    {
+        PopulatePannelsLists();
+    }
 
     void Update()
     {
         if (!pannelsActivated)
         {
             for (int i = 0; i < companions.Length; i++)
-            {
                 for (int j = 0; j < PlayerComponents.Instance.playerEquipment.boughtCompanions.Count; j++)
-                {
-                    if (PlayerComponents.Instance.playerEquipment.boughtCompanions[j].title.ToLower().Contains(companions[i].name.ToLower()))
-                    {
+                    if (PlayerComponents.Instance.playerEquipment.boughtCompanions[j].title != null && PlayerComponents.Instance.playerEquipment.boughtCompanions[j].title.Contains(companions[i].name))
                         companions[i].SetActive(true);
-                    }
-                }
-            }
-
-            // LoyalSphere
-            for (int i = 0; i < itemsSO.Length; i++)
+            
+            List<GameObject[]> companionObjects = new()
             {
-                PannelsSOLoyalSphere[i].SetActive(true);
-            }
-
-            // AttackSquare
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOAttackSquare[i].SetActive(true);
-            }
-
-            // Companion1
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOCompanions1[i].SetActive(true);
-            }
-
-            // Companion2
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOCompanions2[i].SetActive(true);
-            }
-
-            // Companion3
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOCompanions3[i].SetActive(true);
-            }
-
-            // Companion4
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOCompanions4[i].SetActive(true);
-            }
+                FindObject(pannelsLoyalSphere),
+                FindObject(pannelsAttackSquare),
+            };
+            
+            for (int i = 0; i < companionObjects.Count; i++)
+                for (int j = 0; j < itemsSO.Length; j++)
+                    companionObjects[i][j].SetActive(true);
 
             loyalSphereContents.position = new Vector3(1000f, loyalSphereContents.position.y);
             attackSquareContents.position = new Vector3(1000f, attackSquareContents.position.y);
-            companions1Contents.position = new Vector3(1000f, companions1Contents.position.y);
-            companions2Contents.position = new Vector3(1000f, companions2Contents.position.y);
-            companions3Contents.position = new Vector3(1000f, companions3Contents.position.y);
-            companions4Contents.position = new Vector3(1000f, companions4Contents.position.y);
 
             CheckUpgradesPurchaseable();
 
             pannelsActivated = true;
         }
         
-        if (!pannelsLoaded)
-        {
-            LoadUpgradePannels();
-        }
+        if (!pannelsLoaded) LoadUpgradePannels();
         CheckUpgradesPurchaseable();
 
         if (!atTop)
         {
             contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
-
             atTop = true;
         }
     }
@@ -140,95 +88,17 @@ public class CompanionUpgradesMenu : MonoBehaviour
     {
         var playerUpgrades = PlayerComponents.Instance.playerUpgrades;
 
-        // LoyalSphere
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsLoyalSphere[i].titleText.text = itemsSO[i].title;
-            PannelsLoyalSphere[i].descriptionText.text = itemsSO[i].description;
-            PannelsLoyalSphere[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsLoyalSphere[i].counter.fillAmount = playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-
-            if (playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
+        for (int i = 0; i < companionPannels.Count; i++)
+            for (int j = 0; j < itemsSO.Length; j++)
             {
-                PannelsLoyalSphere[i].lights.SetActive(true);
+                companionPannels[i][j].titleText.text = itemsSO[j].title;
+                companionPannels[i][j].descriptionText.text = itemsSO[j].description;
+                companionPannels[i][j].priceText.text = "Price: " + itemsSO[j].price.ToString();
+
+                companionPannels[i][j].counter.fillAmount = playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[j].title).Count() * 0.067f;
+
+                if (playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[j].title).Count() == itemsSO[j].max) companionPannels[i][j].lights.SetActive(true);
             }
-        }
-
-        // AttackSquare
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsAttackSquare[i].titleText.text = itemsSO[i].title;
-            PannelsAttackSquare[i].descriptionText.text = itemsSO[i].description;
-            PannelsAttackSquare[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsAttackSquare[i].counter.fillAmount = playerUpgrades.upgradesAttackSquare.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-
-            if (playerUpgrades.upgradesAttackSquare.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsAttackSquare[i].lights.SetActive(true);
-            }
-        }
-
-        // Companion1
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsCompanions1[i].titleText.text = itemsSO[i].title;
-            PannelsCompanions1[i].descriptionText.text = itemsSO[i].description;
-            PannelsCompanions1[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsCompanions1[i].counter.fillAmount = playerUpgrades.upgradesCompanion1.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-
-            if (playerUpgrades.upgradesCompanion1.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsCompanions1[i].lights.SetActive(true);
-            }
-        }
-
-        // Companion2
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsCompanions2[i].titleText.text = itemsSO[i].title;
-            PannelsCompanions2[i].descriptionText.text = itemsSO[i].description;
-            PannelsCompanions2[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsCompanions2[i].counter.fillAmount = playerUpgrades.upgradesCompanion2.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-
-            if (playerUpgrades.upgradesCompanion2.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsCompanions2[i].lights.SetActive(true);
-            }
-        }
-
-        // Companion3
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsCompanions3[i].titleText.text = itemsSO[i].title;
-            PannelsCompanions3[i].descriptionText.text = itemsSO[i].description;
-            PannelsCompanions3[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsCompanions3[i].counter.fillAmount = playerUpgrades.upgradesCompanion3.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-
-            if (playerUpgrades.upgradesCompanion3.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsCompanions3[i].lights.SetActive(true);
-            }
-        }
-
-        // Companion4
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsCompanions4[i].titleText.text = itemsSO[i].title;
-            PannelsCompanions4[i].descriptionText.text = itemsSO[i].description;
-            PannelsCompanions4[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsCompanions4[i].counter.fillAmount = playerUpgrades.upgradesCompanion4.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-
-            if (playerUpgrades.upgradesCompanion4.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsCompanions4[i].lights.SetActive(true);
-            }
-        }
 
         pannelsLoaded = true;
     }
@@ -238,114 +108,65 @@ public class CompanionUpgradesMenu : MonoBehaviour
         var upgradeMenu = UpgradeMenu.Instance;
         var playerUpgrades = PlayerComponents.Instance.playerUpgrades;
 
-        // LoyalSphere
-        for (int i = 0; i < itemsSO.Length; i++)
+        List<Button[]> companionButtons = new()
         {
-            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsLoyalSphere[i].interactable = true;
-            }
-            else
-            {
-                ButtonsLoyalSphere[i].interactable = false;
-            }
-        }
+            FindButton(pannelsLoyalSphere),
+            FindButton(pannelsAttackSquare),
+        };
 
-        // AttackSquare
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesAttackSquare.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsAttackSquare[i].interactable = true;
-            }
-            else
-            {
-                ButtonsAttackSquare[i].interactable = true;
-            }
-        }
-
-        // Companion1
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesCompanion1.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsCompanions1[i].interactable = true;
-            }
-            else
-            {
-                ButtonsCompanions1[i].interactable = false;
-            }
-        }
-
-        // Companion2
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesCompanion2.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsCompanions2[i].interactable = true;
-            }
-            else
-            {
-                ButtonsCompanions2[i].interactable = false;
-            }
-        }
-
-        // Companion3
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesCompanion3.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsCompanions3[i].interactable = true;
-            }
-            else
-            {
-                ButtonsCompanions3[i].interactable = false;
-            }
-        }
-
-        // Companion4
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesCompanion4.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsCompanions4[i].interactable = true;
-            }
-            else
-            {
-                ButtonsCompanions4[i].interactable = false;
-            }
-        }
+        for (int i = 0; i < companionButtons.Count; i++)
+            for (int j = 0; j < itemsSO.Length; j++)
+                if (upgradeMenu.souls >= itemsSO[j].price && playerUpgrades.upgradesLoyalSphere.Where(x => x.title == itemsSO[j].title).Count() < itemsSO[j].max)
+                    companionButtons[i][j].interactable = true;
+                else companionButtons[i][j].interactable = false;
     }
 
-    public void PurchaseUpgradesLoyalSphere(int btnNo)
+    public void PurchaseUpgrade(int btnNo)
     {
-        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
-        {
-            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
+        if (UpgradeMenu.Instance.souls < itemsSO[btnNo].price) return;
 
-            //Unlock purchased item.
-            PlayerComponents.Instance.playerUpgrades.AddLoyalSphereUpgrade(itemsSO[btnNo]);
-            pannelsLoaded = false;
-        }
-    }
+        var playerData = SaveSystem.loadedPlayerData;
 
-    public void PurchaseUpgradesAttackSquare(int btnNo)
-    {
-        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
-        {
-            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
+        playerData.currentSouls -= itemsSO[btnNo].price;
+        PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
 
-            //Unlock purchased item.
-            PlayerComponents.Instance.playerUpgrades.AddAttackSquareUpgrade(itemsSO[btnNo]);
-            pannelsLoaded = false;
-        }
+        SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+
+        PlayerComponents.Instance.playerUpgrades.AddUpgrade(itemsSO[btnNo], itemsSO[btnNo].title);
+        pannelsLoaded = false;
     }
 
     public void ChangeHeader()
     {
         headerText.text = header;
-
         contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
+    }
+
+    void PopulatePannelsLists()
+    {
+        companionPannels.AddRange(new List<UpgradeTemplate[]>
+        {
+            pannelsLoyalSphere,
+            pannelsAttackSquare,
+        });
+    }
+
+    GameObject[] FindObject(UpgradeTemplate[] pannels)
+    {
+        GameObject[] objects = new GameObject[pannels.Length];
+        for (int i = 0; i < pannels.Length; i++)
+            objects[i] = pannels[i].gameObject;
+        
+        return objects;
+    }
+
+    Button[] FindButton(UpgradeTemplate[] pannels)
+    {
+        Button[] buttons = new Button[pannels.Length];
+        for (int i = 0; i < pannels.Length; i++)
+            buttons[i] = pannels[i].transform.Find("BuyButton").GetComponent<Button>();
+
+        return buttons;
     }
 
     #endregion

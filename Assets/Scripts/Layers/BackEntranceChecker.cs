@@ -24,10 +24,7 @@ public class BackEntranceChecker : MonoBehaviour
         
         try
         {
-            if (coll.transform.CompareTag("FloorTile"))
-            {
-                active = true;
-            }
+            if (coll.transform.CompareTag("FloorTile")) active = true;
         }
         catch (MissingReferenceException)
         {

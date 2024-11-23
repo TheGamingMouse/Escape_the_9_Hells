@@ -40,8 +40,7 @@ public class PlayerEquipment : MonoBehaviour
             // Weapons
             int countWeapons = 0;
             foreach (var weapon in boughtWeapons.ToList())
-            {
-                if (!weapon || weapon.equipmentType.ToLower() != "weapon")
+                if (!weapon || weapon.equipmentType != "Weapon")
                 {
                     boughtWeapons.Remove(weapon);
                     continue;
@@ -55,18 +54,13 @@ public class PlayerEquipment : MonoBehaviour
                         countWeapons--;
                         continue;
                     }
-                } 
-            }
-            if (countWeapons == 0)
-            {
-                boughtWeapons.Add(defaultWeapon);
-            }
+                }
+            if (countWeapons == 0) boughtWeapons.Add(defaultWeapon);
 
             // Companions
             int countCompanions = 0;
             foreach (var companion in boughtCompanions.ToList())
-            {
-                if (!companion || companion.equipmentType.ToLower() != "companion")
+                if (!companion || companion.equipmentType != "Companion")
                 {
                     boughtCompanions.Remove(companion);
                     continue;
@@ -81,17 +75,12 @@ public class PlayerEquipment : MonoBehaviour
                         continue;
                     }
                 }
-            }
-            if (countCompanions == 0)
-            {
-                boughtCompanions.Add(defaultCompanion);
-            }
+            if (countCompanions == 0) boughtCompanions.Add(defaultCompanion);
 
             // Armors
             int countArmors = 0;
             foreach (var armor in boughtArmors.ToList())
-            {
-                if (!armor || armor.equipmentType.ToLower() != "armor")
+                if (!armor || armor.equipmentType != "Armor")
                 {
                     boughtArmors.Remove(armor);
                     continue;
@@ -106,17 +95,12 @@ public class PlayerEquipment : MonoBehaviour
                         continue;
                     }
                 }
-            }
-            if (countArmors == 0)
-            {
-                boughtArmors.Add(defaultArmor);
-            }
+            if (countArmors == 0) boughtArmors.Add(defaultArmor);
 
             // Backs
             int countBacks = 0;
             foreach (var back in boughtBacks.ToList())
-            {
-                if (!back || back.equipmentType.ToLower() != "back")
+                if (!back || back.equipmentType != "Back")
                 {
                     boughtBacks.Remove(back);
                     continue;
@@ -131,11 +115,7 @@ public class PlayerEquipment : MonoBehaviour
                         continue;
                     }
                 }
-            }
-            if (countBacks == 0)
-            {
-                boughtBacks.Add(defaultBacks);
-            }
+            if (countBacks == 0) boughtBacks.Add(defaultBacks);
 
             equipmentLoaded = true;
         }

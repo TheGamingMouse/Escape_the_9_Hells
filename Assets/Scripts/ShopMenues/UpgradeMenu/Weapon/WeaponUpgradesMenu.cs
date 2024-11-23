@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static SaveSystemSpace.SaveClasses.EquipmentData.WeaponData;
 
 public class WeaponUpgradesMenu : MonoBehaviour
 {
@@ -21,113 +22,61 @@ public class WeaponUpgradesMenu : MonoBehaviour
     public Transform contents;
     public Transform pugioContents;
     public Transform ulfberhtContents;
-    public Transform weapons1Contents;
-    public Transform weapons2Contents;
-    public Transform weapons3Contents;
-    public Transform weapons4Contents;
 
     [Header("TMP_Texts")]
     public TMP_Text headerText;
 
     [Header("Arrays")]
     public UpgradeItemsSO[] itemsSO;
-    public UpgradeTemplate[] PannelsPugio;
-    public UpgradeTemplate[] PannelsUlfberht;
-    public UpgradeTemplate[] PannelsWeapons1;
-    public UpgradeTemplate[] PannelsWeapons2;
-    public UpgradeTemplate[] PannelsWeapons3;
-    public UpgradeTemplate[] PannelsWeapons4;
-    public GameObject[] PannelsSOPugio;
-    public GameObject[] PannelsSOUlfberht;
-    public GameObject[] PannelsSOWeapons1;
-    public GameObject[] PannelsSOWeapons2;
-    public GameObject[] PannelsSOWeapons3;
-    public GameObject[] PannelsSOWeapons4;
-    public Button[] ButtonsPugio;
-    public Button[] ButtonsUlfberht;
-    public Button[] ButtonsWeapons1;
-    public Button[] ButtonsWeapons2;
-    public Button[] ButtonsWeapons3;
-    public Button[] ButtonsWeapons4;
+    public UpgradeTemplate[] pannelsPugio;
+    public UpgradeTemplate[] pannelsUlfberht;
     public GameObject[] weapons;
+
+    [Header("Lists")]
+    readonly List<UpgradeTemplate[]> weaponPannels = new();
 
     #endregion
 
     #region StartUpdate Methods
+
+    void Awake()
+    {
+        PopulatePannelsLists();
+    }
 
     void Update()
     {
         if (!pannelsActivated)
         {
             for (int i = 0; i < weapons.Length; i++)
-            {
                 for (int j = 0; j < PlayerComponents.Instance.playerEquipment.boughtWeapons.Count; j++)
-                {
-                    if (PlayerComponents.Instance.playerEquipment.boughtWeapons[j].title.ToLower().Contains(weapons[i].name.ToLower()))
-                    {
+                    if (PlayerComponents.Instance.playerEquipment.boughtWeapons[j].title != null && PlayerComponents.Instance.playerEquipment.boughtWeapons[j].title.Contains(weapons[i].name))
                         weapons[i].SetActive(true);
-                    }
-                }
-            }
-
-            // Pugio
-            for (int i = 0; i < itemsSO.Length; i++)
+            
+            List<GameObject[]> weaponObjects = new()
             {
-                PannelsSOPugio[i].SetActive(true);
-            }
+                FindObject(pannelsPugio),
+                FindObject(pannelsUlfberht),
+            };
 
-            // Ulfberht
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOUlfberht[i].SetActive(true);
-            }
-
-            // Weapon1
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOWeapons1[i].SetActive(true);
-            }
-
-            // Weapon2
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOWeapons2[i].SetActive(true);
-            }
-
-            // Weapon3
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOWeapons3[i].SetActive(true);
-            }
-
-            // Weapon4
-            for (int i = 0; i < itemsSO.Length; i++)
-            {
-                PannelsSOWeapons4[i].SetActive(true);
-            }
+            for (int i = 0; i < weaponObjects.Count; i++)
+                for (int j = 0; j < itemsSO.Length; j++)
+                    weaponObjects[i][j].SetActive(true);
 
             pugioContents.position = new Vector3(1000f, pugioContents.position.y);
             ulfberhtContents.position = new Vector3(1000f, ulfberhtContents.position.y);
-            weapons1Contents.position = new Vector3(1000f, weapons1Contents.position.y);
-            weapons2Contents.position = new Vector3(1000f, weapons2Contents.position.y);
-            weapons3Contents.position = new Vector3(1000f, weapons3Contents.position.y);
-            weapons4Contents.position = new Vector3(1000f, weapons4Contents.position.y);
 
             CheckUpgradesPurchaseable();
 
             pannelsActivated = true;
         }
         
-        if (!pannelsLoaded)
-        {
-            LoadUpgradePannels();
-        }
+        if (!pannelsLoaded) LoadUpgradePannels();
         CheckUpgradesPurchaseable();
 
         if (!atTop)
         {
             contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
-
             atTop = true;
         }
     }
@@ -141,118 +90,17 @@ public class WeaponUpgradesMenu : MonoBehaviour
         var playerUpgrades = PlayerComponents.Instance.playerUpgrades;
 
         // Pugio
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsPugio[i].titleText.text = itemsSO[i].title;
-            PannelsPugio[i].descriptionText.text = itemsSO[i].description;
-            PannelsPugio[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsPugio[i].counter.fillAmount = playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-            if (PannelsPugio[i].titleText.text == "Special Attack")
+        for (int i = 0; i < weaponPannels.Count; i++)
+            for (int j = 0; j < itemsSO.Length; j++)
             {
-                PannelsPugio[i].border.SetActive(false);
+                weaponPannels[i][j].titleText.text = itemsSO[j].title;
+                weaponPannels[i][j].descriptionText.text = itemsSO[j].description;
+                weaponPannels[i][j].priceText.text = "Price: " + itemsSO[j].price.ToString();
+                weaponPannels[i][j].counter.fillAmount = playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[j].title).Count() * 0.067f;
+
+                if (weaponPannels[i][j].titleText.text == specialAttackUpgradeString) weaponPannels[i][j].border.SetActive(false);
+                if (playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[j].title).Count() == itemsSO[j].max) weaponPannels[i][j].lights.SetActive(true);
             }
-
-            if (playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsPugio[i].lights.SetActive(true);
-            }
-        }
-
-        // Ulfberht
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsUlfberht[i].titleText.text = itemsSO[i].title;
-            PannelsUlfberht[i].descriptionText.text = itemsSO[i].description;
-            PannelsUlfberht[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsUlfberht[i].counter.fillAmount = playerUpgrades.upgradesUlfberht.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-            if (PannelsUlfberht[i].titleText.text == "Special Attack")
-            {
-                PannelsUlfberht[i].border.SetActive(false);
-            }
-
-            if (playerUpgrades.upgradesUlfberht.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsUlfberht[i].lights.SetActive(true);
-            }
-        }
-
-        // Weapon1
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsWeapons1[i].titleText.text = itemsSO[i].title;
-            PannelsWeapons1[i].descriptionText.text = itemsSO[i].description;
-            PannelsWeapons1[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsWeapons1[i].counter.fillAmount = playerUpgrades.upgradesWeapon1.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-            if (PannelsWeapons1[i].titleText.text == "Special Attack")
-            {
-                PannelsWeapons1[i].border.SetActive(false);
-            }
-
-            if (playerUpgrades.upgradesWeapon1.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsWeapons1[i].lights.SetActive(true);
-            }
-        }
-
-        // Weapon2
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsWeapons2[i].titleText.text = itemsSO[i].title;
-            PannelsWeapons2[i].descriptionText.text = itemsSO[i].description;
-            PannelsWeapons2[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsWeapons2[i].counter.fillAmount = playerUpgrades.upgradesWeapon2.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-            if (PannelsWeapons2[i].titleText.text == "Special Attack")
-            {
-                PannelsWeapons2[i].border.SetActive(false);
-            }
-
-            if (playerUpgrades.upgradesWeapon2.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsWeapons2[i].lights.SetActive(true);
-            }
-        }
-
-        // Weapon3
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsWeapons3[i].titleText.text = itemsSO[i].title;
-            PannelsWeapons3[i].descriptionText.text = itemsSO[i].description;
-            PannelsWeapons3[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsWeapons3[i].counter.fillAmount = playerUpgrades.upgradesWeapon3.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-            if (PannelsWeapons3[i].titleText.text == "Special Attack")
-            {
-                PannelsWeapons3[i].border.SetActive(false);
-            }
-
-            if (playerUpgrades.upgradesWeapon3.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsWeapons3[i].lights.SetActive(true);
-            }
-        }
-
-        // Weapon4
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            PannelsWeapons4[i].titleText.text = itemsSO[i].title;
-            PannelsWeapons4[i].descriptionText.text = itemsSO[i].description;
-            PannelsWeapons4[i].priceText.text = "Price: " + itemsSO[i].price.ToString();
-
-            PannelsWeapons4[i].counter.fillAmount = playerUpgrades.upgradesWeapon4.Where(x => x.title == itemsSO[i].title).Count() * 0.067f;
-            if (PannelsWeapons4[i].titleText.text == "Special Attack")
-            {
-                PannelsWeapons4[i].border.SetActive(false);
-            }
-
-            if (playerUpgrades.upgradesWeapon4.Where(x => x.title == itemsSO[i].title).Count() == itemsSO[i].max)
-            {
-                PannelsWeapons4[i].lights.SetActive(true);
-            }
-        }
 
         pannelsLoaded = true;
     }
@@ -262,312 +110,87 @@ public class WeaponUpgradesMenu : MonoBehaviour
         var playerUpgrades = PlayerComponents.Instance.playerUpgrades;
         var upgradeMenu = UpgradeMenu.Instance;
 
-        // Pugio
-        for (int i = 0; i < itemsSO.Length; i++)
+        List<Button[]> weaponButtons = new()
         {
-            if (itemsSO[i].title == "Special Cooldown")
-            {
-                for (int j = 0; j < playerUpgrades.upgradesPugio.Count; j++)
-                {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesPugio[j].title.Contains("Special Attack") && playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-                    {
-                        ButtonsPugio[i].interactable = true;
-                        break;
-                    }
-                }
-            }
-            else if (itemsSO[i].title == "Special Attack")
-            {
-                if (playerUpgrades.upgradesPugio.Count != 0)
-                {
-                    for (int j = 0; j < playerUpgrades.upgradesPugio.Count; j++)
-                    {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesPugio[j].title.Contains(itemsSO[i].title))
-                        {
-                            ButtonsPugio[i].interactable = true;
-                        }
-                        else
-                        {
-                            ButtonsPugio[i].interactable = false;
-                            break;
-                        }
-                    }
-                }
-                else if (upgradeMenu.souls >= itemsSO[i].price)
-                {
-                    ButtonsPugio[i].interactable = true;
-                }
-            }
-            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsPugio[i].interactable = true;
-            }
-            else
-            {
-                ButtonsPugio[i].interactable = false;
-            }
-        }
+            FindButton(pannelsPugio),
+            FindButton(pannelsUlfberht),
+        };
 
-        // Ulfberht
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (itemsSO[i].title == "Special Cooldown")
-            {
-                for (int j = 0; j < playerUpgrades.upgradesUlfberht.Count; j++)
+        for (int i = 0; i < weaponButtons.Count; i++)
+            for (int j = 0; j < itemsSO.Length; j++)
+                if (itemsSO[j].title == specialCooldownUpgradeString)
                 {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesUlfberht[j].title.Contains("Special Attack") && playerUpgrades.upgradesUlfberht.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-                    {
-                        ButtonsUlfberht[i].interactable = true;
-                        break;
-                    }
-                }
-            }
-            else if (itemsSO[i].title == "Special Attack")
-            {
-                if (playerUpgrades.upgradesUlfberht.Count != 0)
-                {
-                    for (int j = 0; j < playerUpgrades.upgradesUlfberht.Count; j++)
-                    {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesUlfberht[j].title.Contains(itemsSO[i].title))
+                    for (int k = 0; k < playerUpgrades.upgradesPugio.Count; k++)
+                        if (upgradeMenu.souls >= itemsSO[k].price && playerUpgrades.upgradesPugio[k].title.Contains("Special Attack") && playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[k].title).Count() < itemsSO[k].max)
                         {
-                            ButtonsUlfberht[i].interactable = true;
-                        }
-                        else
-                        {
-                            ButtonsUlfberht[i].interactable = false;
+                            weaponButtons[i][k].interactable = true;
                             break;
                         }
-                    }
                 }
-                else if (upgradeMenu.souls >= itemsSO[i].price)
-                {
-                    ButtonsUlfberht[i].interactable = true;
-                }
-            }
-            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesUlfberht.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsUlfberht[i].interactable = true;
-            }
-            else
-            {
-                ButtonsUlfberht[i].interactable = false;
-            }
-        }
-
-        // Weapon1
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (itemsSO[i].title == "Special Cooldown")
-            {
-                for (int j = 0; j < playerUpgrades.upgradesWeapon1.Count; j++)
-                {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon1[j].title.Contains("Special Attack") && playerUpgrades.upgradesWeapon1.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
+                else if (itemsSO[j].title == specialAttackUpgradeString)
+                    if (playerUpgrades.upgradesPugio.Count != 0)
                     {
-                        ButtonsWeapons1[i].interactable = true;
-                        break;
+                        for (int k = 0; k < playerUpgrades.upgradesPugio.Count; k++)
+                            if (upgradeMenu.souls >= itemsSO[k].price && !playerUpgrades.upgradesPugio[k].title.Contains(itemsSO[k].title))
+                                weaponButtons[i][k].interactable = true;
+                            else
+                            {
+                                weaponButtons[i][k].interactable = false;
+                                break;
+                            }
                     }
-                }
-            }
-            else if (itemsSO[i].title == "Special Attack")
-            {
-                if (playerUpgrades.upgradesWeapon1.Count != 0)
-                {
-                    for (int j = 0; j < playerUpgrades.upgradesWeapon1.Count; j++)
-                    {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon1[j].title.Contains(itemsSO[i].title))
-                        {
-                            ButtonsWeapons1[i].interactable = true;
-                        }
-                        else
-                        {
-                            ButtonsWeapons1[i].interactable = false;
-                            break;
-                        }
-                    }
-                }
-                else if (upgradeMenu.souls >= itemsSO[i].price)
-                {
-                    ButtonsWeapons1[i].interactable = true;
-                }
-            }
-            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon1.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsWeapons1[i].interactable = true;
-            }
-            else
-            {
-                ButtonsWeapons1[i].interactable = false;
-            }
-        }
-
-        // Weapon2
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (itemsSO[i].title == "Special Cooldown")
-            {
-                for (int j = 0; j < playerUpgrades.upgradesWeapon2.Count; j++)
-                {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon2[j].title.Contains("Special Attack") && playerUpgrades.upgradesWeapon2.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-                    {
-                        ButtonsWeapons2[i].interactable = true;
-                        break;
-                    }
-                }
-            }
-            else if (itemsSO[i].title == "Special Attack")
-            {
-                if (playerUpgrades.upgradesWeapon2.Count != 0)
-                {
-                    for (int j = 0; j < playerUpgrades.upgradesWeapon2.Count; j++)
-                    {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon2[j].title.Contains(itemsSO[i].title))
-                        {
-                            ButtonsWeapons2[i].interactable = true;
-                        }
-                        else
-                        {
-                            ButtonsWeapons2[i].interactable = false;
-                            break;
-                        }
-                    }
-                }
-                else if (upgradeMenu.souls >= itemsSO[i].price)
-                {
-                    ButtonsWeapons2[i].interactable = true;
-                }
-            }
-            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon2.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsWeapons2[i].interactable = true;
-            }
-            else
-            {
-                ButtonsWeapons2[i].interactable = false;
-            }
-        }
-
-        // Weapon3
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (itemsSO[i].title == "Special Cooldown")
-            {
-                for (int j = 0; j < playerUpgrades.upgradesWeapon3.Count; j++)
-                {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon3[j].title.Contains("Special Attack") && playerUpgrades.upgradesWeapon3.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-                    {
-                        ButtonsWeapons3[i].interactable = true;
-                        break;
-                    }
-                }
-            }
-            else if (itemsSO[i].title == "Special Attack")
-            {
-                if (playerUpgrades.upgradesWeapon3.Count != 0)
-                {
-                    for (int j = 0; j < playerUpgrades.upgradesWeapon3.Count; j++)
-                    {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon3[j].title.Contains(itemsSO[i].title))
-                        {
-                            ButtonsWeapons3[i].interactable = true;
-                        }
-                        else
-                        {
-                            ButtonsWeapons3[i].interactable = false;
-                            break;
-                        }
-                    }
-                }
-                else if (upgradeMenu.souls >= itemsSO[i].price)
-                {
-                    ButtonsWeapons3[i].interactable = true;
-                }
-            }
-            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon3.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsWeapons3[i].interactable = true;
-            }
-            else
-            {
-                ButtonsWeapons3[i].interactable = false;
-            }
-        }
-
-        // Weapon4
-        for (int i = 0; i < itemsSO.Length; i++)
-        {
-            if (itemsSO[i].title == "Special Cooldown")
-            {
-                for (int j = 0; j < playerUpgrades.upgradesWeapon4.Count; j++)
-                {
-                    if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon4[j].title.Contains("Special Attack") && playerUpgrades.upgradesWeapon4.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-                    {
-                        ButtonsWeapons4[i].interactable = true;
-                        break;
-                    }
-                }
-            }
-            else if (itemsSO[i].title == "Special Attack")
-            {
-                if (playerUpgrades.upgradesWeapon4.Count != 0)
-                {
-                    for (int j = 0; j < playerUpgrades.upgradesWeapon4.Count; j++)
-                    {
-                        if (upgradeMenu.souls >= itemsSO[i].price && !playerUpgrades.upgradesWeapon4[j].title.Contains(itemsSO[i].title))
-                        {
-                            ButtonsWeapons4[i].interactable = true;
-                        }
-                        else
-                        {
-                            ButtonsWeapons4[i].interactable = false;
-                            break;
-                        }
-                    }
-                }
-                else if (upgradeMenu.souls >= itemsSO[i].price)
-                {
-                    ButtonsWeapons4[i].interactable = true;
-                }
-            }
-            else if (upgradeMenu.souls >= itemsSO[i].price && playerUpgrades.upgradesWeapon4.Where(x => x.title == itemsSO[i].title).Count() < itemsSO[i].max)
-            {
-                ButtonsWeapons4[i].interactable = true;
-            }
-            else
-            {
-                ButtonsWeapons4[i].interactable = false;
-            }
-        }
+                    else if (upgradeMenu.souls >= itemsSO[j].price) weaponButtons[i][j].interactable = true;
+                else if (upgradeMenu.souls >= itemsSO[j].price && playerUpgrades.upgradesPugio.Where(x => x.title == itemsSO[j].title).Count() < itemsSO[j].max)
+                    weaponButtons[i][j].interactable = true;
+                else weaponButtons[i][j].interactable = false;
     }
 
-    public void PurchaseUpgradesPugio(int btnNo)
+    public void PurchaseUpgrade(int btnNo)
     {
-        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
-        {
-            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
+        if (UpgradeMenu.Instance.souls < itemsSO[btnNo].price) return;
 
-            //Unlock purchased item.
-            PlayerComponents.Instance.playerUpgrades.AddPugioUpgrade(itemsSO[btnNo]);
-            pannelsLoaded = false;
-        }
-    }
+        var playerData = SaveSystem.loadedPlayerData;
 
-    public void PurchaseUpgradesUlfberht(int btnNo)
-    {
-        if (UpgradeMenu.Instance.souls >= itemsSO[btnNo].price)
-        {
-            PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
+        playerData.currentSouls -= itemsSO[btnNo].price;
+        PlayerComponents.Instance.playerLevel.souls -= itemsSO[btnNo].price;
 
-            //Unlock purchased item.
-            PlayerComponents.Instance.playerUpgrades.AddUlfberhtUpgrade(itemsSO[btnNo]);
-            pannelsLoaded = false;
-        }
+        SaveSystem.Instance.Save(playerData, SaveSystem.playerDataPath);
+
+        PlayerComponents.Instance.playerUpgrades.AddUpgrade(itemsSO[btnNo], itemsSO[btnNo].title);
+        pannelsLoaded = false;
     }
 
     public void ChangeHeader()
     {
         headerText.text = header;
-
         contents.position = new Vector3(contents.position.x, contents.position.y - 5000f);
+    }
+
+    void PopulatePannelsLists()
+    {
+        weaponPannels.AddRange(new List<UpgradeTemplate[]>
+        {
+            pannelsPugio,
+            pannelsUlfberht,
+        });
+    }
+
+    GameObject[] FindObject(UpgradeTemplate[] pannels)
+    {
+        GameObject[] objects = new GameObject[pannels.Length];
+        for (int i = 0; i < pannels.Length; i++)
+            objects[i] = pannels[i].gameObject;
+        
+        return objects;
+    }
+
+    Button[] FindButton(UpgradeTemplate[] pannels)
+    {
+        Button[] buttons = new Button[pannels.Length];
+        for (int i = 0; i < pannels.Length; i++)
+            buttons[i] = pannels[i].transform.Find("BuyButton").GetComponent<Button>();
+
+        return buttons;
     }
 
     #endregion

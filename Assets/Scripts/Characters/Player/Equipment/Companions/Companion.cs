@@ -7,7 +7,6 @@ public class Companion : MonoBehaviour
     #region Variables
 
     [Header("Enum States")]
-    public CompanionType cType;
     public CompanionActive cActive;
 
     [Header("Floats")]
@@ -19,7 +18,7 @@ public class Companion : MonoBehaviour
     [SerializeField] GameObject attackSquareObj;
 
     [Header("Lists")]
-    [SerializeField] List<GameObject> companionObjs = new();
+    [SerializeField] Dictionary<CompanionActive, GameObject> companions = new();
 
     [Header("Components")]
     public LoyalSphereCombat loyalSphere;
@@ -38,75 +37,26 @@ public class Companion : MonoBehaviour
         loyalSphereObj = loyalSphere.gameObject;
         attackSquareObj = attackSquare.gameObject;
 
-        companionObjs.Add(loyalSphereObj);
-        companionObjs.Add(attackSquareObj);
+        companions.Add(CompanionActive.LoyalSphere, loyalSphereObj);
+        companions.Add(CompanionActive.AttackSquare, attackSquareObj);
 
-        SwitchToNone();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (loyalSphereObj.activeInHierarchy)
-        {
-            cType = CompanionType.Offensive;
-        }
-        else if (attackSquareObj.activeInHierarchy)
-        {
-            cType = CompanionType.Offensive;
-        }
-        else
-        {
-            cType = CompanionType.None;
-        }
+        SwitchCompanion(CompanionActive.None);
     }
 
     #endregion
 
     #region Companion Swap
 
-    public void SwitchToNone()
+    public void SwitchCompanion(CompanionActive companion)
     {
-        cActive = CompanionActive.None;
-
-        foreach (GameObject companionObj in companionObjs)
-        {
-            companionObj.SetActive(false);
-        }
-    }
-
-    public void SwitchToLoyalSphere()
-    {
-        cActive = CompanionActive.LoyalSphere;
-
-        foreach (GameObject companionObj in companionObjs)
-        {
-            companionObj.SetActive(false);
-        }
-        loyalSphereObj.SetActive(true);
-    }
-
-    public void SwitchToAttackSquare()
-    {
-        cActive = CompanionActive.AttackSquare;
-
-        foreach (GameObject companionObj in companionObjs)
-        {
-            companionObj.SetActive(false);
-        }
-        attackSquareObj.SetActive(true);
+        cActive = companion;
+        foreach (GameObject obj in companions.Values) obj.SetActive(false);
+        if (companion != CompanionActive.None) foreach (GameObject obj in companions.Values) if (obj == companions[companion]) obj.SetActive(true);
     }
 
     #endregion
 
     #region Enums
-
-    public enum CompanionType
-    {
-        None,
-        Offensive,
-        Support
-    }
 
     public enum CompanionActive
     {

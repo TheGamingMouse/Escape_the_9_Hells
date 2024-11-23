@@ -99,7 +99,7 @@ public class Alexander : MonoBehaviour, IInteractable
         talking = true;
         UIManager.Instance.alexanderTalking = true;
 
-        SFXAudioManager.Instance.PlayAlexanderVO(true);
+        SFXAudioManager.Instance.PlayNPCVoice(NPCSpawner.NPCEnum.Alexander, true);
 
         return true;
     }
@@ -112,7 +112,7 @@ public class Alexander : MonoBehaviour, IInteractable
         UIManager.Instance.dialogueStart = true;
         beginDialogue = true;
 
-        SFXAudioManager.Instance.PlayAlexanderVO(true);
+        SFXAudioManager.Instance.PlayNPCVoice(NPCSpawner.NPCEnum.Alexander, true);
         
         return true;
     }

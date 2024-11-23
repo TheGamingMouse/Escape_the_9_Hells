@@ -49,12 +49,9 @@ public class Dialogue : MonoBehaviour
 
     void Update()
     {
-        if (lines.Length > 0 && dialogue.text == lines[index])
-        {
-            clickForNext.SetActive(true);
-        }
+        if (lines.Length > 0 && dialogue.text == lines[index]) clickForNext.SetActive(true);
+
         if (Input.GetMouseButtonDown(0))
-        {
             if (dialogue.text == lines[index])
             {
                 NextLine();
@@ -66,7 +63,6 @@ public class Dialogue : MonoBehaviour
                 dialogue.text = lines[index];
                 npcName.text = nameString;
             }
-        }
     }
 
     #region General Methods
@@ -109,10 +105,7 @@ public class Dialogue : MonoBehaviour
             dialogue.text = string.Empty;
             StartCoroutine(TypeLine());
         }
-        else
-        {
-            dialogueDone = true;
-        }
+        else dialogueDone = true;
     }
 
     #endregion

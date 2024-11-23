@@ -100,7 +100,7 @@ public class Barbara : MonoBehaviour, IInteractable
         talking = true;
         UIManager.Instance.barbaraTalking = true;
 
-        SFXAudioManager.Instance.PlayBarbaraVO(true);
+        SFXAudioManager.Instance.PlayNPCVoice(NPCSpawner.NPCEnum.Barbara, true);
 
         return true;
     }
@@ -113,7 +113,7 @@ public class Barbara : MonoBehaviour, IInteractable
         UIManager.Instance.dialogueStart = true;
         beginDialogue = true;
 
-        SFXAudioManager.Instance.PlayBarbaraVO(true);
+        SFXAudioManager.Instance.PlayNPCVoice(NPCSpawner.NPCEnum.Barbara, true);
         
         return true;
     }

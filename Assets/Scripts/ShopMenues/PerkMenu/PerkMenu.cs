@@ -50,17 +50,13 @@ public class PerkMenu : MonoBehaviour
     void Start()
     {
         perksSelected = new bool[perkItemsSO.Length];
-
         reRolls = SaveSystem.loadedSoulData.reRollSoulsBought.Count;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!pannelsLoaded)
-        {
-            LoadPerkPannels();
-        }
+        if (!pannelsLoaded) LoadPerkPannels();
 
         if (menuOpen)
         {
@@ -76,14 +72,8 @@ public class PerkMenu : MonoBehaviour
             Cursor.visible = false;
         }
 
-        if (reRolls > 0)
-        {
-            reRollButton.interactable = true;
-        }
-        else
-        {
-            reRollButton.interactable = false;
-        }
+        if (reRolls > 0) reRollButton.interactable = true;
+        else reRollButton.interactable = false;
     }
 
     #endregion
@@ -120,14 +110,8 @@ public class PerkMenu : MonoBehaviour
                 perksSelected[selectedPerk] = true;
             }
 
-            if (cardAmount > 3)
-            {
-                scrollbar.gameObject.SetActive(true);
-            }
-            else
-            {
-                scrollbar.gameObject.SetActive(false);
-            }
+            if (cardAmount > 3) scrollbar.gameObject.SetActive(true);
+            else scrollbar.gameObject.SetActive(false);
 
             perksLoaded = true;
         }
@@ -136,7 +120,6 @@ public class PerkMenu : MonoBehaviour
     public void SelectedPerk(int btnNo)
     {
         PlayerComponents.Instance.playerPerks.AddPerk(selectedPerks[btnNo]);
-
         menuOpen = false;
     }
 

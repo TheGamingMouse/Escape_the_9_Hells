@@ -32,28 +32,13 @@ public class ExplosionComponentStorage : MonoBehaviour
     void OnTriggerEnter(Collider coll)
     {
         if (canDamagePlayer)
-        {
-            if (coll.TryGetComponent(out PlayerHealth playerComp))
-            {
-                playerComp.TakeDamage(damage);
-            }
-        }
+            if (coll.TryGetComponent(out PlayerHealth playerComp)) playerComp.TakeDamage(damage);
         else if (canDamageEnemies)
-        {
-            if (coll.TryGetComponent(out BasicEnemyHealth basicComp))
-            {
-                basicComp.TakeDamage(damage, false);
-            }
-            else if (coll.TryGetComponent(out ImpHealth impComp))
-            {
-                impComp.TakeDamage(damage, false);
-            }
-        }
+            if (coll.TryGetComponent(out EnemyHealth basicComp)) basicComp.TakeDamage(damage, false);
 
         if (!firstColl)
         {
             sfxManager.PlayClip(sfxManager.fireboltExplosion, MasterAudioManager.Instance.sBlend3D, sfxManager.effectsVolumeMod / 2, gameObject);
-
             firstColl = true;
         }
     }
@@ -61,12 +46,7 @@ public class ExplosionComponentStorage : MonoBehaviour
     void OnDestroy()
     {
         foreach (var source in gameObject.GetComponents<AudioSource>())
-        {
-            if (sfxManager.audioSourcePool.Contains(source))
-            {
-                sfxManager.audioSourcePool.Remove(source);
-            }
-        }
+            if (sfxManager.audioSourcePool.Contains(source)) sfxManager.audioSourcePool.Remove(source);
     }
 
     #endregion

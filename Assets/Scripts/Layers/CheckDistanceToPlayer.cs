@@ -28,17 +28,18 @@ public class CheckDistanceToPlayer : MonoBehaviour
             nameUpdated = true;
         }
 
-        if (PlayerComponents.Instance.player && room.GetComponentInChildren<RoomBehavior>().active)
+        if (PlayerComponents.Instance && PlayerComponents.Instance.player && room.GetComponentInChildren<RoomBehavior>().active)
         {
             distToPlayer = Vector3.Distance(PlayerComponents.Instance.player.position, transform.position);
+            
             if (distToPlayer <= maxDist)
             {
                 room.SetActive(true);
+                
+                var roomBehaviour = room.GetComponent<RoomBehavior>();
+                roomBehaviour.UpdateLights(roomBehaviour.savedStatus);
             }
-            else
-            {
-                room.SetActive(false);
-            }
+            else room.SetActive(false);
         }
     }
 

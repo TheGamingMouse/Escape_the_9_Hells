@@ -67,55 +67,17 @@ public class PlayerMovement : MonoBehaviour
             Move();
             LookAtMouse();
             
-            if (Input.GetKeyDown(KeyCode.Space) && !isDashing && !dashCooldown && move.sqrMagnitude > 0)
-            {
-                StartCoroutine(Dash());
-            }
-
-            if (weapon.rState == Weapon.RangeState.Melee && weapon.aType == Weapon.AttackType.Slash)
-            {
-                if (Input.GetMouseButton(0) && weapon.canAttack)
-                {
-                    weapon.UlfberhtStartNormal();
-                }
-                
-                if (Input.GetMouseButton(1) && weapon.canAttack && weapon.canSpecial && weapon.specialAttack)
-                {
-                    weapon.UlfberhtStartSpecial();
-                }
-            }
-            else if (weapon.rState == Weapon.RangeState.Melee && weapon.aType == Weapon.AttackType.Pierce)
-            {
-                if (Input.GetMouseButton(0) && weapon.canAttack)
-                {
-                    weapon.PugioStartNormal();
-                }
-
-                if (Input.GetMouseButton(1) && weapon.canAttack && weapon.canSpecial && weapon.specialAttack)
-                {
-                    weapon.PugioStartSpecial();
-                }
-            }
+            if (Input.GetKeyDown(KeyCode.Space) && !isDashing && !dashCooldown && move.sqrMagnitude > 0) StartCoroutine(Dash());
 
             if (move.sqrMagnitude > 0 && !isDashing)
             {
-                if (!walking)
-                {
-                    StartCoroutine(PlayWalkingAudio());
-                }
-
+                if (!walking) StartCoroutine(PlayWalkingAudio());
                 walking = true;
             }
         }
 
-        if (backs != null && (backs.angelWings.active || backs.steelWings.active))
-        {
-            dashCooldownTime = baseDashCooldownTime / backs.abilityCooldownMultiplier;
-        }
-        else
-        {
-            dashCooldownTime = baseDashCooldownTime;
-        }
+        if (backs != null && (backs.angelWings.active || backs.steelWings.active)) dashCooldownTime = baseDashCooldownTime / backs.abilityCooldownMultiplier;
+        else dashCooldownTime = baseDashCooldownTime;
     }
 
     #endregion
@@ -129,10 +91,7 @@ public class PlayerMovement : MonoBehaviour
             move.x = Input.GetAxisRaw("Horizontal");
             move.z = Input.GetAxisRaw("Vertical");
 
-            if (move.sqrMagnitude == 0)
-            {
-                rb.velocity = new Vector3(0f, -currentSpeed, 0f);
-            }
+            if (move.sqrMagnitude == 0) rb.velocity = new Vector3(0f, -currentSpeed, 0f);
         }
     }
 
@@ -152,14 +111,8 @@ public class PlayerMovement : MonoBehaviour
 
         GetComponent<MeshRenderer>().material.SetColor("_Color", dashColor);
 
-        if (backs.angelWings.active && backs.bActive == Backs.BackActive.AngelWings)
-        {
-            backs.angelWings.SwitchAnimation(2, dashDuration);
-        }
-        else if (backs.steelWings.active && backs.bActive == Backs.BackActive.SteelWings)
-        {
-            backs.steelWings.SwitchAnimation(2, dashDuration);
-        }
+        if (backs.angelWings.active && backs.bActive == Backs.BackActive.AngelWings) backs.angelWings.SwitchAnimation(2, dashDuration);
+        else if (backs.steelWings.active && backs.bActive == Backs.BackActive.SteelWings) backs.steelWings.SwitchAnimation(2, dashDuration);
 
         yield return new WaitForSeconds(dashDuration);
 
@@ -180,10 +133,7 @@ public class PlayerMovement : MonoBehaviour
 
             sfxManager.PlayClip(sfxManager.angelWingsActivate, MasterAudioManager.Instance.sBlend2D, sfxManager.backVolumeMod, true, "none", null, 0.5f);
         }
-        else
-        {
-            StartCoroutine(DashCooldown());
-        }
+        else StartCoroutine(DashCooldown());
     }
 
     IEnumerator DashCooldown()
@@ -212,19 +162,13 @@ public class PlayerMovement : MonoBehaviour
                 yield break;
             }
 
-            if (i >= sfxManager.playerWalking.Count - 1)
-            {
-                i = 0;
-            }
+            if (i >= sfxManager.playerWalking.Count - 1) i = 0;
         }
     }
 
     void OnTriggerEnter(Collider coll)
     {
-        if (coll.transform.CompareTag("LayerRoom"))
-        {
-            roomSpawner = coll.GetComponent<RoomSpawner>();
-        }
+        if (coll.transform.CompareTag("LayerRoom")) roomSpawner = coll.GetComponent<RoomSpawner>();
     }
 
     #endregion

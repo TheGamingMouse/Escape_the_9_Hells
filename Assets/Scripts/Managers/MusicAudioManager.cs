@@ -88,7 +88,7 @@ public class MusicAudioManager : MonoBehaviour
 
     public void PlayMusicTrack()
     {
-        StopSource(currentAudio);
+        if (currentAudio != null) currentAudio.Stop();
         int layer = SaveSystem.Instance.CheckLayer();
 
         if (layer == 0 || layer == -1)
@@ -98,26 +98,12 @@ public class MusicAudioManager : MonoBehaviour
                 PlaySource(backgroundSource);
                 onStartUp = false;
             }
-            else
-            {
-                PlaySource(backgroundSource, SaveSystem.loadedPersistentData.musicTime);
-            }
+            else PlaySource(backgroundSource, SaveSystem.loadedPersistentData.musicTime);
         }
         else if (layer > 0)
-        {
-            if (inBossRoom)
-            {
-                PlaySource(bossSource);
-            }
-            else
-            {
-                PlaySource(backgroundSource);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Error occured when checking layer");
-        }
+            if (inBossRoom) PlaySource(bossSource);
+            else PlaySource(backgroundSource);
+        else Debug.LogWarning("Error occured when checking layer");
     }
 
     #endregion
@@ -138,14 +124,6 @@ public class MusicAudioManager : MonoBehaviour
         source.Play();
 
         currentAudio = source;
-    }
-
-    void StopSource(AudioSource source)
-    {
-        if (source)
-        {
-            source.Stop();
-        }
     }
 
     #endregion

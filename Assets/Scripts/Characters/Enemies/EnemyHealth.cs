@@ -3,42 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ImpHealth : MonoBehaviour
+public class EnemyHealth : MonoBehaviour
 {
-    #region Variables
+    # region Variables
 
-    [Header("Ints")]
-    public int maxHealth = 75;
-    public int soulAmount = 60;
+    public int maxHealth;
+    public int soulAmount;
     int health;
-    public int expAmount = 25;
+    public int expAmount;
 
-    [Header("Bools")]
     public bool boss;
+    bool canTakeDamage = true;
     [HideInInspector]
     public bool minion;
-    bool canTakeDamage = true;
 
-    [Header("Strings")]
     public string bossName;
 
-    [Header("GameObjects")]
     GameObject healthbar;
-
-    [Header("Images")]
     Image healthImage;
 
-    [Header("Components")]
-    [HideInInspector]
     public RoomSpawner roomSpawner;
     EnemySight enemySight;
-    ImpAction impAction;
 
     #endregion
 
-    #region StartUpdate Methods
-
-    // Start is called before the first frame update
     void Start()
     {
         enemySight = GetComponent<EnemySight>();
@@ -53,24 +41,15 @@ public class ImpHealth : MonoBehaviour
             healthImage = GameObject.FindWithTag("Canvas").transform.Find("Boss/BossHealthBar/Health Bar Fill").GetComponent<Image>();
             UIManager.Instance.bossNameString = bossName;
         }
-        impAction = GetComponent<ImpAction>();
         
         health = maxHealth;
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
-        if (!boss)
-        {
-            healthbar.transform.rotation = new Quaternion(0.707106829f, 0f, 0f, 0.707106829f);
-        }
+        if (!boss) healthbar.transform.rotation = new Quaternion(0.707106829f, 0f, 0f, 0.707106829f);
         healthImage.fillAmount = (float)health / maxHealth;
     }
-
-    #endregion
-
-    #region General Methods
 
     public void TakeDamage(int damage, bool aura)
     {
@@ -84,10 +63,7 @@ public class ImpHealth : MonoBehaviour
                     StartCoroutine(DamageFromAura());
                 }
             }
-            else
-            {
-                health -= damage;
-            }
+            else health -= damage;
             
             if (health <= 0)
             {
@@ -97,14 +73,9 @@ public class ImpHealth : MonoBehaviour
 
                 if (!boss)
                 {
-                    if (!minion)
-                    {
-                        roomSpawner.enemies.Remove(gameObject);
-                    }
-                    else
-                    {
-                        MinionSpawner.Instance.minions.Remove(gameObject);
-                    }
+                    if (!minion) roomSpawner.enemies.Remove(gameObject);
+                    else MinionSpawner.Instance.minions.Remove(gameObject);
+
                     expSoulsManager.AddExperience(expAmount, "demon");
                 }
                 else
@@ -125,7 +96,6 @@ public class ImpHealth : MonoBehaviour
                     else
                     {
                         sfxManager.PlayClip(sfxManager.gainLevel, MasterAudioManager.Instance.sBlend2D, sfxManager.effectsVolumeMod);
-
                         playerLevel.LevelUp(false, true, true);
                     }
                     
@@ -133,19 +103,12 @@ public class ImpHealth : MonoBehaviour
                     BossGenerator.Instance.isBossDead = true;
                 }
                 foreach (var source in gameObject.GetComponents<AudioSource>())
-                {
-                    if (sfxManager.audioSourcePool.Contains(source))
-                    {
-                        sfxManager.audioSourcePool.Remove(source);
-                    }
-                }
+                    if (sfxManager.audioSourcePool.Contains(source)) sfxManager.audioSourcePool.Remove(source);
+
                 EnemyDeath();
                 Destroy(gameObject);
             }
-            else
-            {
-                EnemyDamage();
-            }
+            else EnemyDamage();
         }
     }
 
@@ -161,9 +124,10 @@ public class ImpHealth : MonoBehaviour
     void EnemyDeath()
     {
         var sfxManager = SFXAudioManager.Instance;
+        var enemyAction = GetComponent<IEnemyAction>();
 
         int randDeath;
-        if (impAction.male)
+        if (enemyAction.male)
         {
             randDeath = Random.Range(0, sfxManager.enemyDeathMale.Count);
             sfxManager.PlayClip(sfxManager.enemyDeathMale[randDeath], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod);
@@ -178,9 +142,10 @@ public class ImpHealth : MonoBehaviour
     void EnemyDamage()
     {
         var sfxManager = SFXAudioManager.Instance;
+        var enemyAction = GetComponent<IEnemyAction>();
         
         int randDamage;
-        if (impAction.male)
+        if (enemyAction.male)
         {
             randDamage = Random.Range(0, sfxManager.enemyDamageMale.Count);
             sfxManager.PlayClip(sfxManager.enemyDamageMale[randDamage], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
@@ -191,6 +156,4 @@ public class ImpHealth : MonoBehaviour
             sfxManager.PlayClip(sfxManager.enemyDamageFemale[randDamage], MasterAudioManager.Instance.sBlend3D, sfxManager.enemyVolumeMod, gameObject, "low");
         }
     }
-
-    #endregion
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "StoreMenu", menuName = "Scriptable Objects/New Upgrade Item", order = 4)]

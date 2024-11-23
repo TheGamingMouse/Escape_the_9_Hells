@@ -125,7 +125,7 @@ Transform:
   m_GameObject: {fileID: 3574239063221235080}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.5, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -223,6 +223,8 @@ MonoBehaviour:
   doInterior: 0
   completed: 0
   active: 0
+  mainPath: 0
+  playerPathfinder: 0
   door: {fileID: 0}
   secondDoor: {fileID: 0}
   backDoor: {fileID: 0}
@@ -493,7 +495,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49dc574d4d92f294a8b9960edde22d2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bossGenerator: {fileID: 6087883898127004410}
 --- !u!54 &4905654651453944365
 Rigidbody:
   m_ObjectHideFlags: 0

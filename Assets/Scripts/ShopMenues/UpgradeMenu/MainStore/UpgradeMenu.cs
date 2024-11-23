@@ -71,17 +71,11 @@ public class UpgradeMenu : MonoBehaviour
         interactor = PlayerComponents.Instance.player.GetComponent<Interactor>();
 
         if (UIManager.Instance.npcsActive)
-        {
-            if (NPCSpawner.Instance.jensSpawned)
-            {
-                jens = NPCSpawner.Instance.jens;
-            }
-        }
+            if (NPCSpawner.Instance.jensSpawned) jens = NPCSpawner.Instance.jens;
 
         if (!headerUpdated)
         {
             headerText.text = header;
-            
             headerUpdated = true;
         }
 
@@ -135,6 +129,12 @@ public class UpgradeMenu : MonoBehaviour
         menuCanClose = false;
         menuCanOpen = true;
         UIManager.Instance.jensTalking = false;
+        StartCoroutine(StopTalking());
+    }
+
+    IEnumerator StopTalking()
+    {
+        yield return new WaitForSeconds(0.1f);
         jens.talking = false;
     }
 

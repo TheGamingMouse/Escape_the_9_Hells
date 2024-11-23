@@ -15,9 +15,6 @@ public class MasterAudioManager : MonoBehaviour
     public float sBlend3D;
     public float defaultVolume = 0.15f;
 
-    [Header("Lists")]
-    readonly List<AudioSource> audioSourcePool = new();
-
     [Header("AudioClips")]
     
 
@@ -35,72 +32,6 @@ public class MasterAudioManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-    }
-
-    #endregion
-
-    #region General Methods
-
-    AudioSource AddNewSourceToPool()
-    {
-        audioMixer.GetFloat("masterVolume", out float dBMaster);
-        float masterVolume = Mathf.Pow(10.0f, dBMaster / 20.0f);
-        
-        float realVolume = masterVolume * defaultVolume;
-        
-        AudioSource newSource = gameObject.AddComponent<AudioSource>();
-        newSource.playOnAwake = false;
-        newSource.volume = realVolume;
-        newSource.spatialBlend = sBlend2D;
-        newSource.outputAudioMixerGroup = masterMixer;
-        audioSourcePool.Add(newSource);
-        return newSource;
-    }
-
-    AudioSource GetAvailablePoolSource()
-    {
-        //Fetch the first source in the pool that is not currently playing anything
-        foreach (var source in audioSourcePool)
-        {
-            if (!source.isPlaying)
-            {
-                return source;
-            }
-        }
- 
-        //No unused sources. Create and fetch a new source
-        return AddNewSourceToPool();
-    }
-
-    AudioSource GetUnavailablePoolSource(AudioClip clip)
-    {
-        //Fetch the first source in the pool that is not currently playing anything
-        foreach (var source in audioSourcePool)
-        {
-            if (source.isPlaying && source.clip == clip)
-            {
-                return source;
-            }
-        }
-        return null;
-    }
-
-    void PlayClip(AudioClip clip)
-    {
-        AudioSource source = GetAvailablePoolSource();
-        source.clip = clip;
-        source.Play();
-    }
-
-    void StopClip(AudioClip clip)
-    {
-        AudioSource source = GetUnavailablePoolSource(clip);
-        if (source == null)
-        {
-            return;
-        }
-        source.clip = clip;
-        source.Stop();
     }
 
     #endregion

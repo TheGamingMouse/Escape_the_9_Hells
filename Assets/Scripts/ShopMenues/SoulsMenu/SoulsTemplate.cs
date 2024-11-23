@@ -9,7 +9,7 @@ public class SoulsTemplate : MonoBehaviour
     public TMP_Text descriptionText;
     public TMP_Text priceText;
 
-    [Header("Images")]
-    public Image counter1;
-    public Image counter2;
+    [Header("Arrays")]
+    public GameObject[] starsActive;
+    public GameObject[] starsInactive;
 }

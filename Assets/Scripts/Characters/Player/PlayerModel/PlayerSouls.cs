@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using SaveSystemSpace;
 using UnityEngine;
 
 public class PlayerSouls : MonoBehaviour
@@ -31,7 +32,7 @@ public class PlayerSouls : MonoBehaviour
 
     [Header("Components")]
     Weapon weapon;
-    public Ricky ricky;
+    public RickyController ricky;
 
     #endregion
 
@@ -45,7 +46,6 @@ public class PlayerSouls : MonoBehaviour
         weapon = player.GetComponentInChildren<Weapon>();
 
         var soulData = SaveSystem.loadedSoulData;
-        var persistentData = SaveSystem.loadedPersistentData;
 
         attackSpeedSouls = soulData.attackSpeedSoulsBought;
         damageSouls = soulData.damageSoulsBought;
@@ -60,10 +60,7 @@ public class PlayerSouls : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (ricky && ricky.daggerGiven)
-        {
-            weapon = PlayerComponents.Instance.player.GetComponentInChildren<Weapon>();
-        }
+        if (ricky && ricky.daggerGiven) weapon = PlayerComponents.Instance.player.GetComponentInChildren<Weapon>();
 
         if (!soulsUpdated && weapon)
         {
@@ -84,94 +81,73 @@ public class PlayerSouls : MonoBehaviour
 
     public void AddSouls(SoulsItemsSO soul)
     {
-        if (soul.title == "Template Soul")
+        var soulData = SaveSystem.loadedSoulData;
+
+        switch (soul.title)
         {
-            templateSouls.Add(soul);
-            print("player has " + templateSouls.Count + " template perks");
-        }
-        else if (soul.title == "Attack Speed Soul")
-        {
-            weapon.attackSpeedMultiplier -= attackSpeedSouls.Count * attackSpeedMod;
+            case SaveClasses.SoulData.attackSpeedString:
+                weapon.attackSpeedMultiplier -= attackSpeedSouls.Count * attackSpeedMod;
 
-            var soulData = SaveSystem.loadedSoulData;
-            soulData.attackSpeedSoulsBought.Add(soul);
+                soulData.attackSpeedSoulsBought.Add(soul);
+
+                weapon.attackSpeedMultiplier += attackSpeedSouls.Count * attackSpeedMod;
+                break;
             
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
+            case SaveClasses.SoulData.damageString:
+                weapon.damageMultiplier -= damageSouls.Count * damageMod;
 
-            weapon.attackSpeedMultiplier += attackSpeedSouls.Count * attackSpeedMod;
-        }
-        else if (soul.title == "Damage Soul")
-        {
-            weapon.damageMultiplier -= damageSouls.Count * damageMod;
+                soulData.damageSoulsBought.Add(soul);
 
-            var soulData = SaveSystem.loadedSoulData;
-            soulData.attackSpeedSoulsBought.Add(soul);
+                weapon.damageMultiplier += damageSouls.Count * damageMod;
+                break;
             
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
+            case SaveClasses.SoulData.defenceString:
+                PlayerComponents.Instance.playerHealth.resistanceMultiplier -= defenceSouls.Count * defenceMod;
 
-            weapon.damageMultiplier += damageSouls.Count * damageMod;
-
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
-        }
-        else if (soul.title == "Defence Soul")
-        {
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier -= defenceSouls.Count * defenceMod;
-
-            var soulData = SaveSystem.loadedSoulData;
-            soulData.defenceSoulsBought.Add(soul);
+                soulData.defenceSoulsBought.Add(soul);
+                
+                PlayerComponents.Instance.playerHealth.resistanceMultiplier += defenceSouls.Count * defenceMod;
+                break;
             
-            PlayerComponents.Instance.playerHealth.resistanceMultiplier += defenceSouls.Count * defenceMod;
+            case SaveClasses.SoulData.movementSpeedString:
+                PlayerComponents.Instance.playerMovement.speedMultiplier -= movementSpeedSouls.Count * moveSpeedMod;
 
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
-        }
-        else if (soul.title == "Movement Speed Soul")
-        {
-            PlayerComponents.Instance.playerMovement.speedMultiplier -= movementSpeedSouls.Count * moveSpeedMod;
+                soulData.movementSpeedSoulsBought.Add(soul);
+                
+                PlayerComponents.Instance.playerMovement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
+                break;
 
-            var soulData = SaveSystem.loadedSoulData;
-            soulData.movementSpeedSoulsBought.Add(soul);
+            case SaveClasses.SoulData.luckString:
+                PlayerComponents.Instance.playerLevel.luck -= luckSouls.Count * luckMod;
+
+                soulData.luckSoulsBought.Add(soul);
+                
+                PlayerComponents.Instance.playerLevel.luck += luckSouls.Count * luckMod;
+                break;
+
+            case SaveClasses.SoulData.startLevelString:
+                soulData.startLevelSoulsBought.Add(soul);
             
-            PlayerComponents.Instance.playerMovement.speedMultiplier += movementSpeedSouls.Count * moveSpeedMod;
+                PlayerComponents.Instance.playerLevel.startLevel = startLevelSouls.Count + 1;
+                break;
 
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
-        }
-        else if (soul.title == "Luck Soul")
-        {
-            PlayerComponents.Instance.playerLevel.luck -= luckSouls.Count * luckMod;
+            case SaveClasses.SoulData.reRollString:
+                soulData.reRollSoulsBought.Add(soul);
+                break;
 
-            var soulData = SaveSystem.loadedSoulData;
-            soulData.luckSoulsBought.Add(soul);
+            case SaveClasses.SoulData.pathFinderString:
+                soulData.pathFinderSoulsBought.Add(soul);
             
-            PlayerComponents.Instance.playerLevel.luck += luckSouls.Count * luckMod;
+                playerPathfinder = true;
+                break;
 
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
+            default:
+                templateSouls.Add(soul);
+                print("player has " + templateSouls.Count + " template perks");
+                break;
         }
-        else if (soul.title == "Start Level Soul")
-        {
-            var soulData = SaveSystem.loadedSoulData;
-            soulData.startLevelSoulsBought.Add(soul);
-            
-            PlayerComponents.Instance.playerLevel.startLevel = startLevelSouls.Count + 1;
 
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
-        }
-        else if (soul.title == "Re Roll Soul")
-        {
-            var soulData = SaveSystem.loadedSoulData;
-            soulData.reRollSoulsBought.Add(soul);
-            
-
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
-        }
-        else if (soul.title == "Path Finder Soul")
-        {
-            var soulData = SaveSystem.loadedSoulData;
-            soulData.pathFinderSoulsBought.Add(soul);
-            
-            SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
-            
-            playerPathfinder = true;
-        }
+        SaveSystem.Instance.Save(soulData, SaveSystem.soulsDataPath);
     }
 
     #endregion

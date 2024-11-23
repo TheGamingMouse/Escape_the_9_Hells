@@ -8,41 +8,22 @@ public class DevTools : MonoBehaviour
 
     [Header("Bools")]
     [HideInInspector]
-    public bool godMode;
+    public bool godMode = false;
     public bool isDev = false;
 
-    [Header("Transforms")]
-    public Transform toBossRoom;
-
     [Header("Components")]
-    Weapon weapon;
+    public Weapon weapon;
 
     #endregion
 
     #region StartUpdate Methods
 
-    void Start()
-    {
-        weapon = GetComponentInChildren<Weapon>();
-
-        godMode = false;
-    }
-
     void Update()
     {
-        if (isDev)
+        if (isDev && Input.GetKeyDown(KeyCode.P))
         {
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                if (!godMode)
-                {
-                    EnableGodMode();
-                }
-                else
-                {
-                    DisableGodMode();
-                }
-            }
+            if (!godMode) EnableGodMode();
+            else DisableGodMode();
         }
     }
 
@@ -52,25 +33,40 @@ public class DevTools : MonoBehaviour
 
     void EnableGodMode()
     {
-        if (!godMode)
-        {
-            PlayerComponents.Instance.playerHealth.isInvinsible = true;
-            PlayerComponents.Instance.playerMovement.speedMultiplier = 1.25f;
-            weapon.damageMultiplier = 100f;
+        PlayerComponents.Instance.playerHealth.isInvinsible = true;
+        PlayerComponents.Instance.playerMovement.speedMultiplier += 0.5f;
+        weapon.damageMultiplier += 100f;
 
-            godMode = true;
-        }
+        UpdateWeaponDamage();
+
+        godMode = true;
     }
 
     void DisableGodMode()
     {
-        if (godMode)
-        {
-            PlayerComponents.Instance.playerHealth.isInvinsible = false;
-            PlayerComponents.Instance.playerMovement.speedMultiplier = 1f;
-            weapon.damageMultiplier = 1f;
+        PlayerComponents.Instance.playerHealth.isInvinsible = false;
+        PlayerComponents.Instance.playerMovement.speedMultiplier -= 0.5f;
+        weapon.damageMultiplier -= 100f;
 
-            godMode = false;
+        UpdateWeaponDamage();
+
+        godMode = false;
+    }
+
+    void UpdateWeaponDamage()
+    {
+        weapon.pugioObj.transform.GetChild(0).TryGetComponent(out PugioNormalAttack pugio);
+        if (pugio != null)
+        {
+            pugio.damage = pugio.baseDamage * weapon.damageMultiplier;
+            return;
+        }
+
+        weapon.ulfberhtObj.transform.GetChild(0).TryGetComponent(out UlfberhtAttack ulfberht);
+        if (ulfberht != null)
+        {
+            ulfberht.damage = ulfberht.baseDamage * weapon.damageMultiplier;
+            return;
         }
     }
 

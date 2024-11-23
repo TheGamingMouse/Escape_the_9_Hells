@@ -17,14 +17,7 @@ public class SteelWingsCollision : MonoBehaviour
     {
         if (wings.canDamage)
         {
-            if (coll.TryGetComponent(out BasicEnemyHealth eComp))
-            {
-                eComp.TakeDamage(wings.damage, false);
-            }
-            else if (coll.TryGetComponent(out ImpHealth iComp))
-            {
-                iComp.TakeDamage(wings.damage, false);
-            }
+            if (coll.TryGetComponent(out EnemyHealth eComp)) eComp.TakeDamage(wings.damage, false);
         }
     }
 
