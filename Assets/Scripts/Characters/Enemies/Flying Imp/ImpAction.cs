@@ -108,14 +108,18 @@ public class ImpAction : MonoBehaviour, IEnemyAction
 
     void BossAttack()
     {
-        GameObject newProjectile = Instantiate(fireball, transform.position, Quaternion.identity, GameObject.FindWithTag("PrefabStorage").transform);
+        GameObject newProjectile = Instantiate(fireball, transform.position, Quaternion.identity);
         
         newProjectile.GetComponent<Rigidbody>().AddForce(transform.up * bossUpForce, ForceMode.Impulse);
         newProjectile.GetComponent<Rigidbody>().AddForce(transform.forward * bossFrontForce, ForceMode.Impulse);
-        newProjectile.GetComponent<Firebolt>().damage = damage * 2;
-        newProjectile.GetComponent<Firebolt>().explostionScale = 3.5f;
-        newProjectile.GetComponent<Firebolt>().canDamagePlayer = true;
-        newProjectile.GetComponent<Firebolt>().canDamageEnemies = false;
+        
+        var newFirebolt = newProjectile.GetComponent<Firebolt>();
+        newFirebolt.damage = damage * 2;
+        newFirebolt.explostionScale = 3.5f;
+        newFirebolt.canDamagePlayer = true;
+        newFirebolt.canDamageEnemies = false;
+        newFirebolt.boss = true;
+
 
         Destroy(newProjectile, 10f);
 

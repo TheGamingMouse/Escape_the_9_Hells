@@ -28,7 +28,7 @@ public class StartLevel : MonoBehaviour
     public Quaternion openRot;
 
     [Header("Colors")]
-    Color mainPathColor = new(0f, 0.5686275f, 1f);
+    Color mainPathColor;
 
     #endregion
     
@@ -37,6 +37,7 @@ public class StartLevel : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        mainPathColor = RoomBehavior.mainPathColor;
     }
 
     void Update()
@@ -55,7 +56,7 @@ public class StartLevel : MonoBehaviour
         if (doorOpening || LayerManager.Instance.showroom)
         {
             OpenDoor();
-            if (!firstRoomLoaded)
+            if (firstRoomLoaded == false)
             {
                 rooms = LayerManager.Instance.rooms;
                 

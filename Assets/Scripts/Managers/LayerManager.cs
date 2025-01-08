@@ -30,16 +30,15 @@ public class LayerManager : MonoBehaviour
 
     void Update()
     {
-        if (BossGenerator.Instance && BossGenerator.Instance.ready && !ready)
+        if (BossGenerator.Instance != null && BossGenerator.Instance.ready == true && ready == false)
         {
             BossGenerator.Instance.gameObject.SetActive(false);
-            
             ready = true;
         }
 
         layerGenerated = LayerGenerator.Instance.layerGenerated;
 
-        if (layerGenerated && !roomsDeactivated)
+        if (layerGenerated == true && roomsDeactivated == false)
         {
             rooms = GameObject.FindGameObjectsWithTag("LayerRoom");
 

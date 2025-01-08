@@ -1013,7 +1013,6 @@ MonoBehaviour:
   completed: 0
   active: 0
   mainPath: 0
-  playerPathfinder: 0
   door: {fileID: 0}
   secondDoor: {fileID: 0}
   backDoor: {fileID: 0}
@@ -1033,6 +1032,7 @@ MonoBehaviour:
   - {fileID: 6482453344180106957}
   - {fileID: 8810500032722694334}
   - {fileID: 1162996782282936751}
+  savedStatus: 00000000
   boardSize: {x: 0, y: 0}
 --- !u!114 &1414648327794410454
 MonoBehaviour:

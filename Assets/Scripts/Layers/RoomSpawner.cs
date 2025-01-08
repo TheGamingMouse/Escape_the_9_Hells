@@ -52,7 +52,7 @@ public class RoomSpawner : MonoBehaviour
     bool[] spawned;
 
     [Header("Colors")]
-    Color mainPathColor = new(0f, 0.5686275f, 1f);
+    Color mainPathColor;
 
     [Header("Components")]
     RoomBehavior roomBehavior;
@@ -65,6 +65,8 @@ public class RoomSpawner : MonoBehaviour
     void Start()
     {
         roomBehavior = GetComponent<RoomBehavior>();
+
+        mainPathColor = RoomBehavior.mainPathColor;
 
         basicDemonChance = LayerGenerator.Instance.basicDemonChance;
         impChance = LayerGenerator.Instance.impChance;

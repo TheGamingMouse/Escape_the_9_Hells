@@ -159,9 +159,19 @@ public class UIManager : MonoBehaviour
         {
             pauseMenuCurrentSouls.SetActive(false);
             pauseMenuTotalSouls.transform.position += new Vector3(0, 113, 0);
+
+            soulsText = canvas.Find("HubSouls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
+            disableSoulsText = canvas.Find("Souls").gameObject;
+        }
+        else
+        {
+            soulsText = canvas.Find("Souls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
+            disableSoulsText = canvas.Find("HubSouls").gameObject;
         }
 
         PlayerComponents.Instance.playerMovement.startBool = false;
+
+        disableSoulsText.SetActive(false);
     }
 
     void FixedUpdate()
@@ -275,16 +285,6 @@ public class UIManager : MonoBehaviour
         canvas = GameObject.FindWithTag("Canvas").transform;
 
         levelText = canvas.Find("uf_level_elite/LevelText (TMP)").GetComponent<TextMeshProUGUI>();
-        if (SaveSystem.loadedLayerData.lState == LayerData.LayerState.Hub)
-        {
-            soulsText = canvas.Find("HubSouls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
-            disableSoulsText = canvas.Find("Souls").gameObject;
-        }
-        else
-        {
-            soulsText = canvas.Find("Souls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
-            disableSoulsText = canvas.Find("HubSouls").gameObject;
-        }
         totalSoulsText = canvas.Find("Menus/PauseMenu/TotalSouls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
         pauseMenuSoulsText = canvas.Find("Menus/PauseMenu/Souls/SoulsText (TMP)").GetComponent<TextMeshProUGUI>();
 
@@ -323,7 +323,6 @@ public class UIManager : MonoBehaviour
         deathMenu.SetActive(false);
         pauseMenu.SetActive(false);
         bossObj.SetActive(false);
-        disableSoulsText.SetActive(false);
     }
 
     void StartGame()

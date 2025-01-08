@@ -34,7 +34,7 @@ public class RoomBehavior : MonoBehaviour
     public Vector2 boardSize;
 
     [Header("Colors")]
-    Color mainPathColor = new(0f, 0.5686275f, 1f);
+    public static Color mainPathColor = new(0f, 0.2843137f, 0.5f);
 
     #endregion
 

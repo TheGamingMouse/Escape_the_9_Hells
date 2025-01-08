@@ -16,9 +16,36 @@ public class Firebolt : MonoBehaviour
     [Header("Bools")]
     public bool canDamagePlayer;
     public bool canDamageEnemies;
+    public bool boss;
+
+    [Header("Vector3s")]
+    Vector3 originalSize;
 
     [Header("GameObjects")]
     public GameObject explosion;
+    public GameObject targetCircle;
+    [SerializeField] GameObject instantiatedTargetCircle;
+
+    [Header("LayerMasks")]
+    public LayerMask groundMask;
+
+    #endregion
+
+    #region StartUpdate Methods
+
+    void Start()
+    {
+        if (boss == true)
+        {
+            instantiatedTargetCircle = Instantiate(targetCircle);
+            originalSize = targetCircle.transform.localScale;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (instantiatedTargetCircle != null) UpdateTargetCircle();
+    }
 
     #endregion
 
@@ -50,26 +77,39 @@ public class Firebolt : MonoBehaviour
 
     void Explode()
     {
-        GameObject newExplosion = Instantiate(explosion, transform.position, Quaternion.identity);
+        var newExplosion = Instantiate(explosion, transform.position, Quaternion.identity).GetComponent<ExplosionComponentStorage>();
 
-        newExplosion.GetComponent<ExplosionComponentStorage>().Ground.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
-        newExplosion.GetComponent<ExplosionComponentStorage>().Ground_dark.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
-        newExplosion.GetComponent<ExplosionComponentStorage>().Sphere.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
-        newExplosion.GetComponent<ExplosionComponentStorage>().Impact.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
-        newExplosion.GetComponent<ExplosionComponentStorage>().Fire_up.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
-        newExplosion.GetComponent<ExplosionComponentStorage>().Spark.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
+        newExplosion.Ground.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
+        newExplosion.Ground_dark.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
+        newExplosion.Sphere.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
+        newExplosion.Impact.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
+        newExplosion.Fire_up.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
+        newExplosion.Spark.transform.localScale = new Vector3(explostionScale, explostionScale, explostionScale);
 
         newExplosion.GetComponent<SphereCollider>().radius = explosionSize;
 
-        newExplosion.GetComponent<ExplosionComponentStorage>().canDamagePlayer = canDamagePlayer;
-        newExplosion.GetComponent<ExplosionComponentStorage>().canDamageEnemies = canDamageEnemies;
+        newExplosion.canDamagePlayer = canDamagePlayer;
+        newExplosion.canDamageEnemies = canDamageEnemies;
 
-        newExplosion.GetComponent<ExplosionComponentStorage>().damage = damage / 2;
+        newExplosion.damage = damage / 2;
 
-        newExplosion.GetComponent<ExplosionComponentStorage>().sfxManager = SFXAudioManager.Instance;
+        newExplosion.sfxManager = SFXAudioManager.Instance;
         
+        Destroy(instantiatedTargetCircle);
         Destroy(newExplosion, 1f);
         Destroy(gameObject);
+    }
+
+    void UpdateTargetCircle()
+    {
+        if (Physics.Raycast(transform.position, -Vector3.up, out RaycastHit hit, float.MaxValue, groundMask))
+        {
+            instantiatedTargetCircle.transform.position = hit.point;
+            if (originalSize.x / hit.distance * 10 > originalSize.x && hit.distance > 10) instantiatedTargetCircle.transform.localScale = originalSize / hit.distance * 10;
+            else instantiatedTargetCircle.transform.localScale = originalSize;
+
+            Debug.DrawLine (transform.position, hit.point, Color.cyan);
+        }
     }
 
     void OnDestroy()

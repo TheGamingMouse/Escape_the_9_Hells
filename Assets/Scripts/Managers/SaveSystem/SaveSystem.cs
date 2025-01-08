@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static SaveSystemSpace.SaveClasses;
@@ -82,7 +80,6 @@ public class SaveSystem : MonoBehaviour
         string fullPath = Application.persistentDataPath + "/Saved Files/" + dataPath + ".Json";
 
         saveData = Friendlify(saveData);
-        // if (saveData.GetType().Equals(typeof(SoulData)) || saveData.GetType().Equals(typeof(FriendlySoulData))) print(saveData.GetType().ToString());
 
         if (!Directory.Exists(Application.persistentDataPath + "/Saved Files"))
         {
